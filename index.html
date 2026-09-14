@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Practice">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
-<title>Daily Practice — V7.2</title>
+<title>Daily Practice — V7.3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -172,6 +172,8 @@ button{font-family:inherit;border:none;background:none;color:inherit;cursor:poin
 .opt.miss{border-color:var(--pen);background:#FFF5F5;color:var(--pen);text-decoration:line-through}
 .opts.pics{grid-template-columns:repeat(3,1fr)}
 .opt.pic{font-size:clamp(2.4rem,12vw,3.4rem);padding:14px 4px}
+.opt.pic .plabel{display:block;font-size:1rem;line-height:1.2;margin-top:6px;font-weight:700;color:var(--ink)}
+.paper.single .opt.pic .plabel{font-size:1.15rem}
 .passage{background:#F8FAFD;border-left:5px solid var(--gold);padding:14px 16px;margin:0;font-size:1.05rem;line-height:1.75}
 .passage .ttl{display:block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
 .speak{border:2px solid var(--rule);border-radius:14px;padding:10px 18px;font-weight:800;display:inline-flex;align-items:center;gap:8px;font-size:1.05rem;background:#fff}
@@ -1125,13 +1127,30 @@ const SOUND_LETTERS = new Set('abcdefghijklmnopqrstuvwyz'.split(''));
 const RHYMES = [
  [['cat','🐱'],['hat','🎩']], [['dog','🐶'],['frog','🐸']], [['star','⭐'],['car','🚗']],
  [['moon','🌙'],['spoon','🥄']], [['bee','🐝'],['tree','🌳']], [['snake','🐍'],['cake','🍰']],
- [['mouse','🐭'],['house','🏠']], [['bear','🐻'],['pear','🍐']], [['goat','🐐'],['coat','🧥']],
+ [['mouse','🐭'],['house','🏠']], [['bear','🐻'],['pear','🍐']], [['goat','🐐'],['coat','🧣']],
  [['fish','🐟'],['dish','🍽️']], [['sun','☀️'],['bun','🥯']], [['whale','🐳'],['snail','🐌']],
- [['sock','🧦'],['clock','🕐']], [['train','🚂'],['rain','🌧️']], [['ring','💍'],['king','🤴']],
+ [['sock','🧦'],['clock','🕰️']], [['train','🚂'],['rain','🌧️']], [['ring','💍'],['king','🤴']],
  [['bed','🛏️'],['sled','🛷']], [['van','🚐'],['fan','🪭']], [['owl','🦉'],['towel','🧻']],
- [['duck','🦆'],['truck','🚚']], [['pig','🐷'],['wig','💇']], [['light','💡'],['kite','🪁']],
+ [['duck','🦆'],['truck','🚚']], [['pig','🐷'],['wig','💇']], [['light','🔦'],['kite','🪁']],
  [['crab','🦀'],['cab','🚕']], [['corn','🌽'],['horn','📯']], [['shell','🐚'],['bell','🔔']]
 ];
+/* Rhyme groups: every word in a RHYMES pair shares a group id, so a distractor
+   can never accidentally rhyme with the prompt. EXTRA covers rhyming picture
+   words that are not themselves in a RHYMES pair. */
+const RHYME_GROUP = (()=>{
+  const m = {};
+  RHYMES.forEach((pair,gi)=> pair.forEach(([w])=> m[w] = gi));
+  const EXTRA = {key:'bee', jar:'star', cab:'crab', bat:'cat', mat:'cat', log:'dog',
+                 night:'light', bite:'light', pail:'whale', tail:'whale', rock:'sock',
+                 block:'sock', pan:'van', can:'van', dig:'pig', bell:'shell'};
+  Object.keys(EXTRA).forEach(w=>{ const g = m[EXTRA[w]]; if(g !== undefined) m[w] = g; });
+  return m;
+})();
+function rhymesWith(a, b){
+  const ga = RHYME_GROUP[a], gb = RHYME_GROUP[b];
+  return ga !== undefined && ga === gb;
+}
+
 const SIGHT = ['the','and','you','was','are','they','said','have','with','from','what','come',
   'some','little','here','this','that','went','like','will','your','when','them','been','were',
   'there','their','would','could','should','because','into','about','after','again','before',
@@ -1620,9 +1639,12 @@ const ENG = [
  build(n){ return Array.from({length:Math.min(n, RHYMES.length)}, (_,i)=>{
     const pr = RHYMES[(rnd(RHYMES.length)+i) % RHYMES.length];
     const [w,r] = shuffle(pr.slice());
-    const d = sample(PICWORDS.filter(x=>x[0]!==w[0] && x[0]!==r[0]), 2).map(x=>[x[0],x[1]]);
+    const d = sample(PICWORDS.filter(x=>
+        x[0]!==w[0] && x[0]!==r[0] && x[1]!==r[1] &&
+        !rhymesWith(x[0], w[0]) && !rhymesWith(x[0], r[0])), 2).map(x=>[x[0],x[1]]);
     const opts = shuffle([r,...d]);
-    return {kind:'pic', say:w[0], q:'Which one rhymes with '+w[0]+'?', opts:opts.map(o=>o[1]),
+    return {kind:'pic', say:w[0], q:'Which one rhymes with '+w[0]+'?',
+            opts:opts.map(o=>o[1]), labels:opts.map(o=>o[0]),
             a:opts.findIndex(o=>o[0]===r[0]), key:'rhy:'+w[0]}; }); }},
 
 /* ---------- sight words, one set at a time ---------- */
@@ -3361,7 +3383,9 @@ function cell(it, i, single, n){
     it.opts.forEach((o,k)=>{
       const b = document.createElement('button');
       b.className = 'opt' + (it.kind==='pic'?' pic':'') + (it.given===k?' pick':'');
-      b.innerHTML = o;
+      b.innerHTML = (it.labels && it.labels[k])
+        ? o + '<span class="plabel">' + esc(it.labels[k]) + '</span>'
+        : o;
       const locked = phase==='mark' || (phase==='fix' && !it.wrong);
       if(locked){ b.disabled = true;
         if(phase==='mark' && it.given===k && k!==it.a) b.classList.add('miss'); }
