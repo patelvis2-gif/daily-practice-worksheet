@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Practice">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
-<title>Daily Practice — V7.3</title>
+<title>Daily Practice — V7.4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -1643,7 +1643,7 @@ const ENG = [
         x[0]!==w[0] && x[0]!==r[0] && x[1]!==r[1] &&
         !rhymesWith(x[0], w[0]) && !rhymesWith(x[0], r[0])), 2).map(x=>[x[0],x[1]]);
     const opts = shuffle([r,...d]);
-    return {kind:'pic', say:w[0], q:'Which one rhymes with '+w[0]+'?',
+    return {kind:'pic', mode:'rhyme', say:w[0], q:'Which one rhymes with '+w[0]+'?',
             opts:opts.map(o=>o[1]), labels:opts.map(o=>o[0]),
             a:opts.findIndex(o=>o[0]===r[0]), key:'rhy:'+w[0]}; }); }},
 
@@ -3057,6 +3057,10 @@ function sayPictureWord(word){
   if(!word) return false;
   return say('Listen carefully. Find the '+word+'. Tap the picture of the '+word+'.', 0.80);
 }
+function sayRhymePrompt(word){
+  if(!word) return false;
+  return say('Listen carefully. The word is '+word+'. '+word+'. Say each picture out loud. Tap the one that rhymes with '+word+'.', 0.80);
+}
 function saySimpleWord(word){
   if(!word) return false;
   return say('Listen carefully. The word is '+word+'. Tap '+word+'.', 0.80);
@@ -3259,7 +3263,7 @@ function render(){
     holder.style.padding = '8px 0';
     holder.appendChild(cell(it, sheet.items.indexOf(it), true));
     paper.appendChild(holder);
-    if(it && it.say && it.spoke !== true){ it.spoke = true; if(it.kind==='spell') sayWordClearly(it.word,it.hint); else if(it.phoneme) sayPhonics(it.phoneme,it.say); else say(it.say,it.audioRate); }
+    if(it && it.say && it.spoke !== true){ it.spoke = true; if(it.kind==='spell') sayWordClearly(it.word,it.hint); else if(it.phoneme) sayPhonics(it.phoneme,it.say); else if(it.mode==='rhyme') sayRhymePrompt(it.say); else if(it.kind==='pic') sayPictureWord(it.say); else say(it.say,it.audioRate); }
   } else if(sheet.subject === 'math'){
     const g = document.createElement('div'); g.className = 'grid';
     if(writeMode() && me && me.age >= 6 && me.age <= 8) g.classList.add('math-column');
@@ -3395,7 +3399,7 @@ function cell(it, i, single, n){
     });
     d.appendChild(box);
     d.insertAdjacentHTML('beforeend', markHTML(it));
-    const s = d.querySelector('.speak'); if(s) s.onclick = e => { e.stopPropagation(); if(it.phoneme) sayPhonics(it.phoneme,it.say); else if(it.kind==='pic') sayPictureWord(it.say); else if(/^\s*[A-Za-z'-]+\s*$/.test(it.say||'')) saySimpleWord(it.say); else say(it.say,it.audioRate); };
+    const s = d.querySelector('.speak'); if(s) s.onclick = e => { e.stopPropagation(); if(it.phoneme) sayPhonics(it.phoneme,it.say); else if(it.mode==='rhyme') sayRhymePrompt(it.say); else if(it.kind==='pic') sayPictureWord(it.say); else if(/^\s*[A-Za-z'-]+\s*$/.test(it.say||'')) saySimpleWord(it.say); else say(it.say,it.audioRate); };
   }
   else if(it.kind === 'hw'){
     d.innerHTML = num + '<div class="q">✍️ ' + it.q + '</div>' + padCard(it, single ? 110 : 90) +
