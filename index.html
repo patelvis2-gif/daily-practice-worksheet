@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Practice">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
-<title>Daily Practice — V7.5</title>
+<title>Daily Practice — V7.6</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -323,7 +323,7 @@ td{padding:7px 0;border-top:1px solid var(--rule);font-weight:600;font-variant-n
 <section id="who" class="screen on"><div class="wrap">
   <h1>Who's practicing?</h1>
   <div class="date" id="whoDate"></div>
-  <div class="date" style="margin-top:4px;font-size:.72rem">Daily Practice V7.5</div>
+  <div class="date" style="margin-top:4px;font-size:.72rem">Daily Practice V7.6</div>
   <div class="kids" id="kids"></div>
   <button class="linkish" id="toParent">Parent settings</button>
 </div></section>
@@ -793,7 +793,7 @@ const MATH = [
 
 {id:'5A-3', skill:'Learn numbers 31 to 40', n:SHEET_N, sct:440, audio:1,
  lesson:{title:'Meet 31 to 40', sub:'Learn only one new decade', demo:'<div class="say">31, 32, 33 … 39, 40</div><div class="cap">The tens digit is 3 until we reach <b>40</b>.</div>', steps:['Count 31 through 40 aloud together.','Point to the tens digit 3.','Practice the important change 39 → 40.'], tip:'Teach the new decade before testing it. Do not mix in the 40s until 31–40 is retained.'},
- gen(){ const a=31+rnd(9); return {kind:'choice',q:'Which number is '+a+'?',say:'Find '+a+'.',opts:numOpts(a,40,30),a:0,key:'recogn3140:'+a}; },
+ gen(){ const a=31+rnd(9), opts=numOpts(a,40,30); return {kind:'choice',q:'Which number is '+a+'?',say:'Find '+a+'.',opts,a:opts.indexOf(a),key:'recogn3140:'+a}; },
  build(n){return Array.from({length:n},()=>{const a=31+rnd(9),opts=numOpts(a,40,30);return {kind:'choice',q:'Find '+a+'.',say:'Find '+a+'.',opts,a:opts.indexOf(a),key:'recogn3140:'+a};});}},
 {id:'5A-3b', skill:'Missing numbers, 31 to 40', n:SHEET_N, sct:440, audio:1,
  lesson:{title:'Practice 31 to 40', sub:'Use the new decade by itself', demo:'<div class="say">35, 36, ▢, 38</div>', steps:['Say the numbers aloud.','Count forward one.','Practice 39 → 40 every day.'], tip:'This is the mastery gate for the 30s.'},
@@ -3206,7 +3206,7 @@ function buildSheet(subject){
     while(items.length < L.n && guard++ < 500){
       const p = L.gen();
       if(p.kind !== 'trace' && p.kind !== 'count'){ if(seen.has(p.key)) continue; seen.add(p.key); }
-      items.push(Object.assign({stack:L.stack, given:''}, p));
+      items.push(Object.assign({stack:L.stack, given:(p.kind==='choice'||p.kind==='pic')?null:''}, p));
     }
   } else {
     items = L.build(L.n).map(it=>Object.assign({given: it.kind==='choice'||it.kind==='pic' ? null : ''}, it));
