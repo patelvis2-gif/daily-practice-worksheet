@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Practice">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
-<title>Daily Practice — V7.6</title>
+<title>Daily Practice — V7.7</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -323,7 +323,7 @@ td{padding:7px 0;border-top:1px solid var(--rule);font-weight:600;font-variant-n
 <section id="who" class="screen on"><div class="wrap">
   <h1>Who's practicing?</h1>
   <div class="date" id="whoDate"></div>
-  <div class="date" style="margin-top:4px;font-size:.72rem">Daily Practice V7.6</div>
+  <div class="date" style="margin-top:4px;font-size:.72rem">Daily Practice V7.7</div>
   <div class="kids" id="kids"></div>
   <button class="linkish" id="toParent">Parent settings</button>
 </div></section>
@@ -1821,7 +1821,7 @@ const ENG = [
    const s2 = pickStory(SHORT_STORIES);
    out.push({kind:'passage', title:s2.t, text:s2.x});
    sample(s2.q,2).forEach(q=>out.push({kind:'choice', q:q[0], opts:[q[1],q[2],q[3]], a:q[4], key:'st:'+q[0]}));
-   return out; }},,
+   return out; }},
 
 /* ---------- expanded structured literacy & comprehension pathway ---------- */
 {id:'E-1', skill:'CVC blending and decoding', n:SHEET_N, sct:420, audio:1,
@@ -1860,7 +1860,6 @@ const ENG = [
 {id:'G-3', skill:'Compare, contrast, and written response', n:SHEET_N, sct:780,
  lesson:{title:'Compare and explain',sub:'Use complete evidence-based sentences',demo:'<div class="say">Both… However… because…</div>',steps:['State one similarity.','State one difference.','Support the response with details.'],tip:'At this stage, writing quality and reading comprehension should reinforce each other.'},
  build(n){const a=pickStory(SHORT_STORIES),b=pickStory(SHORT_STORIES.filter(x=>x!==a));return [{kind:'passage',title:a.t,text:a.x},{kind:'passage',title:b.t,text:b.x},{kind:'write',q:'Write one complete sentence explaining something these passages have in common.',accept:['the','both','they','story'],key:'compare:1'},{kind:'write',q:'Write one complete sentence explaining an important difference.',accept:['the','but','while','different'],key:'compare:2'}];}},
-,
 
 /* ---------- upper elementary through high-school literacy ---------- */
 {id:'H-1', skill:'Text structure and author purpose', n:SHEET_N, sct:660,
@@ -3183,6 +3182,17 @@ const ladder = s => s==='math' ? MATH : ENG;
    ===================================================================== */
 let sheet = null, sel = 0, phase = 'work';
 
+/* Old saved problems can carry a stale answer key. Recompute it from the key
+   (e.g. recogn3140:37) so a correct answer is never marked wrong on review. */
+function repairItem(it){
+  if(!it || it.kind!=='choice' || !Array.isArray(it.opts)) return true;
+  const want = Number(String(it.key||'').split(':').pop());
+  if(!Number.isFinite(want) || !it.opts.every(o=>typeof o==='number')) return true;
+  const at = it.opts.indexOf(want);
+  if(at < 0) return false;
+  it.a = at;
+  return true;
+}
 function usable(it){
   if(!it || !it.kind) return false;
   switch(it.kind){
@@ -3202,17 +3212,22 @@ function buildSheet(subject){
   const L = lvl(subject, me[subject]);
   let items = [];
   if(subject === 'math'){
+    if(typeof L.gen !== 'function'){
+      items = L.build(L.n).map(it=>Object.assign({stack:L.stack,
+        given:(it.kind==='choice'||it.kind==='pic')?null:''}, it));
+    } else {
     const seen = new Set(); let guard = 0;
     while(items.length < L.n && guard++ < 500){
       const p = L.gen();
       if(p.kind !== 'trace' && p.kind !== 'count'){ if(seen.has(p.key)) continue; seen.add(p.key); }
       items.push(Object.assign({stack:L.stack, given:(p.kind==='choice'||p.kind==='pic')?null:''}, p));
     }
+    }
   } else {
     items = L.build(L.n).map(it=>Object.assign({given: it.kind==='choice'||it.kind==='pic' ? null : ''}, it));
   }
   // fold in up to 3 things she has missed before
-  const due = me.misses.filter(m=>m.subject===subject && usable(m.item)).sort((a,b)=>b.n-a.n).slice(0,3);
+  const due = me.misses.filter(m=>m.subject===subject && repairItem(m.item) && usable(m.item)).sort((a,b)=>b.n-a.n).slice(0,3);
   due.forEach(m=>{
     const rev = Object.assign({}, JSON.parse(JSON.stringify(m.item)),
       {review:true, given: (m.item.kind==='choice'||m.item.kind==='pic') ? null : ''});
