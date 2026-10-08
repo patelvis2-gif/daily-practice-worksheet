@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Practice">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
-<title>Daily Practice — V7.7</title>
+<title>Daily Practice — V8.4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -323,7 +323,7 @@ td{padding:7px 0;border-top:1px solid var(--rule);font-weight:600;font-variant-n
 <section id="who" class="screen on"><div class="wrap">
   <h1>Who's practicing?</h1>
   <div class="date" id="whoDate"></div>
-  <div class="date" style="margin-top:4px;font-size:.72rem">Daily Practice V7.7</div>
+  <div class="date" style="margin-top:4px;font-size:.72rem">Daily Practice V8.4</div>
   <div class="kids" id="kids"></div>
   <button class="linkish" id="toParent">Parent settings</button>
 </div></section>
@@ -370,6 +370,10 @@ td{padding:7px 0;border-top:1px solid var(--rule);font-weight:600;font-variant-n
     <span class="lv" id="lvEng"></span>
     <span><h3>Reading &amp; Writing <span id="newEng"></span></h3><p id="descEng"></p></span>
     <span class="pips" id="doneEng"></span><span class="tick" id="tickEng"></span>
+  </button>
+  <button class="sheet-card" id="cardCatch" style="display:none;border-left-color:var(--gold)">
+    <span class="lv">↩</span>
+    <span><h3 id="titleCatch">Missed sheets <span class="badge">CATCH-UP</span></h3><p id="descCatch"></p></span>
   </button>
   <div class="shelf" id="shelf"></div>
   <p class="hint" id="homeHint"></p>
@@ -470,6 +474,11 @@ td{padding:7px 0;border-top:1px solid var(--rule);font-weight:600;font-variant-n
       <button class="step" data-lv="english" data-d="1">+</button>
     </div>
     <p class="hint" style="text-align:left;margin-top:4px">Mastery first: a child advances only after strong first-try accuracy is repeated across 3 different days, including a later retention check. Perfect or fast work never skips a level.</p>
+  </div>
+  <div class="panel">
+    <h4>Catching up on missed days</h4>
+    <div class="rowbtns" id="catchRow"></div>
+    <p class="hint" style="text-align:left;margin-top:8px">How far back she may go to finish missed sheets. Catch-up work restores the day streak, and it is always counted on the real day she did it, so it never shortens the retention wait between mastery passes.</p>
   </div>
   <div class="panel">
     <h4>Voice</h4>
@@ -1016,10 +1025,13 @@ divLevel('D-5', 4, 180),
  build(n){ return Array.from({length:n},(_,i)=>{const d=4+rnd(6),a=1+rnd(d-2),b=1+rnd(d-a-1),ans=(a+b)+'/'+d,opts=shuffle([ans,(a+b)+'/'+(d+1),Math.max(1,a+b-1)+'/'+d]);return {kind:'choice',q:a+'/'+d+' + '+b+'/'+d+' = ?',opts,a:opts.indexOf(ans),key:'frac:add:'+i};});}},
 {id:'G-3', skill:'Decimals: tenths and hundredths', n:SHEET_N, sct:330,
  lesson:{title:'Decimals and place value',sub:'Tenths and hundredths',demo:'<div class="say">0.7 = seven tenths</div>',steps:['Read the decimal point.','Name each place.','Compare digits from left to right.'],tip:'Connect decimals to money and fractions.'},
- build(n){ return Array.from({length:n},(_,i)=>{const a=(rnd(90)+10)/100,b=(rnd(90)+10)/100,hi=Math.max(a,b).toFixed(2),opts=shuffle([a.toFixed(2),b.toFixed(2)]);return {kind:'choice',q:'Which is greater: '+a.toFixed(2)+' or '+b.toFixed(2)+'?',opts,a:opts.indexOf(hi),key:'dec:'+i};});}},
+ build(n){ return Array.from({length:n},(_,i)=>{const a=(rnd(90)+10)/100;let b=(rnd(90)+10)/100;let g=0;while(b===a&&g++<50)b=(rnd(90)+10)/100;if(b===a)b=a+0.01;const hi=Math.max(a,b).toFixed(2),opts=shuffle([a.toFixed(2),b.toFixed(2)]);return {kind:'choice',q:'Which is greater: '+a.toFixed(2)+' or '+b.toFixed(2)+'?',opts,a:opts.indexOf(hi),key:'dec:'+i};});}},
 {id:'G-4', skill:'Order of operations', n:SHEET_N, sct:360,
  lesson:{title:'Order of operations',sub:'Multiply before adding',demo:'<div class="say">3 + 4 × 2 = 11</div>',steps:['Do multiplication or division first.','Then addition or subtraction.','Use parentheses first when present.'],tip:'Have her mark the operation that must happen first before calculating.'},
- build(n){ return Array.from({length:n},(_,i)=>{const a=1+rnd(8),b=2+rnd(7),c=2+rnd(7),ans=a+b*c,opts=shuffle([String(ans),String((a+b)*c),String(ans+1)]);return {kind:'choice',q:a+' + '+b+' × '+c+' = ?',opts,a:opts.indexOf(String(ans)),key:'order:'+i};});}},
+ build(n){ return Array.from({length:n},(_,i)=>{const a=1+rnd(8),b=2+rnd(7),c=2+rnd(7),ans=a+b*c;
+   const alts=[String((a+b)*c),String(ans+1),String(ans-1),String(a+b+c)].filter(x=>x!==String(ans));
+   const opts=shuffle([String(ans),...[...new Set(alts)].slice(0,2)]);
+   return {kind:'choice',q:a+' + '+b+' × '+c+' = ?',opts,a:opts.indexOf(String(ans)),key:'order:'+i};});}},
 ,
 
 /* ---------- middle school through high school pathway ---------- */
@@ -1586,8 +1598,174 @@ function soundLesson(label, letters){
   MATH.splice(0,MATH.length,...picked,...rest);
 })();
 
+/* =====================================================================
+   EARLY READING BANKS  (V8.3)
+   Decodable short-vowel words with pictures, listening stories, and
+   decodable passages. Every word a child is asked to READ here is either a
+   short-vowel word she can sound out or a sight word from SIGHT/SIGHT_SETS.
+   ===================================================================== */
+const CVCPIC = [
+ ['cat','\u{1F431}','at'],['hat','\u{1F3A9}','at'],['bat','\u{1F987}','at'],['rat','\u{1F400}','at'],
+ ['van','\u{1F690}','an'],['can','\u{1F96B}','an'],['pan','\u{1F373}','an'],
+ ['cap','\u{1F9E2}','ap'],['map','\u{1F5FA}\uFE0F','ap'],
+ ['pig','\u{1F437}','ig'],
+ ['pin','\u{1F4CC}','in'],['bin','\u{1F5D1}\uFE0F','in'],
+ ['dog','\u{1F436}','og'],
+ ['pot','\u{1F372}','ot'],['dot','\u{1F534}','ot'],
+ ['bug','\u{1F41B}','ug'],
+ ['sun','\u2600\uFE0F','un'],['bun','\u{1F96F}','un'],
+ ['net','\u{1F945}','et'],['jet','\u2708\uFE0F','et'],
+ ['bed','\u{1F6CF}\uFE0F','ed'],
+ ['box','\u{1F4E6}','ox'],['fox','\u{1F98A}','ox'],
+ ['bus','\u{1F68C}','us'],['cup','\u{1F964}','up'],
+ ['hen','\u{1F414}','en'],['pen','\u{1F58A}\uFE0F','en'],['ten','\u{1F51F}','en'],
+ ['nut','\u{1F95C}','ut'],['web','\u{1F578}\uFE0F','eb']
+];
+/* Words whose pictures a 4-year-old could reasonably mix up never appear as
+   each other's wrong answer. */
+const CVC_CONFUSABLE = [['hat','cap'],['bun','nut'],['pot','pan'],['cup','pot'],
+  ['dot','pin'],['can','pot'],['can','pan'],['cup','can'],['van','bus'],['net','web']];
+function cvcConfusable(a,b){
+  return CVC_CONFUSABLE.some(p=>(p[0]===a&&p[1]===b)||(p[1]===a&&p[0]===b));
+}
+function cvcDistractors(word, n){
+  return sample(CVCPIC.filter(x=>x[0]!==word && !cvcConfusable(x[0],word)), n).map(x=>x[1]);
+}
+const PHONEME_SAY = {a:'aah',b:'buh',c:'kuh',d:'duh',e:'eh',f:'fff',g:'guh',h:'huh',i:'ih',
+  j:'juh',k:'kuh',l:'lll',m:'mmm',n:'nnn',o:'awe',p:'puh',q:'kwuh',r:'rrr',s:'sss',t:'tuh',
+  u:'uh',v:'vvv',w:'wuh',x:'ks',y:'yuh',z:'zzz'};
+const soundsOut = w => String(w).split('').map(c=>PHONEME_SAY[c]||c).join(' ... ');
+const cvcPool = fams => CVCPIC.filter(w=>fams.indexOf(w[2])>-1);
+
+/* Hear the sounds, tap the picture. No letters on purpose: this is listening. */
+function blendItems(n, fams){
+  const pool = fams ? cvcPool(fams) : CVCPIC;
+  const out = [], used = {};
+  let guard = 0;
+  while(out.length < n && guard++ < 300){
+    const row = pick(pool), w = row[0], e = row[1];
+    if(used[w] && out.length < pool.length) continue;
+    used[w] = 1;
+    const opts = shuffle([e].concat(cvcDistractors(w, 2)));
+    out.push({kind:'pic', mode:'story', spkLabel:'Hear the sounds',
+      q:'Which word did you hear?', opts, a:opts.indexOf(e),
+      say:'Listen. '+soundsOut(w)+'. Now say the sounds fast. Which picture is that word?',
+      audioRate:0.68, key:'blend:'+w});
+  }
+  return out;
+}
+/* Read the printed word, tap the picture. Deliberately silent -- speaking the
+   word would hand her the answer and turn reading into listening. */
+function readWordItems(n, fams){
+  const pool = cvcPool(fams);
+  const out = [], used = {};
+  let guard = 0;
+  while(out.length < n && guard++ < 300){
+    const row = pick(pool), w = row[0], e = row[1];
+    if(used[w] && out.length < pool.length) continue;
+    used[w] = 1;
+    const opts = shuffle([e].concat(cvcDistractors(w, 2)));
+    out.push({kind:'pic', q:'Sound it out, then tap the picture. <div style="font-size:2.2rem;font-weight:800;margin-top:10px">'+w+'</div>',
+      opts, a:opts.indexOf(e), key:'readw:'+w});
+  }
+  return out;
+}
+/* Decodable sentences: short-vowel words plus early sight words only. */
+const CVC_SENTENCES = [
+ ['The cat sat on the bed.','What sat on the bed?','\u{1F431}',['\u{1F436}','\u{1F437}']],
+ ['The dog ran to the bus.','What ran to the bus?','\u{1F436}',['\u{1F98A}','\u{1F414}']],
+ ['The pig is in the mud.','What is in the mud?','\u{1F437}',['\u{1F98A}','\u{1F400}']],
+ ['My hen sat on a big log.','What sat on the log?','\u{1F414}',['\u{1F436}','\u{1F41B}']],
+ ['The red fox ran to the den.','What ran to the den?','\u{1F98A}',['\u{1F431}','\u{1F437}']],
+ ['A bug is on my cup.','What is on the cup?','\u{1F41B}',['\u{1F578}\uFE0F','\u{1F400}']],
+ ['The sun is hot on my cap.','What is hot?','\u2600\uFE0F',['\u{1F6CF}\uFE0F','\u{1F4E6}']],
+ ['Dad had a bun in the box.','What is in the box?','\u{1F96F}',['\u{1F372}','\u{1F5FA}\uFE0F']],
+ ['The jet is big. The bus is not big.','What is big?','\u2708\uFE0F',['\u{1F68C}','\u{1F690}']],
+ ['My pen is in the bin.','What is in the bin?','\u{1F58A}\uFE0F',['\u{1F4CC}','\u{1F945}']]
+];
+function sentenceItems(n){
+  return sample(CVC_SENTENCES, Math.min(n, CVC_SENTENCES.length)).map(r=>{
+    const opts = shuffle([r[2]].concat(r[3]));
+    return {kind:'pic', q:'<div style="font-size:1.35rem;line-height:1.5;font-weight:700">'+r[0]+'</div><div style="margin-top:10px">'+r[1]+'</div>',
+      opts, a:opts.indexOf(r[2]), key:'sent:'+r[0].slice(0,14)};
+  });
+}
+/* Listening comprehension: she answers questions about a story she cannot yet
+   read herself. Language comprehension is half of reading and starts now. */
+const LISTEN_STORIES = [
+ ['Mia went to the park with her mom. She saw a little brown dog. The dog had a red ball.','What did Mia see at the park?','\u{1F436}',['\u{1F431}','\u{1F426}']],
+ ['Ben was hungry after school. He ate an apple. Then he went outside to play.','What did Ben eat?','\u{1F34E}',['\u{1F355}','\u{1F36A}']],
+ ['It started to rain, so Ana opened her umbrella. Her shoes got wet in a puddle. She laughed all the way home.','What did Ana open?','\u2602\uFE0F',['\u{1FA9F}','\u{1F6AA}']],
+ ['Tom planted a seed in a pot. Every day he gave it water. After many days a small flower grew.','What grew in the pot?','\u{1F338}',['\u{1F333}','\u{1F96C}']],
+ ['The baby bird fell out of the nest. Dad put it back very gently. The mother bird came home.','Who fell out of the nest?','\u{1F426}',['\u{1F431}','\u{1F41D}']],
+ ['Lily lost her sock under the bed. She looked and looked. The cat was sleeping on it!','What was the cat sleeping on?','\u{1F9E6}',['\u{1F45F}','\u{1F455}']],
+ ['Sam helped Grandpa wash the car. They used a big blue bucket. The car was shiny at the end.','What did Sam wash?','\u{1F697}',['\u{1F6B2}','\u{1F69A}']],
+ ['Nina had a picnic by the lake. A duck swam right up to her. She gave it a piece of bread.','What swam up to Nina?','\u{1F986}',['\u{1F41F}','\u{1F422}']],
+ ['Max could not sleep. He counted sheep in his head. Soon he was dreaming about the moon.','What did Max count?','\u{1F411}',['\u2B50','\u{1F42E}']],
+ ['Priya built a tall tower out of blocks. Her little brother knocked it over. She started building it again.','What did Priya build?','\u{1F9F1}',['\u{1F3B8}','\u{1F9F8}']],
+ ['The ice cream melted in the hot sun. It dripped all down Jo\u2019s hand. Grandma gave her a napkin.','What melted in the sun?','\u{1F366}',['\u{1F36B}','\u{1F9CA}']],
+ ['Dev found a key on the path. He took it to his teacher. It opened the cupboard in the classroom.','What did Dev find?','\u{1F511}',['\u{1F4DA}','\u26BD']]
+];
+/* Longer stories, and the answer is never the last thing she heard -- she has
+   to hold the whole story in her head. */
+const LISTEN_LONG = [
+ ['Ivy woke up early because it was her birthday. Her dad made pancakes with blueberries on top. Her friends came over in the afternoon and they played in the yard. At bedtime Ivy said it was her best day ever.','What did Ivy eat in the morning?','\u{1F95E}',['\u{1F35D}','\u{1F373}']],
+ ['Leo and his sister walked to the shop to buy milk. On the way it began to snow. They forgot the milk and built a snowman instead. Their mom laughed when they came home with nothing.','What were Leo and his sister sent to buy?','\u{1F95B}',['\u{1F35E}','\u{1F34C}']],
+ ['The class went on a trip to the farm. First they fed the goats, and the goats pushed at their hands. After lunch they watched a farmer milk a cow. On the bus home almost everyone fell asleep.','Which animal did the children feed first?','\u{1F410}',['\u{1F42E}','\u{1F413}']],
+ ['Omar could not find his library book anywhere. He looked under his bed and in his backpack. His little sister finally found it in the kitchen, next to the toaster. Omar gave her a high five.','Who found the book?','\u{1F467}',['\u{1F474}','\u{1F415}']],
+ ['A storm knocked the power out at night. Nana lit candles and told stories about when she was a girl. They toasted bread over the fire for dinner. In the morning the lights came back on.','What did they use for light?','\u{1F56F}\uFE0F',['\u{1F526}','\u{1F4A1}']],
+ ['Ravi wanted to join the swim team, but he was nervous about the first practice. His coach showed him how to breathe to the side. By the end of the week he could swim a whole lap. He signed up for the race.','What was Ravi learning to do?','\u{1F3CA}',['\u26BD','\u{1F3C0}']],
+ ['The twins saved their coins all summer in a jar. They wanted to buy a tent for the backyard. When they counted the money, they had just enough. That night they slept outside and listened to the crickets.','What did the twins save up for?','\u26FA',['\u{1F6B2}','\u{1F3AE}']],
+ ['Mrs. Diaz brought a box into class and would not say what was inside. It made small scratching sounds all morning. At last she opened it and showed them two rabbits. The class voted on names for them.','What was in the box?','\u{1F430}',['\u{1F41F}','\u{1F99C}']]
+];
+function listenItems(n, bank, keyPrefix){
+  const list = bank || LISTEN_STORIES, kp = keyPrefix || 'listen:';
+  return sample(list, Math.min(n, list.length)).map(r=>{
+    const opts = shuffle([r[2]].concat(r[3]));
+    return {kind:'pic', mode:'story', spkLabel:'Hear the story',
+      q:r[1], opts, a:opts.indexOf(r[2]),
+      say:'Listen to the story. '+r[0]+' '+r[1], audioRate:0.82, key:kp+r[0].slice(0,16)};
+  });
+}
+/* Decodable stories: she reads every word of these herself. */
+const CVC_STORIES = [
+ {t:'The Cat and the Mat', x:'Sam has a cat. The cat is big. The cat sat on the mat.',
+  q:[['What is big?','the cat','the mat','the bed',0],['Is the cat big?','yes','no','it is sad',0],['What did the cat sit on?','the mat','the bed','the box',0]]},
+ {t:'The Red Bug', x:'A red bug sat on my cap. The dog ran at the bug. The bug ran up the bed.',
+  q:[['What sat on the cap?','a bug','a cat','a rat',0],['What ran at the bug?','the dog','the hen','the fox',0],['Where did the bug run?','up the bed','in the cup','on the bus',0]]},
+ {t:'Ten Hens', x:'Ten hens sat in the sun. A hen had a bun. The hens ran to get the bun.',
+  q:[['What did the hens sit in?','the sun','the mud','the van',0],['What did the hen have?','a bun','a nut','a pot',0],['What did the hens run to get?','the bun','the dog','the bed',0]]},
+ {t:'Dad and the Jug', x:'Dad put a jug on the big box. The cat hit the jug. Dad had to mop it up.',
+  q:[['Where did Dad put the jug?','on the box','in the pot','on the bed',0],['What hit the jug?','the cat','the pig','the hen',0],['What did Dad do?','mop it up','run to the bus','sit on the mat',0]]},
+ {t:'The Fox and the Log', x:'A fox ran to the log. A pig was in the mud. The fox did not sit.',
+  q:[['What ran to the log?','a fox','a dog','a rat',0],['Who was in the mud?','a pig','a hen','a bug',0],['Did the fox sit?','no','yes','it had a nap',0]]},
+ {t:'My Dog Rex', x:'Rex is my dog. He is big and red. Rex can sit on my bed and nap.',
+  q:[['What is Rex?','a dog','a cat','a pig',0],['What is Rex like?','big and red','sad and wet','wet',0],['Where can Rex nap?','on my bed','in the bus','on the mat',0]]}
+];
+/* Sight words mixed into decodable text -- the step before real books. */
+const SIGHT_STORIES = [
+ {t:'The Cat Ran Off', x:'They said the cat ran off. We went to get him. The cat was in the big red box!',
+  q:[['What ran off?','the cat','the dog','the hat',0],['What did we do?','went to get him','went to bed','had a nap',0],['Where was the cat?','in the box','in the bed','on the bus',0]]},
+ {t:'Mom and the Bag', x:'Mom had a big bag. What was in the bag? Mom said we can have it. In the bag was a red pot and a bun.',
+  q:[['Who had the bag?','Mom','Dad','Ben',0],['What was in the bag?','a pot and a bun','a cat and a dog','a cap',0],['Can we have it?','yes','no','not yet',0]]},
+ {t:'The Wet Dog', x:'It was wet, and the dog ran in. He had mud on him. Mom said, get in the tub!',
+  q:[['What ran in?','the dog','the cat','the man',0],['What was on him?','mud','a hat','a bug',0],['Where did the dog have to get in?','the tub','the bed','the van',0]]},
+ {t:'A Pal and a Big Bag', x:'My bag was big. I did not want to do it on my own. Then my pal ran up and we got it in the van.',
+  q:[['What was big?','my bag','my cat','my cap',0],['Did I want to do it on my own?','no','yes','I had no bag',0],['What did my pal do?','ran up','ran off','had a nap',0]]}
+];
+function storyItems(list, nq, keyPrefix){
+  const s = pickStory(list);
+  const out = [{kind:'passage', title:s.t, text:s.x}];
+  sample(s.q, Math.min(nq, s.q.length)).forEach(q=>{
+    const right = q[1+(q[4]||0)], opts = shuffle([q[1],q[2],q[3]]);
+    out.push({kind:'choice', q:q[0], opts, a:opts.indexOf(right), key:keyPrefix+q[0]});
+  });
+  return out;
+}
+
 const ENG = [
-/* ---------- forming letters ---------- */
+
+/* ---------- letters: forming them by hand ---------- */
 {id:'9A-1', skill:'Tracing capitals A to M', n:8, sct:660, audio:1,
  lesson:{title:'Writing capital letters', sub:'Start on the orange dot and follow the dots',
   demo:'<div class="say">A ⋯⋯▶</div><div class="cap">Some letters take two or three lines. Do 1, then 2, then 3.</div>',
@@ -1613,8 +1791,8 @@ const ENG = [
   tip:'p and q are the hardest pair in the alphabet. Do not drill them side by side; separate them by a few days.'},
  build(n){ return sample(SMALLS.slice(13), n).map(c=>({kind:'trace', ch:c, label:'the letter '+c, say:'Write the small letter '+c+'.', key:'traceL'+c})); }},
 
-/* ---------- listening and sounds ---------- */
-{id:'7A', skill:'Words and pictures', n:SHEET_N, sct:420, audio:1,
+/* ---------- listening, sounds, and understanding spoken stories ---------- */
+{id:'7A-1', skill:'Words and pictures', n:SHEET_N, sct:420, audio:1,
  lesson:{title:'Listen and find', sub:'I say a word — you tap the picture',
   demo:'<div class="say">🔊 "cat" → 🐱</div><div class="cap">Tap the picture that matches the word.</div>',
   steps:['Tap the speaker to hear the word.','Look at all three pictures.','Tap the one that matches.'],
@@ -1623,22 +1801,7 @@ const ENG = [
     const d = sample(PICWORDS.filter(x=>x[0]!==w[0]), 2), opts = shuffle([w,...d]);
     return {kind:'pic', say:w[0], q:'Which one is a '+w[0]+'?', opts:opts.map(o=>o[1]),
             a:opts.findIndex(o=>o[0]===w[0]), key:'pic:'+w[0]}; }); }},
-
-...SOUND_GROUPS.map((grp, i)=>({
-  id:'6A-'+(i+1), skill:'First sounds: ' + grp[0], n:SHEET_N, sct:420, audio:1,
-  lesson:soundLesson(grp[0], grp[1]),
-  build(n){
-    const pool = PICWORDS.filter(w=>grp[1].includes(w[2]) && SOUND_LETTERS.has(w[2]));
-    const use = pool.length ? pool : PICWORDS.filter(w=>SOUND_LETTERS.has(w[2]));
-    return Array.from({length:n}, ()=>{
-      const w = pick(use);
-      const d = sample(PICWORDS.filter(x=>x[2]!==w[2]), 2), opts = shuffle([w,...d]);
-      return {kind:'pic', say:w[0], phoneme:w[2], audioRate:0.72,
-              q:'Which picture starts with this sound?', opts:opts.map(o=>o[1]),
-              a:opts.findIndex(o=>o[0]===w[0]), key:'snd:'+w[2]+w[0]}; }); }
-})),
-
-{id:'5A', skill:'Rhyming words', n:SHEET_N, sct:420, audio:1,
+{id:'7A-2', skill:'Rhyming words', n:SHEET_N, sct:420, audio:1,
  lesson:{title:'Words that rhyme', sub:'Words that end the same way',
   demo:'<div class="say">🐱 cat … 🎩 hat</div><div class="cap">Cat and hat rhyme — both end in <b>-at</b>.</div>',
   steps:['Listen to the word.','Say each picture out loud.','Tap the one that ends the same way.'],
@@ -1653,8 +1816,77 @@ const ENG = [
     return {kind:'pic', mode:'rhyme', say:w[0], q:'Which one rhymes with '+w[0]+'?',
             opts:opts.map(o=>o[1]), labels:opts.map(o=>o[0]),
             a:opts.findIndex(o=>o[0]===r[0]), key:'rhy:'+w[0]}; }); }},
+{id:'7A-3', skill:'Listen to a story and answer', n:6, sct:600, audio:1,
+ lesson:{title:'Listen and answer', sub:'Understanding comes before reading',
+  demo:'<div class="say">🔊 "Mia saw a little brown dog…"</div><div class="cap">Who did Mia see? Tap the picture.</div>',
+  steps:['Tap the speaker and listen to the whole story.','Listen again if you need to.','Tap the picture that answers the question.'],
+  tip:'A child understands stories years before she can read them. This builds the comprehension half of reading now, so that when decoding clicks there is already meaning behind it.'},
+ build(n){ return listenItems(n); }},
+...SOUND_GROUPS.map((grp, i)=>({
+  id:'6A-'+(i+1), skill:'First sounds: ' + grp[0], n:SHEET_N, sct:420, audio:1,
+  lesson:soundLesson(grp[0], grp[1]),
+  build(n){
+    const pool = PICWORDS.filter(w=>grp[1].includes(w[2]) && SOUND_LETTERS.has(w[2]));
+    const use = pool.length ? pool : PICWORDS.filter(w=>SOUND_LETTERS.has(w[2]));
+    return Array.from({length:n}, ()=>{
+      const w = pick(use);
+      const d = sample(PICWORDS.filter(x=>x[2]!==w[2]), 2), opts = shuffle([w,...d]);
+      return {kind:'pic', say:w[0], phoneme:w[2], audioRate:0.72,
+              q:'Which picture starts with this sound?', opts:opts.map(o=>o[1]),
+              a:opts.findIndex(o=>o[0]===w[0]), key:'snd:'+w[2]+w[0]}; }); }
+})),
+{id:'6A-6', skill:'Blending sounds into words', n:SHEET_N, sct:480, audio:1,
+ lesson:{title:'Put the sounds together', sub:'Three sounds make one word',
+  demo:'<div class="say">c … a … t → cat</div><div class="cap">Say the sounds, then say them fast.</div>',
+  steps:['Tap the speaker and listen to each sound.','Say the sounds faster and faster.','Tap the picture of the word you hear.'],
+  tip:'Oral blending predicts reading success better than almost anything else at this age, and there are no letters here on purpose — this is pure listening. Do it in the car too: "d … o … g. What word?"'},
+ build(n){ return blendItems(n); }},
+{id:'6A-7', skill:'Listen to a longer story and answer', n:6, sct:660, audio:1,
+ lesson:{title:'Listen for the details', sub:'Hold the whole story in your head',
+  demo:'<div class="say">🔊 "Leo and his sister walked to the shop to buy milk…"</div><div class="cap">What were they sent to buy?</div>',
+  steps:['Listen to the whole story first.','Think about what happened.','Choose the picture that answers the question.'],
+  tip:'Ask her to retell the story in her own words before she answers. Retelling is the strongest early comprehension check there is.'},
+ build(n){ return listenItems(n, LISTEN_LONG, 'listen2:'); }},
 
-/* ---------- sight words, one set at a time ---------- */
+/* ---------- learning to read: blend, read words, read sentences, read stories ---------- */
+{id:'5A-1', skill:'Read short words: -at and -an', n:SHEET_N, sct:480, audio:1,
+ lesson:{title:'Read your first words', sub:'Sound out each letter, then blend',
+  demo:'<div class="say">c a t → <b>cat</b></div><div class="cap">Touch each letter, say its sound, then say the word.</div>',
+  steps:['Touch each letter and say its sound.','Say the sounds together, faster.','Tap the picture that matches the word.'],
+  tip:'This is the first level where she reads rather than listens. Point under each letter with her finger. If she guesses from the pictures, cover them and ask her to read the word first.'},
+ build(n){ return readWordItems(n, ['at','an']); }},
+{id:'5A-2', skill:'Read short words: -ap, -ig, -in', n:SHEET_N, sct:480, audio:1,
+ lesson:{title:'More short words', sub:'Same skill, new word families',
+  demo:'<div class="say">p i g → <b>pig</b></div>',
+  steps:['Say each letter sound.','Blend them into one word.','Tap the matching picture.'],
+  tip:'Short vowels are the hardest part. If she says "peg" for pig, stop and practise just the middle sound.'},
+ build(n){ return readWordItems(n, ['ap','ig','in']); }},
+{id:'5A-3', skill:'Read short words: -og, -ot, -ug, -un', n:SHEET_N, sct:480, audio:1,
+ lesson:{title:'o and u words', sub:'The last two short vowels',
+  demo:'<div class="say">b u g → <b>bug</b></div>',
+  steps:['Say each letter sound.','Blend them together.','Tap the matching picture.'],
+  tip:'o and u are the two vowels children mix up most. Slow down here rather than pushing on.'},
+ build(n){ return readWordItems(n, ['og','ot','ug','un']); }},
+{id:'5A-4', skill:'Read short words, all mixed', n:SHEET_N, sct:500, audio:1,
+ lesson:{title:'All short words mixed', sub:'Every vowel, in any order',
+  demo:'<div class="say">h e n → <b>hen</b> · f o x → <b>fox</b></div>',
+  steps:['Read the word on your own.','Blend it before you look at the pictures.','Tap the one that matches.'],
+  tip:'This is the gate into real reading. She should get these right without hesitating before moving on to sentences.'},
+ build(n){ return readWordItems(n, ['at','an','ap','ig','in','og','ot','ug','un','et','ed','ox','us','up','en','ut','eb']); }},
+{id:'5A-5', skill:'Read a short sentence', n:8, sct:600, audio:1,
+ lesson:{title:'Words become sentences', sub:'Read the whole line, then answer',
+  demo:'<div class="say">The cat sat on the bed.</div><div class="cap">What sat on the bed? 🐱</div>',
+  steps:['Read the sentence from left to right.','Read it again to be sure.','Tap the picture that answers the question.'],
+  tip:'Reading a whole sentence takes more memory than reading one word. If she loses the beginning by the end, have her read it twice before answering.'},
+ build(n){ return sentenceItems(n); }},
+{id:'5A-6', skill:'Read a short story and answer', n:3, sct:720,
+ lesson:{title:'Your first story', sub:'Three sentences you can read yourself',
+  demo:'<div class="say">Sam has a cat. The cat is big.</div><div class="cap">Who has a cat?</div>',
+  steps:['Read the whole story first.','Read each question.','Look back at the story to check your answer.'],
+  tip:'Every word here is one she can sound out. Looking back at the text to check an answer is the habit that carries all the way through school.'},
+ build(n){ return storyItems(CVC_STORIES, 3, 'rq:'); }},
+
+/* ---------- sight words: the words that break the rules ---------- */
 ...SIGHT_SETS.map((set, i)=>({
   id:'4A-'+(i+1), skill:'Sight words, set ' + (i+1), n:SHEET_N, sct:420, audio:1,
   lesson:sightLesson(set, i+1),
@@ -1673,8 +1905,14 @@ const ENG = [
    return Array.from({length:n}, ()=>{ const w = pick(all);
      const opts = shuffle([w, ...sample(all.filter(x=>x!==w), 2)]);
      return {kind:'choice', say:w, q:'Tap the word you hear', opts, a:opts.indexOf(w), key:'sw:'+w}; }); }},
+{id:'4A-6', skill:'Read a story with sight words', n:3, sct:780,
+ lesson:{title:'Stories with tricky words', sub:'Sight words inside real reading',
+  demo:'<div class="say">They said the ball was lost.</div><div class="cap">What was lost?</div>',
+  steps:['Read the story all the way through.','Answer each question.','Check your answer against the story.'],
+  tip:'These mix the sight words she has learned with words she can sound out — which is what real books do.'},
+ build(n){ return storyItems(SIGHT_STORIES, 3, 'rq:'); }},
 
-/* ---------- sounding out and writing, one family at a time ---------- */
+/* ---------- writing what she can already read ---------- */
 ...FAMILIES.map((f, i)=>({
   id:'3A-'+(i+1), skill:'Writing the ' + f[0] + ' words', n:8, sct:480, audio:1,
   lesson:familyLesson(f[0], f[1]),
@@ -1688,8 +1926,6 @@ const ENG = [
   tip:'The middle vowel is the hardest part and the usual error. If she gets the first and last sound right but the middle wrong, that is normal — go back to whichever family uses that vowel for a few days.'},
  build(n){ const all = FAMILIES.flatMap(f=>f[1]);
    return sample(all, n).map(w=>({kind:'spell', word:w, say:w, hint:'Sound it out: ' + w.split('').join(' – '), key:'cvc:'+w})); }},
-
-/* ---------- writing everyday words ---------- */
 ...[0,1,2].map(i=>({
   id:'2A-'+(i+1), skill:'Writing everyday words, set ' + (i+1), n:SHEET_N, sct:540, audio:1,
   lesson:{title:'Spelling words we use a lot', sub:'Listen, then write it',
@@ -1700,7 +1936,30 @@ const ENG = [
     return sample(slice.length ? slice : EVERYDAY, n).map(w=>({kind:'spell', word:w[0], say:w[0], hint:w[1], key:'ew:'+w[0]})); }
 })),
 
-/* ---------- word endings, one rule at a time ---------- */
+/* ---------- phonics beyond short vowels: digraphs, blends, long vowels ---------- */
+{id:'E-1', skill:'Sounding out short words, mixed review', n:SHEET_N, sct:420, audio:1,
+ lesson:{title:'Blend three sounds',sub:'Sound it out, then say it fast',demo:'<div class="say">c - a - t → cat</div>',steps:['Say each sound.','Blend without pausing.','Read the whole word again.'],tip:'Do not guess from the first letter; blend through the whole word.'},
+ build(n){ return sample(CVC,n).map((w,i)=>{const opts=shuffle([w,...sample(CVC.filter(x=>x!==w),2)]);return {kind:'choice',q:'Blend: '+w.split('').join(' - '),opts,a:opts.indexOf(w),say:'Say each sound, then blend them and tap the word.',spkLabel:'Hear directions',audioRate:0.8,key:'blend1:'+w};});}},
+{id:'E-2', skill:'Digraphs: sh, ch, th, wh', n:SHEET_N, sct:450,
+ lesson:{title:'Two letters, one sound',sub:'Digraphs',demo:'<div class="say">sh-ip → ship</div>',steps:['Spot the two-letter sound.','Say it as one sound.','Blend the rest.'],tip:'Circle the digraph before reading the word.'},
+ build(n){const words=['ship','shop','fish','chat','chin','much','thin','this','whip','when'];return sample(words,n).map((w,i)=>{const opts=shuffle([w,w.slice(1),w[0]+w.slice(2)]);return {kind:'choice',q:'Read the word:',opts,a:opts.indexOf(w),say:'Sound out each word, then tap the one that is spelled right.',spkLabel:'Hear directions',audioRate:0.8,key:'digraph:'+w};});}},
+{id:'E-3', skill:'Consonant blends', n:SHEET_N, sct:450,
+ lesson:{title:'Blends',sub:'Keep both consonant sounds',demo:'<div class="say">s + t + op → stop</div>',steps:['Say both beginning sounds.','Slide into the vowel.','Read it smoothly.'],tip:'Unlike a digraph, both sounds can still be heard.'},
+ build(n){const words=['stop','flag','frog','clap','drum','spin','plug','grin','step','crab'];return sample(words,n).map((w,i)=>{const opts=shuffle([w,w.slice(1),w[0]+w.slice(2)]);return {kind:'choice',q:'Which word says “'+w+'”?',opts,a:opts.indexOf(w),say:'Read each word, then tap the one that matches.',spkLabel:'Hear directions',audioRate:0.8,key:'blend2:'+w};});}},
+{id:'E-4', skill:'Silent-e words', n:SHEET_N, sct:450,
+ lesson:{title:'Silent e',sub:'The vowel says its name',demo:'<div class="say">cap → cape</div>',steps:['Find the final e.','Make the first vowel long.','Blend the word.'],tip:'Contrast pairs such as cap/cape and kit/kite.'},
+ build(n){const pairs=[['cap','cape'],['kit','kite'],['hop','hope'],['cub','cube'],['mad','made']];return Array.from({length:n},(_,i)=>{const [a,b]=pairs[i%pairs.length],other=pairs[(i+2)%pairs.length][0],opts=shuffle([a,b,other]);return {kind:'choice',q:'Which word has the long vowel sound?',opts,a:opts.indexOf(b),say:'Read both words. Tap the one where the vowel says its name.',spkLabel:'Hear directions',audioRate:0.8,key:'silent-e:'+i};});}},
+{id:'E-5', skill:'Vowel teams', n:SHEET_N, sct:480, audio:1,
+ lesson:{title:'Vowel teams',sub:'Two letters, one long-vowel sound',demo:'<div class="say">rain \u00b7 seed \u00b7 boat</div>',steps:['Listen to the word.','Find the two vowels that work together.','Pick the spelling that is right.'],tip:'Teach one pattern at a time. The wrong choices here are spellings that sound the same but are not how the word is written.'},
+ build(n){
+   const BANK=[['rain',['rayn','rane']],['train',['trane','trayn']],['seed',['sead','cede']],
+     ['feet',['fete','feit']],['boat',['bote','baot']],['coat',['coet','cote']],
+     ['play',['plai','pley']],['day',['dai','dey']],['moon',['mune','moun']],['food',['fude','foud']]];
+   return sample(BANK,n).map(([w,ds])=>{
+     const opts=shuffle([w,...ds]);
+     return {kind:'choice',q:'Which spelling is right?',opts,a:opts.indexOf(w),
+       say:'Listen. The word is '+w+'. '+w+'. Which spelling is right?',spkLabel:'Hear the word',
+       audioRate:0.8,key:'vteam:'+w};});}},
 {id:'A-1', skill:'More than one: adding -s', n:SHEET_N, sct:480,
  lesson:{title:'Adding -s', sub:'The ordinary way to mean more than one',
   demo:'<div class="say">one cat → two cat<b>s</b></div><div class="cap">Most words just add an s.</div>',
@@ -1745,8 +2004,6 @@ const ENG = [
   tip:'If she is solid on the single sheets but loses it here, it is attention rather than knowledge — slow her down.'},
  build(n){ const all = PLURAL_S.concat(PLURAL_ES, PLURAL_ODD, PAST_ED, PAST_ODD);
    return sample(all, n).map(r=>({kind:'choice', q:r[0], opts:[r[1],r[2],r[3]], a:r[4], key:'end:'+r[0]})); }},
-
-/* ---------- meanings ---------- */
 {id:'B-1', skill:'Opposites', n:SHEET_N, sct:480,
  lesson:{title:'Opposites', sub:'The other end of the word',
   demo:'<div class="say">hot ↔ cold</div><div class="cap">Full and empty. Early and late.</div>',
@@ -1769,8 +2026,6 @@ const ENG = [
    out.push({kind:'passage', title:s.t, text:s.x});
    sample(s.q,3).forEach(q=>out.push({kind:'choice', q:q[0], opts:[q[1],q[2],q[3]], a:q[4], key:'st:'+q[0]}));
    return out; }},
-
-/* ---------- sentences and reading ---------- */
 {id:'C-1', skill:'Capital letters', n:SHEET_N, sct:500,
  lesson:{title:'Where capitals go', sub:'The start of a sentence, and names',
   demo:'<div class="say">My dog Max is brown.</div><div class="cap">Capital M to start. Capital M for the name.</div>',
@@ -1783,7 +2038,6 @@ const ENG = [
   steps:['A telling sentence ends with a period.','A question ends with a question mark.','A shout ends with an exclamation mark.'],
   tip:'Have her read her own writing out loud — her voice drops at the end of a sentence, and that is where the period goes.'},
  build(n){ return sample(PUNCT, n).map(r=>({kind:'choice', q:r[0], opts:[r[1],r[2],r[3]], a:r[4], key:'pn:'+r[0]})); }},
-
 {id:'C-3', skill:'Build a complete sentence', n:8, sct:600,
  lesson:{title:'A complete sentence',sub:'Who or what + what happened',demo:'<div class="sentenceFrame"><div class="model">The dog runs.</div><div class="cap">A sentence tells a complete thought and starts with a capital.</div></div>',steps:['Name who or what the sentence is about.','Tell what the person or thing does.','Start with a capital and finish with punctuation.'],tip:'At this level, one clear sentence is enough. Parent review checks meaning and handwriting; the app does not pretend open-ended writing can be graded perfectly.'},
  build(n){const q=['Write a sentence about a dog.','Write a sentence about your family.','Write a sentence about something you can see.','Write a sentence beginning with “I can”.','Write a sentence about school.','Write a sentence about a favorite food.','Write a sentence about something that moves.','Write a sentence about today.'];return Array.from({length:n},(_,i)=>({kind:'write',q:q[i%q.length],accept:[' '],key:'sent1:'+i}));}},
@@ -1796,6 +2050,8 @@ const ENG = [
 {id:'C-6', skill:'Write a 3-sentence mini paragraph', n:4, sct:900,
  lesson:{title:'A tiny paragraph',sub:'Topic + detail + ending',demo:'<div class="sentenceFrame"><div class="model">Dogs are fun pets. They like to play and walk. I like dogs because they are friendly.</div><div class="cap">Three connected sentences make a beginning paragraph.</div></div>',steps:['Start with the main idea.','Add one useful detail.','Finish with a closing thought.'],tip:'This is deliberately small. Repeating the same paragraph structure across several days builds composition habits before longer writing is expected.'},
  build(n){const q=['Write 3 sentences about your favorite animal.','Write 3 sentences about a fun day.','Write 3 sentences about your favorite food.','Write 3 sentences about something you know how to do.'];return Array.from({length:n},(_,i)=>({kind:'write',q:q[i%q.length],accept:[' '],key:'para3:'+i}));}},
+
+/* ---------- reading and writing about what she read ---------- */
 {id:'D-1', skill:'Reading and writing answers', n:SHEET_N, sct:660,
  lesson:{title:'Answering in a full sentence', sub:'Read it, then write your answer',
   demo:'<div class="say">Where was the mitten?<br><b>It was on the fence.</b></div><div class="cap">Capital at the start. Period at the end. Words from the story.</div>',
@@ -1822,26 +2078,9 @@ const ENG = [
    out.push({kind:'passage', title:s2.t, text:s2.x});
    sample(s2.q,2).forEach(q=>out.push({kind:'choice', q:q[0], opts:[q[1],q[2],q[3]], a:q[4], key:'st:'+q[0]}));
    return out; }},
-
-/* ---------- expanded structured literacy & comprehension pathway ---------- */
-{id:'E-1', skill:'CVC blending and decoding', n:SHEET_N, sct:420, audio:1,
- lesson:{title:'Blend three sounds',sub:'Sound it out, then say it fast',demo:'<div class="say">c - a - t → cat</div>',steps:['Say each sound.','Blend without pausing.','Read the whole word again.'],tip:'Do not guess from the first letter; blend through the whole word.'},
- build(n){ return sample(CVC,n).map((w,i)=>{const opts=shuffle([w,...sample(CVC.filter(x=>x!==w),2)]);return {kind:'choice',q:'Blend: '+w.split('').join(' - '),opts,a:opts.indexOf(w),say:w,key:'blend:'+i};});}},
-{id:'E-2', skill:'Digraphs: sh, ch, th, wh', n:SHEET_N, sct:450,
- lesson:{title:'Two letters, one sound',sub:'Digraphs',demo:'<div class="say">sh-ip → ship</div>',steps:['Spot the two-letter sound.','Say it as one sound.','Blend the rest.'],tip:'Circle the digraph before reading the word.'},
- build(n){const words=['ship','shop','fish','chat','chin','much','thin','this','whip','when'];return sample(words,n).map((w,i)=>{const opts=shuffle([w,w.slice(1),w[0]+w.slice(2)]);return {kind:'choice',q:'Read the word:',opts,a:opts.indexOf(w),say:w,key:'digraph:'+i};});}},
-{id:'E-3', skill:'Consonant blends', n:SHEET_N, sct:450,
- lesson:{title:'Blends',sub:'Keep both consonant sounds',demo:'<div class="say">s + t + op → stop</div>',steps:['Say both beginning sounds.','Slide into the vowel.','Read it smoothly.'],tip:'Unlike a digraph, both sounds can still be heard.'},
- build(n){const words=['stop','flag','frog','clap','drum','spin','plug','grin','step','crab'];return sample(words,n).map((w,i)=>{const opts=shuffle([w,w.slice(1),w[0]+w.slice(2)]);return {kind:'choice',q:'Which word says “'+w+'”?',opts,a:opts.indexOf(w),say:w,key:'blend2:'+i};});}},
-{id:'E-4', skill:'Silent-e words', n:SHEET_N, sct:450,
- lesson:{title:'Silent e',sub:'The vowel says its name',demo:'<div class="say">cap → cape</div>',steps:['Find the final e.','Make the first vowel long.','Blend the word.'],tip:'Contrast pairs such as cap/cape and kit/kite.'},
- build(n){const pairs=[['cap','cape'],['kit','kite'],['hop','hope'],['cub','cube'],['mad','made']];return Array.from({length:n},(_,i)=>{const [a,b]=pairs[i%pairs.length],opts=shuffle([a,b]);return {kind:'choice',q:'Which word has the long vowel sound?',opts,a:opts.indexOf(b),say:b,key:'silent-e:'+i};});}},
-{id:'E-5', skill:'Vowel teams', n:SHEET_N, sct:480,
- lesson:{title:'Vowel teams',sub:'Common long-vowel spellings',demo:'<div class="say">rain · seed · boat</div>',steps:['Spot the vowel team.','Say its common sound.','Blend the whole word.'],tip:'Teach one pattern at a time, then mix only after it is secure.'},
- build(n){const words=['rain','train','seed','feet','boat','coat','play','day','moon','food'];return sample(words,n).map((w,i)=>{const opts=shuffle([w,w.replace(/[aeiou]/,'a'),w.slice(0,-1)]);return {kind:'choice',q:'Read:',opts,a:opts.indexOf(w),say:w,key:'vteam:'+i};});}},
 {id:'F-1', skill:'Two-syllable decoding', n:SHEET_N, sct:520,
  lesson:{title:'Read by syllables',sub:'Break long words into parts',demo:'<div class="say">sun-set → sunset</div>',steps:['Find a sensible break.','Read each part.','Blend the whole word.'],tip:'Cover one syllable at a time when a longer word feels overwhelming.'},
- build(n){const words=['sunset','rabbit','picnic','napkin','basket','robot','music','hotel','paper','tiger'];return sample(words,n).map((w,i)=>{const opts=shuffle([w,w.slice(1),w+'s']);return {kind:'choice',q:'Read the two-syllable word:',opts,a:opts.indexOf(w),say:w,key:'syll:'+i};});}},
+ build(n){const words=['sunset','rabbit','picnic','napkin','basket','robot','music','hotel','paper','tiger'];return sample(words,n).map((w,i)=>{const opts=shuffle([w,w.slice(1),w+'s']);return {kind:'choice',q:'Read the two-syllable word:',opts,a:opts.indexOf(w),say:'Break each word into two parts and read it. Then tap the real word.',spkLabel:'Hear directions',audioRate:0.8,key:'syll:'+w};});}},
 {id:'F-2', skill:'Prefixes and suffixes', n:SHEET_N, sct:540,
  lesson:{title:'Meaningful word parts',sub:'Prefixes, roots, suffixes',demo:'<div class="say">un + happy = unhappy</div>',steps:['Find the base word.','Notice the added part.','Use the word part to predict meaning.'],tip:'Morphology supports both vocabulary and spelling.'},
  build(n){const q=[['unhappy','not happy'],['replay','play again'],['careless','without care'],['helpful','full of help'],['preview','view before']];return Array.from({length:n},(_,i)=>{const x=q[i%q.length],opts=shuffle([x[1],'the opposite meaning','a person']);return {kind:'choice',q:'What does “'+x[0]+'” mean?',opts,a:opts.indexOf(x[1]),key:'morph:'+i};});}},
@@ -1851,6 +2090,8 @@ const ENG = [
 {id:'F-4', skill:'Inference and evidence', n:SHEET_N, sct:660,
  lesson:{title:'Inference',sub:'Use clues plus what you know',demo:'<div class="say">Answer + evidence = strong thinking</div>',steps:['Find a clue.','Combine it with what you know.','Explain how the clue supports the answer.'],tip:'Always ask, “What in the text makes you think that?”'},
  build(n){const s=pickStory(LONG_STORIES),out=[{kind:'passage',title:s.t,text:s.x}];sample(s.q,4).forEach(q=>out.push({kind:'choice',q:q[0],opts:[q[1],q[2],q[3]],a:q[4],key:'infer:'+q[0]}));s.w.slice(0,2).forEach(w=>out.push({kind:'write',q:w[0],accept:w[1],key:'evidence:'+w[0]}));return out;}},
+
+/* ---------- upper elementary through high school ---------- */
 {id:'G-1', skill:'Vocabulary in context', n:SHEET_N, sct:600,
  lesson:{title:'Context clues',sub:'Use the sentence around the word',demo:'<div class="say">The trail was steep, so we climbed slowly.</div>',steps:['Read before and after the word.','Substitute a possible meaning.','Check that the sentence still makes sense.'],tip:'Context gives clues; it does not always give a perfect dictionary definition.'},
  build(n){const qs=[['The puppy was timid and hid behind the chair. Timid means…',['shy','loud','hungry'],'shy'],['The glass was fragile, so we carried it carefully. Fragile means…',['easy to break','very heavy','bright'],'easy to break'],['Mia was exhausted after the long hike. Exhausted means…',['very tired','confused','excited'],'very tired']];return Array.from({length:n},(_,i)=>{const x=qs[i%qs.length],opts=shuffle(x[1]);return {kind:'choice',q:x[0],opts,a:opts.indexOf(x[2]),key:'vocab:'+i};});}},
@@ -1860,8 +2101,6 @@ const ENG = [
 {id:'G-3', skill:'Compare, contrast, and written response', n:SHEET_N, sct:780,
  lesson:{title:'Compare and explain',sub:'Use complete evidence-based sentences',demo:'<div class="say">Both… However… because…</div>',steps:['State one similarity.','State one difference.','Support the response with details.'],tip:'At this stage, writing quality and reading comprehension should reinforce each other.'},
  build(n){const a=pickStory(SHORT_STORIES),b=pickStory(SHORT_STORIES.filter(x=>x!==a));return [{kind:'passage',title:a.t,text:a.x},{kind:'passage',title:b.t,text:b.x},{kind:'write',q:'Write one complete sentence explaining something these passages have in common.',accept:['the','both','they','story'],key:'compare:1'},{kind:'write',q:'Write one complete sentence explaining an important difference.',accept:['the','but','while','different'],key:'compare:2'}];}},
-
-/* ---------- upper elementary through high-school literacy ---------- */
 {id:'H-1', skill:'Text structure and author purpose', n:SHEET_N, sct:660,
  lesson:{title:'How a text is built',sub:'Structure reveals purpose',demo:'<div class="say">cause/effect · compare/contrast · sequence</div>',steps:['Identify signal words.','Name the structure.','Explain how it supports the author’s purpose.'],tip:'Students should justify the label with evidence, not just name it.'},
  build(n){const q=[['“Because the road flooded, school closed.” Structure?','cause and effect'],['“Unlike wolves, foxes often hunt alone.” Structure?','compare and contrast'],['“First mix, then bake, finally cool.” Structure?','sequence'],['A manual explaining how to assemble a desk is mainly written to…','instruct']];return Array.from({length:n},(_,i)=>{const x=q[i%q.length],opts=shuffle([x[1],'description','entertain']);return {kind:'choice',q:x[0],opts,a:opts.indexOf(x[1]),key:'structure:'+i};});}},
@@ -1898,7 +2137,6 @@ const ENG = [
 {id:'M-1', skill:'College-readiness reading and argument review', n:SHEET_N, sct:960,
  lesson:{title:'Cumulative literacy mastery',sub:'Interpret, evaluate, synthesize, and write',demo:'<div class="say">Meaning → evidence → evaluation → synthesis</div>',steps:['Read for the author’s actual claim.','Evaluate evidence and rhetoric separately.','Synthesize before writing a conclusion.'],tip:'This mixed gate checks whether advanced reading skills hold together under unfamiliar prompts.'},
  build(n){const q=[['A strong argument can contain emotional language if…','its central claims are still supported by sound evidence'],['Best way to resolve conflicting factual claims?','trace each claim to its evidence and method'],['A nuanced thesis usually…','states a defensible claim while recognizing important limits'],['A summary differs from analysis because analysis…','explains significance, relationships, or implications']];return Array.from({length:n},(_,i)=>{const x=q[i%q.length],opts=shuffle([x[1],'avoids evidence','must be longer']);return {kind:'choice',q:x[0],opts,a:opts.indexOf(x[1]),key:'lit-review:'+i};});}},
-
 ];
 
 /* =====================================================================
@@ -2620,8 +2858,8 @@ const gradeName = v => GRADE_NAME[Math.max(0, Math.min(GRADE_NAME.length-1, Math
 
 const MATH_BAND = {'9A':-1,'8A':-1,'7A':-1,'6A':0,'5A':0,'4A':0,'3A':0.5,'2A':1,
   'A':1.5,'B':2,'C':3,'D':3.5,'E':3.5,'F':4.5,'G':5.5,'H':6,'I':7,'J':8,'K':9,'L':10.5,'M':12};
-const ENG_BAND  = {'9A':-1,'8A':-1,'7A':-1,'6A':0,'5A':0,'4A':0.5,'3A':1,'2A':1.5,
-  'A':2,'B':2,'C':2.5,'D':3,'E':1,'F':3.5,'G':5,'H':6,'I':7,'J':8,'K':9,'L':10.5,'M':12};
+const ENG_BAND  = {'9A':-1,'8A':-1,'7A':-1,'6A':0,'5A':0,'4A':0.5,'3A':1,'2A':1.25,
+  'E':1.5,'A':2,'B':2,'C':2.5,'D':3,'F':3.5,'G':5,'H':6,'I':7,'J':8,'K':9,'L':10.5,'M':12};
 const band = id => String(id).split('-')[0];
 const MATH_GRADE = new Proxy({}, {get:(_,k)=>MATH_BAND[band(k)]});
 const ENG_GRADE  = new Proxy({}, {get:(_,k)=>ENG_BAND[band(k)]});
@@ -2783,15 +3021,16 @@ const MATH_STAGE_NAMES = {
 };
 const ENG_STAGE_NAMES = {
   '9A':'Writing letters', '8A':'Writing letters',
-  '7A':'Listening and sounds', '6A':'Listening and sounds', '5A':'Listening and sounds',
-  '4A':'Sight words',
-  '3A':'Sounding out and writing short words',
+  '7A':'Listening and understanding', '6A':'Sounds and blending',
+  '5A':'Reading short words and sentences',
+  '4A':'Sight words and first stories',
+  '3A':'Writing short words',
   '2A':'Writing everyday words',
+  'E':'Phonics: digraphs, blends and long vowels',
   'A':'Word endings',
   'B':'Meanings and stories',
   'C':'Sentences',
   'D':'Reading and writing',
-  'E':'Phonics and decoding',
   'F':'Fluency, morphology and comprehension',
   'G':'Upper-elementary reading and writing'
 };
@@ -2834,8 +3073,13 @@ function buildTest(subject){
     let i = 0, guard = 0;
     while(items.length < TEST_N && guard++ < 600){
       const L = levels[i++ % levels.length];
-      try { items.push(Object.assign({stack:L.stack, lv:L.id}, L.gen())); } catch(e){}
+      try {
+        if(typeof L.gen === 'function') items.push(Object.assign({stack:L.stack, lv:L.id}, L.gen()));
+        else if(typeof L.build === 'function') L.build(2).forEach(it=>items.push(Object.assign({stack:L.stack, lv:L.id}, it)));
+        else break;
+      } catch(e){}
     }
+    items = items.slice(0, TEST_N);
   } else {
     levels.forEach(L=>{ try { L.build(2).forEach(it=>items.push(Object.assign({lv:L.id}, it))); } catch(e){} });
     /* keep passages with their questions, cap the length */
@@ -2895,7 +3139,7 @@ const mmss = s => Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
 const dayKey = d => { const x = d||new Date();
   return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); };
 const esc = s => String(s).replace(/</g,'&lt;');
-const strip = s => String(s).replace(/<[^>]+>/g,'');
+const strip = s => String(s).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
 const COLORS = ['#1C7ED6','#C2255C','#2F9E44','#7048E8','#E8590C','#0C8599'];
 const FACES = ['🦊','🐰','🐼','🦁','🐨','🦉'];
 
@@ -2935,8 +3179,8 @@ async function save(){
 const OLD_MATH = {'4A':'4A-1','3A':'3A-1','2A':'A-1','A1':'2A-1','A2':'2A-4','A3':'A-2',
   'B1':'B-1','B2':'B-2','B3':'B-3','B4':'B-4','B5':'B-5','B6':'B-6','B7':'B-7','B8':'B-8',
   'C1':'C-1','C2':'C-5','C3':'C-13','D1':'E-1','D2':'E-2','E1':'D-1','E2':'D-6'};
-const OLD_ENG = {'9A':'9A-1','8A':'8A-1','6A':'6A-1','4A':'4A-1','3A':'3A-1','2A':'2A-1',
-  'A':'A-1','B':'B-1','C':'C-1','D':'D-1','E':'D-2'};
+const OLD_ENG = {'9A':'9A-1','8A':'8A-1','7A':'7A-1','6A':'6A-1','5A':'7A-2','4A':'4A-1',
+  '3A':'3A-1','2A':'2A-1','A':'A-1','B':'B-1','C':'C-1','D':'D-1','E':'D-2'};
 function defaultDailySheets(age){
   /* Daily Practice uses short digital sheets (10 questions each). The default
      is age-sensitive, but the child's demonstrated fluency can be adjusted by a parent.
@@ -2952,7 +3196,7 @@ function defaultDailySheets(age){
 function migrate(){
   DB.students.forEach(s=>{
     if(!MATH.some(l=>l.id===s.math)) s.math = OLD_MATH[s.math] || '4A-1';
-    if(!ENG.some(l=>l.id===s.english)) s.english = OLD_ENG[s.english] || '7A';
+    if(!ENG.some(l=>l.id===s.english)) s.english = OLD_ENG[s.english] || '7A-1';
     if(!s.perDay) s.perDay = defaultDailySheets(s.age);
     if(!s.weeklyGoal) s.weeklyGoal = 5;
     if(!s.weeklyReward) s.weeklyReward = '30 minutes of screen time';
@@ -2962,7 +3206,7 @@ function startLevels(age){
   /* V4.4: age is only a diagnostic anchor. Start conservatively so the app
      measures prerequisites rather than assuming grade-level mastery. */
   if(age <= 4) return {math:'9A', english:'9A-1'};
-  if(age === 5) return {math:'7A', english:'7A'};
+  if(age === 5) return {math:'7A', english:'7A-1'};
   if(age === 6) return {math:'6A-4', english:'6A-1'};
   if(age === 7) return {math:'4A-1', english:'E-1'};
   if(age === 8) return {math:'2A-1', english:'A-1'};
@@ -3285,7 +3529,7 @@ function render(){
     holder.style.padding = '8px 0';
     holder.appendChild(cell(it, sheet.items.indexOf(it), true));
     paper.appendChild(holder);
-    if(it && it.say && it.spoke !== true){ it.spoke = true; if(it.kind==='spell') sayWordClearly(it.word,it.hint); else if(it.phoneme) sayPhonics(it.phoneme,it.say); else if(it.mode==='rhyme') sayRhymePrompt(it.say); else if(it.kind==='pic') sayPictureWord(it.say); else say(it.say,it.audioRate); }
+    if(it && it.say && it.spoke !== true){ it.spoke = true; if(it.kind==='spell') sayWordClearly(it.word,it.hint); else if(it.phoneme) sayPhonics(it.phoneme,it.say); else if(it.mode==='rhyme') sayRhymePrompt(it.say); else if(it.mode==='story') say(it.say,it.audioRate); else if(it.kind==='pic') sayPictureWord(it.say); else say(it.say,it.audioRate); }
   } else if(sheet.subject === 'math'){
     const g = document.createElement('div'); g.className = 'grid';
     if(writeMode() && me && me.age >= 6 && me.age <= 8) g.classList.add('math-column');
@@ -3401,7 +3645,7 @@ function cell(it, i, single, n){
     }, 0);
   }
   else if(it.kind === 'pic' || it.kind === 'choice'){
-    const spk = it.say ? '<button class="speak">🔊 '+(it.phoneme?'Hear directions + examples':(it.kind==='pic'?'Hear directions':'Hear the word'))+'</button>' : '';
+    const spk = it.say ? '<button class="speak">🔊 '+(it.spkLabel || (it.phoneme?'Hear directions + examples':(it.kind==='pic'?'Hear directions':'Hear the word')))+'</button>' : '';
     const audDir = it.phoneme ? '<div class="note" style="margin:6px 0 10px"><b>Directions:</b> Tap the speaker. Listen to the beginning sound in the example words. Then tap the picture that starts the same way.</div>' : (it.say ? '<div class="note" style="margin:6px 0 10px"><b>Directions:</b> Tap the speaker, listen carefully, then choose your answer.</div>' : '');
     d.innerHTML = num + (it.say ? '<div style="margin:8px 0 4px">'+spk+'</div>' : '') + audDir +
                   '<div class="q">'+it.q+'</div>';
@@ -3422,7 +3666,7 @@ function cell(it, i, single, n){
     });
     d.appendChild(box);
     d.insertAdjacentHTML('beforeend', markHTML(it));
-    const s = d.querySelector('.speak'); if(s) s.onclick = e => { e.stopPropagation(); if(it.phoneme) sayPhonics(it.phoneme,it.say); else if(it.mode==='rhyme') sayRhymePrompt(it.say); else if(it.kind==='pic') sayPictureWord(it.say); else if(/^\s*[A-Za-z'-]+\s*$/.test(it.say||'')) saySimpleWord(it.say); else say(it.say,it.audioRate); };
+    const s = d.querySelector('.speak'); if(s) s.onclick = e => { e.stopPropagation(); if(it.phoneme) sayPhonics(it.phoneme,it.say); else if(it.mode==='rhyme') sayRhymePrompt(it.say); else if(it.mode==='story') say(it.say,it.audioRate); else if(it.kind==='pic') sayPictureWord(it.say); else if(/^\s*[A-Za-z'-]+\s*$/.test(it.say||'')) saySimpleWord(it.say); else say(it.say,it.audioRate); };
   }
   else if(it.kind === 'hw'){
     d.innerHTML = num + '<div class="q">✍️ ' + it.q + '</div>' + padCard(it, single ? 110 : 90) +
@@ -3936,13 +4180,20 @@ function finish(){
   else msg = 'Everything was corrected, but first-try mastery is not established yet. Same level again before moving on.';
   const assignmentDay = sheet.assignedFor || dayKey();
   const ahead = assignmentDay === tomorrowKey();
+  const behind = assignmentDay < dayKey();
   const left = perDay() - sheetsForDay(sheet.subject, assignmentDay);
-  if(left > 0) msg = msg + ' ' + left + ' more ' + (left===1?'sheet':'sheets') + (ahead ? ' assigned for tomorrow.' : ' of this today.');
+  if(left > 0) msg = msg + ' ' + left + ' more ' + (left===1?'sheet':'sheets') +
+    (ahead ? ' assigned for tomorrow.' : behind ? ' to finish ' + dayName(assignmentDay) + '.' : ' of this today.');
   else if(ahead) msg = msg + ' Tomorrow\'s ' + (sheet.subject==='math'?'Math':'Reading & Writing') + ' assignment is complete early.';
+  else if(behind) msg = msg + ' ' + dayName(assignmentDay) + '\'s ' + (sheet.subject==='math'?'Math':'Reading & Writing') + ' work is caught up.';
   $('rMsg').textContent = msg;
   if(left > 0){
-    $('rDone').textContent = ahead ? 'Next tomorrow sheet →' : 'Next sheet →';
-    $('rDone').onclick = () => { workAheadDay = ahead ? tomorrowKey() : null; startSubject(sheet.subject); };
+    $('rDone').textContent = ahead ? 'Next tomorrow sheet →' : behind ? 'Next catch-up sheet →' : 'Next sheet →';
+    $('rDone').onclick = () => { workAheadDay = ahead ? tomorrowKey() : behind ? assignmentDay : null; startSubject(sheet.subject); };
+  } else if(behind){
+    const more = nextCatchUp();
+    $('rDone').textContent = more ? 'Next catch-up sheet →' : 'On to today →';
+    $('rDone').onclick = () => { workAheadDay=null; if(more) startCatchUp(); else show('home'); };
   } else if(!ahead && sheetsTomorrow(sheet.subject) < perDay() && !(me.testDue&&me.testDue[sheet.subject])){
     $('rDone').textContent = 'Start tomorrow\'s sheet →';
     $('rDone').onclick = () => startTomorrowSubject(sheet.subject);
@@ -4034,9 +4285,13 @@ const MATH_PLACE = [['Not sure — go by age',null],
 const READ_PLACE = [['Not sure — go by age',null],
   ['Learning to write letters','9A-1'],
   ['Knows letters, learning their sounds','6A-1'],
+  ['Can hear sounds, not blending yet','6A-6'],
+  ['Starting to sound out short words','5A-1'],
+  ['Reads short words, new to sentences','5A-5'],
   ['Learning sight words','4A-1'],
-  ['Starting to sound out short words','3A-1'],
+  ['Writing short words','3A-1'],
   ['Writing simple words','2A-1'],
+  ['Reads short words, ready for blends and silent e','E-2'],
   ['Plurals and word endings','A-1'],
   ['Reading short stories','B-3'],['Upper-elementary comprehension','G-1'],['Middle-school analysis','H-1'],['Argument and source evaluation','J-1'],['High-school analytical reading','K-1'],['Advanced synthesis','L-2']];
 let addAge = null, placeM = null, placeE = null;
@@ -4084,6 +4339,7 @@ $('addSave').onclick = () => {
 $('addClose').onclick = () => show('who');
 
 function tomorrowKey(){ const d=new Date(); d.setDate(d.getDate()+1); return dayKey(d); }
+function yesterdayKey(){ const d=new Date(); d.setDate(d.getDate()-1); return dayKey(d); }
 function assignedDay(h){ return h.assignedFor || h.d; }
 function sheetsForDay(subject, k){
   return (me.history||[]).filter(h=>h.subject===subject && assignedDay(h)===k).length;
@@ -4099,6 +4355,60 @@ function assignmentDayStarted(k){
   if(!me) return false;
   return ['math','english'].some(sub=>sheetsForDay(sub,k) > 0);
 }
+function sheetsYesterday(subject){ return sheetsForDay(subject, yesterdayKey()); }
+/* Missed days can be made up inside a window the parent sets (default: just
+   yesterday). Mastery days are counted from the real calendar date the sheet
+   was worked, so catching up restores the streak but can never manufacture a
+   second retention day. */
+const CATCH_CHOICES = [[0,'Off'],[1,'Yesterday only'],[3,'Last 3 days'],[7,'Last 7 days']];
+function catchWindow(){ return me && me.catchDays !== undefined ? me.catchDays : 1; }
+function catchUpList(){
+  const out = [];
+  if(!me || !(me.history||[]).length) return out;
+  const w = catchWindow();
+  if(!w) return out;
+  const first = me.history[me.history.length-1];
+  const firstDay = first.assignedFor || first.d;
+  const goal = perDay();
+  for(let i=w; i>=1; i--){                       /* oldest missed day first */
+    const k = daysBack(i);
+    if(k < firstDay) continue;
+    const blocked = sub => !!(me.testDue && me.testDue[sub]);
+    const m = blocked('math') ? 0 : Math.max(0, goal - sheetsForDay('math', k));
+    const e = blocked('english') ? 0 : Math.max(0, goal - sheetsForDay('english', k));
+    if(m || e) out.push({day:k, math:m, english:e});
+  }
+  return out;
+}
+function catchUpDue(subject){
+  if(me && me.testDue && me.testDue[subject]) return 0;
+  return catchUpList().reduce((a,d)=>a + d[subject], 0);
+}
+function catchUpDays(){ return catchUpList().filter(d=>d.math || d.english).length; }
+function nextCatchUp(){
+  const blocked = sub => !!(me.testDue && me.testDue[sub]);
+  const list = catchUpList();
+  for(let i=0;i<list.length;i++){
+    const d = list[i];
+    if(d.math && !blocked('math')) return {day:d.day, subject:'math'};
+    if(d.english && !blocked('english')) return {day:d.day, subject:'english'};
+  }
+  return null;
+}
+function startCatchUp(){
+  const n = nextCatchUp();
+  if(!n){ workAheadDay = null; paintHome(); return show('home'); }
+  workAheadDay = n.day;
+  startSubject(n.subject);
+}
+function dayName(k){
+  try{
+    const d = new Date(k+'T12:00:00');
+    const far = (new Date(dayKey()+'T12:00:00') - d) / 86400000 >= 6;
+    return d.toLocaleDateString(undefined, far ? {weekday:'long', month:'short', day:'numeric'} : {weekday:'long'});
+  } catch(e){ return k; }
+}
+
 let workAheadDay = null;
 function dots(done, goal){
   let s = '';
@@ -4127,6 +4437,16 @@ function paintHome(){
     : (dm ? m.skill + ' · today complete · '+Math.min(sheetsTomorrow('math'),goal)+'/'+goal+' tomorrow sheets done' : m.skill + ' · sheet ' + (nm+1) + ' of ' + goal);
   $('descEng').textContent  = dueE ? dueE + ' · ' + TEST_N + ' questions, one go'
     : (de ? e.skill + ' · today complete · '+Math.min(sheetsTomorrow('english'),goal)+'/'+goal+' tomorrow sheets done' : e.skill + ' · sheet ' + (ne+1) + ' of ' + goal);
+  const cm = catchUpDue('math'), ce = catchUpDue('english'), nDays = catchUpDays(), catchBtn = $('cardCatch');
+  if(cm || ce){
+    const list = catchUpList();
+    catchBtn.style.display = '';
+    $('titleCatch').innerHTML = (nDays === 1 ? dayName(list[0].day) + '\u2019s sheets' : 'Missed sheets') + ' <span class="badge">CATCH-UP</span>';
+    $('descCatch').textContent = (nDays === 1 ? 'Missed ' + dayName(list[0].day) : 'Missed ' + nDays + ' days') +
+      ' · ' + (cm ? cm + ' math ' + (cm===1?'sheet':'sheets') : 'math done') +
+      ' · ' + (ce ? ce + ' reading ' + (ce===1?'sheet':'sheets') : 'reading done') +
+      ' · oldest day first';
+  } else catchBtn.style.display = 'none';
   $('doneMath').innerHTML = dots(nm, goal);
   $('doneEng').innerHTML  = dots(ne, goal);
   let n = 0;
@@ -4157,6 +4477,10 @@ function paintHome(){
     (stageWins ? '<br>' + stageWins + ' stage test' + (stageWins===1?'':'s') + ' passed 🏆' : '') + '</div>';
   const wd=weeklyPracticeDays(), wg=rewardGoal(), wr=rewardText();
   $('shelf').insertAdjacentHTML('beforeend','<div class="weekreward"><b>🎁 Weekly reward: '+wd+' / '+wg+' practice days</b><div class="meter"><i style="width:'+Math.min(100,Math.round(wd/wg*100))+'%"></i></div><small>'+(wd>=wg?'Earned: ':'Working toward: ')+esc(wr)+'</small></div>');
+  if(cm || ce){
+    $('homeHint').textContent = 'There is unfinished work to catch up. Finishing it repairs the day streak. The weekly reward and the mastery clock still count only the days she actually sat down to practise.';
+    return;
+  }
   $('homeHint').textContent = dm&&de
     ? "Today is complete. Tap Math or Reading & Writing to work on tomorrow's sheets. Work completed early is credited to tomorrow, but it does not create a new mastery day and tomorrow's retention checks still wait for tomorrow."
     : goal + ' short sheets of each — daily repetition builds mastery.';
@@ -4208,7 +4532,9 @@ function openSheet(subject){
   workAheadDay = null;
   phase = 'work'; sel = sheet.items.findIndex(i=>i.kind!=='passage');
   $('sheetId').textContent = (subject==='math'?'Math ':'Reading ')+sheet.level;
-  $('sheetSkill').textContent = sheet.skill + ((sheet.assignedFor||dayKey())===tomorrowKey() ? ' · TOMORROW\'S WORK' : '');
+  const aDay = sheet.assignedFor || dayKey();
+  $('sheetSkill').textContent = sheet.skill + (aDay===tomorrowKey() ? ' · TOMORROW\'S WORK'
+    : aDay < dayKey() ? ' · CATCH-UP · ' + dayName(aDay).toUpperCase() : '');
   $('clock').textContent = '0:00'; $('clock').style.color = '';
   $('bar').style.width = '0%';
   show('work'); render(); startClock(false);
@@ -4216,6 +4542,7 @@ function openSheet(subject){
 
 $('cardMath').onclick = () => sheetsToday('math')>=perDay() ? startTomorrowSubject('math') : startSubject('math');
 $('cardEng').onclick  = () => sheetsToday('english')>=perDay() ? startTomorrowSubject('english') : startSubject('english');
+$('cardCatch').onclick = () => startCatchUp();
 $('rDone').onclick    = () => show('home');
 $('switchKid').onclick= () => show('who');
 $('toParent').onclick = () => { if(!me) me = DB.students[0]; me ? show('parent') : newStudent(); };
@@ -4344,13 +4671,23 @@ $('diagSelected').onclick=()=>diagSpeak('This is the selected reading voice. One
 function weekStartDate(){
   const d=new Date(); d.setHours(12,0,0,0); const day=d.getDay(); const diff=(day===0?-6:1-day); d.setDate(d.getDate()+diff); return d;
 }
+/* Counted by the day she actually worked, not the day the work was credited
+   to, so clearing a backlog in one sitting earns one day of reward, not three. */
+function workedDayComplete(k){
+  if(!me) return false;
+  const goal = perDay();
+  /* Sheets count toward the day they were assigned to, as long as they were
+     worked on or before that day. Working ahead still earns the day; clearing
+     a backlog afterwards does not turn one sitting into several reward days. */
+  return ['math','english'].every(sub =>
+    (me.history||[]).filter(h=>h.subject===sub && (h.assignedFor||h.d)===k && h.d <= k).length >= goal);
+}
 function weeklyPracticeDays(){
   if(!me) return 0; const start=weekStartDate(), days=new Set();
   for(let i=0;i<7;i++){
     const d=new Date(start); d.setDate(start.getDate()+i); if(d>new Date()) break;
     const key=dayKey(d);
-    const done=assignmentDayComplete(key);
-    if(done) days.add(key);
+    if(workedDayComplete(key)) days.add(key);
   }
   return days.size;
 }
@@ -4366,7 +4703,20 @@ function paintReward(){
   document.querySelectorAll('[data-reward]').forEach(b=>b.onclick=()=>{me.weeklyReward=b.dataset.reward;save();paintReward();});
   const give=$('rewardGiven'); if(give){give.textContent=given?'Reward marked given ✓':'Mark this week’s reward given';give.onclick=()=>{me.rewardGivenWeek=rewardWeekKey();save();paintReward();paintHome();};}
 }
+function paintCatchRow(){
+  const el = $('catchRow'); if(!el) return;
+  el.innerHTML = '';
+  CATCH_CHOICES.forEach(([v,label])=>{
+    const b = document.createElement('button');
+    b.textContent = label;
+    b.setAttribute('aria-pressed', catchWindow()===v ? 'true' : 'false');
+    if(catchWindow()===v) b.style.cssText = 'background:var(--ink);color:#fff';
+    b.onclick = () => { me.catchDays = v; save(); paintCatchRow(); };
+    el.appendChild(b);
+  });
+}
 function paintParent(){
+  paintCatchRow();
   paintVoices(); paintMute(); paintHw(); paintWipe(); paintPerDay(); paintInput(); paintReward();
   $('pWho').textContent = me ? me.name+' · age '+me.age : '';
   $('pName').value = me ? me.name : '';
@@ -4635,7 +4985,8 @@ window.resetMathLearning=function(){if(!me)return;if(!confirm('Reset Math level 
 /* lightweight adaptive diagnostic: samples nearby levels and moves one step at a time; no level skipping after placement */
 function qText(it){if(it.kind==='math')return it.top+' '+it.op+' '+it.bottom+' = ?';if(it.kind==='seq')return (it.run||[]).map(x=>x===null?'?':x).join(', ');if(it.kind==='count')return 'How many '+(it.emoji||'objects')+'?';if(it.kind==='choice'||it.kind==='pic')return strip(it.q||'Choose the best answer');if(it.kind==='spell')return 'Type the word you hear.';return null;}
 function diagItem(sub,L){for(let n=0;n<30;n++){let it;if(sub==='math')it=L.gen();else{const a=L.build(4);it=a.find(x=>['choice','pic','spell'].includes(x.kind));}if(it&&qText(it))return it;}return null;}
-window.startSmartPlacement=function(sub){const list=ladder(sub),base=list.findIndex(x=>x.id===me[sub]);let idx=Math.max(0,Math.min(list.length-1,base)),round=0,correct=0,total=0;const modal=document.createElement('div');modal.className='v4modal';document.body.appendChild(modal);function step(){const L=list[idx],it=diagItem(sub,L);if(!it){idx=Math.min(list.length-1,idx+1);return step();}modal.innerHTML='<div class="v4box"><h3>Smart placement · '+(sub==='math'?'Math':'Reading')+'</h3><p class="hint">Short beta check. It tests around the current starting point and never changes progress history.</p><div class="v4diagq">'+esc(qText(it))+'</div><div id="v4ans"></div><button id="v4cancel">Cancel</button></div>';const a=modal.querySelector('#v4ans');if(it.kind==='spell')setTimeout(()=>sayWordClearly(it.word,it.hint),180);function done(ok){total++;if(ok)correct++;round++;if(round%3===0){if(correct>=2)idx=Math.min(list.length-1,idx+1);else idx=Math.max(0,idx-1);correct=0;}if(round>=9){me[sub]=list[idx].id;me.diag[sub]={d:V4DAY(),level:list[idx].id};save();modal.innerHTML='<div class="v4box"><h3>Placement complete</h3><p>Starting at <b>'+list[idx].id+' — '+esc(list[idx].skill)+'</b>.</p><p class="hint">Mastery rules still apply from here; placement does not skip future levels.</p><button id="v4close">Done</button></div>';modal.querySelector('#v4close').onclick=()=>{modal.remove();show('parent')};return;}step();}
+window.startSmartPlacement=function(sub){const list=ladder(sub),base=list.findIndex(x=>x.id===me[sub]);let idx=Math.max(0,Math.min(list.length-1,base)),round=0,correct=0,total=0;const modal=document.createElement('div');modal.className='v4modal';document.body.appendChild(modal);function step(){const L=list[idx],it=diagItem(sub,L);if(!it){idx=Math.min(list.length-1,idx+1);return step();}modal.innerHTML='<div class="v4box"><h3>Smart placement · '+(sub==='math'?'Math':'Reading')+'</h3><p class="hint">Short beta check. It tests around the current starting point and never changes progress history.</p><div class="v4diagq">'+esc(qText(it))+'</div><div id="v4ans"></div><button id="v4cancel">Cancel</button></div>';const a=modal.querySelector('#v4ans');if(it.kind==='spell')setTimeout(()=>sayWordClearly(it.word,it.hint),180);
+else if(it.say)setTimeout(()=>{if(it.phoneme)sayPhonics(it.phoneme,it.say);else if(it.mode==='rhyme')sayRhymePrompt(it.say);else if(it.mode==='story')say(it.say,it.audioRate);else if(it.kind==='pic')sayPictureWord(it.say);else say(it.say,it.audioRate);},180);function done(ok){total++;if(ok)correct++;round++;if(round%3===0){if(correct>=2)idx=Math.min(list.length-1,idx+1);else idx=Math.max(0,idx-1);correct=0;}if(round>=9){me[sub]=list[idx].id;me.diag[sub]={d:V4DAY(),level:list[idx].id};save();modal.innerHTML='<div class="v4box"><h3>Placement complete</h3><p>Starting at <b>'+list[idx].id+' — '+esc(list[idx].skill)+'</b>.</p><p class="hint">Mastery rules still apply from here; placement does not skip future levels.</p><button id="v4close">Done</button></div>';modal.querySelector('#v4close').onclick=()=>{modal.remove();show('parent')};return;}step();}
 if(it.kind==='choice'||it.kind==='pic'){const opts=it.opts||[];a.className='v4opts';opts.forEach((o,k)=>{const b=document.createElement('button');b.textContent=o;b.onclick=()=>done(k===it.a);a.appendChild(b);});}else{a.innerHTML='<input class="inp" id="v4input" inputmode="numeric" placeholder="Answer"><button id="v4go" style="margin-top:8px">Check</button>';modal.querySelector('#v4go').onclick=()=>{const v=modal.querySelector('#v4input').value;let ok=false;if(it.kind==='spell')ok=v.trim().toLowerCase()===it.word.toLowerCase();else ok=parseInt(v,10)===it.a;done(ok);};}modal.querySelector('#v4cancel').onclick=()=>modal.remove();}step();};
 /* error logging for public beta */
 window.addEventListener('error',e=>{try{const logs=JSON.parse(localStorage.getItem('practice-v4-errors')||'[]');logs.unshift({d:new Date().toISOString(),m:String(e.message||'error')});localStorage.setItem('practice-v4-errors',JSON.stringify(logs.slice(0,20)));}catch(_){}});
