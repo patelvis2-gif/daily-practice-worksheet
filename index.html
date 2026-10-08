@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Practice">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
-<title>Daily Practice — V8.5</title>
+<title>Daily Practice — V8.6</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -323,7 +323,7 @@ td{padding:7px 0;border-top:1px solid var(--rule);font-weight:600;font-variant-n
 <section id="who" class="screen on"><div class="wrap">
   <h1>Who's practicing?</h1>
   <div class="date" id="whoDate"></div>
-  <div class="date" style="margin-top:4px;font-size:.72rem">Daily Practice V8.5</div>
+  <div class="date" style="margin-top:4px;font-size:.72rem">Daily Practice V8.6</div>
   <div class="kids" id="kids"></div>
   <button class="linkish" id="toParent">Parent settings</button>
 </div></section>
@@ -474,6 +474,12 @@ td{padding:7px 0;border-top:1px solid var(--rule);font-weight:600;font-variant-n
       <button class="step" data-lv="english" data-d="1">+</button>
     </div>
     <p class="hint" style="text-align:left;margin-top:4px">Mastery first: a child advances only after strong first-try accuracy is repeated across 3 different days, including a later retention check. Perfect or fast work never skips a level.</p>
+  </div>
+  <div class="panel">
+    <h4>Letter sounds</h4>
+    <p class="hint" id="v86SndStatus" style="text-align:left;margin:0 0 10px;color:var(--ink)"></p>
+    <div class="rowbtns"><button id="v86SndGo">🎙 Record letter sounds</button></div>
+    <p class="hint" style="text-align:left;margin-top:8px">The tablet voice can say words well but not sounds on their own. Record the 26 sounds once in your voice and the app uses them everywhere she sounds out a word.</p>
   </div>
   <div class="panel">
     <h4>Jump to a level</h4>
@@ -652,6 +658,18 @@ td{padding:7px 0;border-top:1px solid var(--rule);font-weight:600;font-variant-n
     <div id="fluHist"></div>
     <p class="hint" style="text-align:left;margin-top:8px">Words correct per minute is how schools track reading growth. The trend matters more than any one score. Roughly, a typical first grader reads about 30 by mid-year and about 60 by the end of the year (national norms, Hasbrouck &amp; Tindal). Accuracy should stay above 95%; if it drops, the passage is too hard to judge speed.</p>
   </div>
+</div></section>
+
+<section id="sounds" class="screen scroll"><div class="wrap">
+  <div class="top">
+    <div><div class="hello">Letter sounds in your voice</div><div class="date" id="sndCount"></div></div>
+    <button class="gear" id="sndClose">✕</button>
+  </div>
+  <div class="v85tip" style="margin:6px 0 12px"><b>How to record</b>
+    <p>Tap Record, wait for 3-2-1, then say just the <b>sound</b> — not the letter name. Keep stop sounds short and crisp: /b/ is a quick puff, not "buh". Hold sounds like /m/ and /s/ for about a second. Vowels are the short sound: /a/ as in apple, /o/ as in octopus. Each clip plays back right away — redo any you don't like.</p>
+    <p>Do it in a quiet room, tablet about a foot from your mouth. These recordings stay on this device.</p></div>
+  <div class="rowbtns" style="margin-bottom:12px"><button id="sndTest">▶ Try it: c – a – t</button><button id="sndPlayAll">▶ Play all</button></div>
+  <div class="snd-grid" id="sndGrid"></div>
 </div></section>
 
 <script>
@@ -5200,6 +5218,23 @@ ensureV4();
 .paper.single{align-items:safe center}
 .lvchip{white-space:nowrap}
 @media(max-width:480px){.v85story{font-size:1.6rem}.v85story .grp{max-width:200px}}
+
+/* V8.6 sound recording */
+.snd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.snd-card{background:#fff;border-radius:14px;padding:12px;border:2px solid var(--rule);display:flex;flex-direction:column;gap:4px}
+.snd-card.done{border-color:#BFE3C8}
+.snd-card.live{border-color:var(--pen);box-shadow:0 0 0 4px #FFE0E0}
+.snd-top{display:flex;justify-content:space-between;align-items:center}
+.snd-top b{font-size:2.2rem;line-height:1}
+.snd-top span{color:var(--pass);font-weight:800;font-size:1.3rem}
+.snd-card small{font-weight:700;color:var(--ink-soft)}
+.snd-card p{margin:2px 0 6px;font-size:.8rem;line-height:1.35;min-height:2.6em}
+.snd-btns{display:grid;grid-template-columns:1fr 48px;gap:6px;margin-top:auto}
+.snd-btns button{padding:10px 6px;border-radius:10px;background:var(--desk);font-weight:800}
+.snd-btns .rec{background:#FFE8E8;color:#B02525}
+.snd-btns button:disabled{opacity:.35}
+.snd-cd{font-size:1.6rem;color:var(--ink)}
+.snd-now{color:var(--pen);font-size:1rem}
 </style>
 <script>
 /* =====================================================================
@@ -5218,7 +5253,7 @@ const range = (a, b) => { const o = []; for(let x = a; x <= b; x++) o.push(x); r
 const NUMWORD = ['zero','one','two','three','four','five','six','seven','eight','nine','ten',
   'eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
 const nw = n => NUMWORD[n] || String(n);
-const sound = c => (PHONEME_SAY[c] || c);
+const sound = c => '[[' + c + ']]';   /* played from the grown-up's recording, see the sounds module */
 const V85_KINDS = new Set(['tiles','bond','tens','story','aloud']);
 const NUM_KINDS = new Set(['bond','tens','story']);
 window.V85_KINDS = V85_KINDS;
@@ -5491,14 +5526,33 @@ window.v85storyItem = storyItem;
 
 /* ---------- new math levels ---------- */
 const MATH_NEW = {};
-MATH_NEW.tens = {id:'5A-5t', skill:'Tens and ones', n:SHEET_N, sct:480, audio:1,
-  lesson:{title:'Tens and ones', sub:'Every big number is tens plus ones',
+MATH_NEW.teens = {id:'5A-5a', skill:'Teen numbers: ten and some more', n:SHEET_N, sct:480, audio:1,
+  lesson:{title:'Ten and some more', sub:'Every teen number is one ten and some ones',
+    demo:'<div class="say">14 = 10 and 4</div><div class="cap">One stick of ten, four little cubes.</div>',
+    steps:['The long stick is a ten — ten cubes stuck together.','Count on from 10 with the little cubes: 11, 12, 13, 14.','A teen number is always one ten and some more.'],
+    tip:'This is the first step of place value, so it starts with numbers she already knows well. Ten things in a cup and a few loose ones beside it is the whole idea: "fourteen is ten and four." ' +
+        'Have her count on from ten rather than recounting the ten. Popsicle sticks with a rubber band around ten are perfect for this.'},
+  gen(){ return tensItem(10, 19, Math.random() < .7 ? 'number' : 'ones'); }};
+MATH_NEW.tensOnly = {id:'5A-5b', skill:'Counting by tens', n:SHEET_N, sct:440, audio:1,
+  lesson:{title:'Counting by tens', sub:'Each long stick is ten',
+    demo:'<div class="say">10, 20, 30, 40</div><div class="cap">Four sticks of ten make forty.</div>',
+    steps:['Touch each stick.','Count by tens: 10, 20, 30…','The last number you say is how many.'],
+    tip:'Counting by tens out loud — in the car, on the stairs — is the best practice for this. The new idea is that one stick stands for ten things, so four sticks is forty, not four.'},
+  gen(){ const n = 10 * (1 + rnd(6)); return tensItem(n, n, 'number'); }};
+MATH_NEW.tens40 = {id:'5A-5c', skill:'Tens and ones to 40', n:SHEET_N, sct:480, audio:1,
+  lesson:{title:'Tens and ones', sub:'Count the tens, then count on the ones',
+    demo:'<div class="say">23 = 2 tens and 3 ones</div><div class="cap">10, 20 … 21, 22, 23.</div>',
+    steps:['Count the long sticks by tens.','Keep going with the little cubes by ones.','Tens first, then ones — that is the number.'],
+    tip:'Kept under 40 on purpose so the counting stays easy and the new idea (tens, then ones) is the only hard part.'},
+  gen(){ return tensItem(21, 40); }};
+MATH_NEW.tens = {id:'5A-5t', skill:'Tens and ones to 60', n:SHEET_N, sct:480, audio:1,
+  lesson:{title:'Tens and ones to 60', sub:'Every big number is tens plus ones',
     demo:'<div class="say">57 = 5 tens and 7 ones</div><div class="cap">Five sticks of ten, seven little cubes.</div>',
     steps:['Count the long sticks by tens: 10, 20, 30…','Then count the little cubes by ones.','Tens first, then ones — that is the number.'],
     tip:'This is the idea that makes every bigger number make sense: 57 is not "five-seven", it is 5 tens and 7 ones. ' +
         'Bundle real things to make it concrete — straws or popsicle sticks in rubber bands of ten, or ten pennies traded for a dime. ' +
         'When she reads a number, ask "how many tens? how many ones?" until it is automatic.'},
-  gen(){ return tensItem(11, 60); }};
+  gen(){ return tensItem(21, 60); }};
 
 MATH_NEW.b1 = {id:'4A-B1', skill:'Number bonds to 5', n:SHEET_N, sct:420, audio:1,
   lesson:{title:'Parts of 5', sub:'A number bond shows a whole and its two parts',
@@ -5545,7 +5599,7 @@ window.V85_MATH_NEW = MATH_NEW;
 function insertBefore(list, id, items){ const i = list.findIndex(l => l.id === id); if(i < 0) return false; list.splice(i, 0, ...items); return true; }
 function insertAfter(list, id, items){ const i = list.findIndex(l => l.id === id); if(i < 0) return false; list.splice(i+1, 0, ...items); return true; }
 if(!MATH.some(l => l.id === '5A-5t')){
-  insertAfter(MATH, '5A-5', [MATH_NEW.tens]);
+  insertAfter(MATH, '5A-5', [MATH_NEW.teens, MATH_NEW.tensOnly, MATH_NEW.tens40, MATH_NEW.tens]);
   insertBefore(MATH, '4A-1', [MATH_NEW.b1, MATH_NEW.b2, MATH_NEW.b3, MATH_NEW.b4, MATH_NEW.s1]);
   insertBefore(MATH, '2A-1', [MATH_NEW.s2]);
 }
@@ -5558,7 +5612,7 @@ const startLevels0 = startLevels;
 window.startLevels = startLevels = function(age){ const s = startLevels0(age); if(s.math === '4A-1') s.math = '4A-B1'; return s; };
 
 /* mixed into existing sheets once she reaches them */
-const TENS_MIX = {'5A-6':[11,70],'5A-7':[11,80],'5A-8':[11,90],'5A-9':[11,99],'5A':[11,99]};
+const TENS_MIX = {'5A-6':[61,70],'5A-7':[71,80],'5A-8':[81,90],'5A-9':[91,99],'5A':[11,99]};   /* the decade she is learning */
 const STORY_ADD_BANDS = new Set(['4A','3A']), STORY_SUB_BANDS = new Set(['2A']);
 function mixIntoMath(sh){
   if(!sh || sh.subject !== 'math' || sh.isTest || sh.isCheckup) return sh;
@@ -5713,7 +5767,7 @@ function tilesUI(it, o){
       e.stopPropagation();
       if(it.partial.length >= it.word.length) return;
       it.partial.push(c); it.used.push(ix);
-      say(sound(c), 0.7);
+      if(window.V85.playSound) window.V85.playSound(c);
       if(it.partial.length >= it.word.length){ it.given = it.partial.join(''); if(o.onFull) o.onFull(); else if(o.onChange) o.onChange(); }
       else if(o.onChange) o.onChange();
     };
@@ -6058,7 +6112,7 @@ function paint(){
     const st = LN.steps[LN.i];
     el('lnMode').textContent = LN.i === 0 ? 'Watch me' : 'Watch me · step ' + LN.i + ' of ' + (LN.steps.length - 1);
     stage.innerHTML = st.html;
-    el('lnSay').textContent = st.say;
+    el('lnSay').textContent = window.v85shown(st.say);
     back.disabled = LN.i === 0;
     hear.style.display = '';
     next.disabled = false;
@@ -6150,7 +6204,7 @@ function check(right){
     LN.solved = true;
     paint();
     el('lnFeedback').className = 'ln-fb ok';
-    el('lnFeedback').innerHTML = '<b>✓ Yes!</b> ' + H(why);
+    el('lnFeedback').innerHTML = '<b>✓ Yes!</b> ' + H(window.v85shown(why));
     SOUND && SOUND.done && SOUND.done();
     say('Yes! ' + why, 0.82);
     return;
@@ -6163,13 +6217,13 @@ function check(right){
     if(it.kind === 'tiles'){ it.partial = it.word.split(''); it.given = it.word; it.used = []; }
     paint();
     el('lnFeedback').className = 'ln-fb help';
-    el('lnFeedback').innerHTML = '<b>Here’s how.</b> ' + H(why);
+    el('lnFeedback').innerHTML = '<b>Here’s how.</b> ' + H(window.v85shown(why));
     say('That’s okay. Here’s how. ' + why, 0.8);
     return;
   }
   paint();
   el('lnFeedback').className = 'ln-fb try';
-  el('lnFeedback').innerHTML = '<b>Not quite.</b> ' + H(hint);
+  el('lnFeedback').innerHTML = '<b>Not quite.</b> ' + H(window.v85shown(hint));
   say('Not quite. ' + hint + ' Try again.', 0.8);
 }
 function finishLearn(){
@@ -6510,7 +6564,7 @@ el('v85FluGo').onclick = openFluency;
 const addStudent0 = addStudent;
 window.addStudent = addStudent = function(name, age){
   const s = addStudent0(name, age);
-  s.v85 = todayKey(); s.checkupStart = monthKey(); save();
+  s.v85 = todayKey(); s.v86 = todayKey(); s.checkupStart = monthKey(); save();
   return s;
 };
 
@@ -6533,6 +6587,8 @@ const migrate0 = migrate;
 window.migrate = migrate = function(){
   migrate0();
   DB.students.forEach(s => {
+    /* V8.6: tens and ones now starts with teen numbers */
+    if(!s.v86){ s.v86 = todayKey(); if(s.math === '5A-5t'){ s.math = '5A-5a'; s.seen = (s.seen || []).filter(x => x !== 'm:5A-5a'); } }
     if(s.v85) return;
     s.v85 = todayKey();
     s.checkupStart = monthKey();
@@ -6543,6 +6599,224 @@ window.migrate = migrate = function(){
     }
   });
 };
+})();
+
+/* ===== V8.6: letter sounds in a grown-up's own voice =====
+   Text-to-speech cannot say a sound on its own ("buh", "kuh" are wrong).
+   A grown-up records each sound once; the app plays those clips wherever
+   it says a sound. Prompts mark a sound as [[m]]. */
+(function(){
+'use strict';
+const KEY = 'practice-sounds-v1';
+const LETTERS = 'abcdefghijklmnopqrstuvwxyz'.split('');
+const WORD = {a:'apple',b:'bat',c:'cat',d:'dog',e:'egg',f:'fish',g:'goat',h:'hat',i:'igloo',j:'jam',k:'kite',l:'lip',m:'map',
+  n:'net',o:'octopus',p:'pig',q:'queen',r:'rat',s:'sun',t:'top',u:'up',v:'van',w:'wet',x:'box',y:'yes',z:'zip'};
+const HOW = {};
+'bcdgkpt'.split('').forEach(l => HOW[l] = 'Quick and crisp. No "uh" after it.');
+'fmnlrsvz'.split('').forEach(l => HOW[l] = 'Hold it about one second: ' + l + l + l + l + '.');
+'aeiou'.split('').forEach(l => HOW[l] = 'The short sound, like the start of ' + WORD[l] + '.');
+Object.assign(HOW, {h:'Just a puff of breath.', j:'Quick, like the start of jam.', w:'Round lips, quick — like the start of wet.',
+  y:'Quick, like the start of yes.', q:'Say /kw/, like the start of queen.', x:'Say /ks/, like the end of box.'});
+const TOKEN = /\[\[([a-z]{1,2})\]\]/g;
+const shown = s => String(s == null ? '' : s).replace(TOKEN, '/$1/');
+window.v85shown = shown;
+
+/* ---------- storage ---------- */
+let REC = {};
+try{ REC = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }catch(e){ REC = {}; }
+function saveRec(){
+  try{ localStorage.setItem(KEY, JSON.stringify(REC)); return true; }
+  catch(e){ alert('This device is out of room for recordings. Try re-recording a few shorter ones.'); return false; }
+}
+const has = l => !!(REC[l] && REC[l].d);
+const count = () => LETTERS.filter(has).length;
+
+/* ---------- playback ---------- */
+let ctx = null, cur = null;
+const cache = {};
+function audio(){ if(!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); if(ctx.state === 'suspended') ctx.resume(); return ctx; }
+async function bufferFor(l){
+  if(cache[l] && cache[l].d === REC[l].d) return cache[l].b;
+  const bin = atob(REC[l].d.split(',')[1]);
+  const arr = new Uint8Array(bin.length);
+  for(let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  const b = await audio().decodeAudioData(arr.buffer);
+  cache[l] = {d: REC[l].d, b};
+  return b;
+}
+function stopClip(){ try{ if(cur) cur.stop(); }catch(e){} cur = null; }
+async function playClip(l){
+  if(!has(l) || (DB.settings && DB.settings.mute)) return false;
+  try{
+    const r = REC[l], b = await bufferFor(l), c = audio();
+    const s = Math.max(0, r.s || 0), e = Math.min(b.duration, r.e || b.duration);
+    stopClip();
+    const src = c.createBufferSource(), g = c.createGain();
+    g.gain.value = r.g || 1;
+    src.buffer = b; src.connect(g); g.connect(c.destination);
+    cur = src;
+    await new Promise(res => { src.onended = res; src.start(0, s, Math.max(0.05, e - s)); setTimeout(res, (e - s) * 1000 + 400); });
+    return true;
+  }catch(err){ console.warn('clip', l, err); return false; }
+}
+
+/* ---------- speaking prompts that contain sounds ---------- */
+let SEQ = 0;
+const wait = ms => new Promise(r => setTimeout(r, ms));
+function speakAwait(t, rate, id){
+  return new Promise(res => {
+    if(id !== SEQ || !canSpeak) return res();
+    try{
+      const u = new SpeechSynthesisUtterance(String(t).replace(/▢/g, 'blank'));
+      u.lang = 'en-US'; u.rate = rate || (DB.settings && DB.settings.rate) || 0.84;
+      if(!voice) pickVoice();
+      if(voice && /^en/i.test(voice.lang || '')) u.voice = voice;
+      let done = false;
+      const fin = () => { if(done) return; done = true; clearTimeout(tm); res(); };
+      const tm = setTimeout(fin, 1500 + String(t).length * 95 / u.rate);
+      u.onend = fin; u.onerror = fin;
+      activeUtterances = [u];
+      speechSynthesis.speak(u);
+    }catch(e){ res(); }
+  });
+}
+async function runSeq(text, rate){
+  const id = ++SEQ;
+  speechSeq++;                                   /* stop any prompt queued by the old speaker */
+  stopClip();
+  try{ if(speechSynthesis.speaking || speechSynthesis.pending){ speechSynthesis.cancel(); await wait(90); } }catch(e){}
+  primeVoice();
+  const parts = String(text).split(/(\[\[[a-z]{1,2}\]\])/);
+  let lastWasSound = false;
+  for(const p of parts){
+    if(id !== SEQ) return;
+    const m = /^\[\[([a-z]{1,2})\]\]$/.exec(p);
+    if(m){
+      if(lastWasSound) await wait(260);
+      const ok = await playClip(m[1]);
+      if(!ok) await speakAwait(m[1] + ', as in ' + (WORD[m[1]] || m[1]) + '.', rate, id);
+      lastWasSound = true;
+      continue;
+    }
+    if(!/[a-z0-9]/i.test(p)){ continue; }      /* commas between sounds are just a pause */
+    if(lastWasSound) await wait(200);
+    await speakAwait(p.replace(/^[\s,.;:!?]+/, ''), rate, id);
+    lastWasSound = false;
+  }
+}
+const say0 = say;
+window.say = say = function(text, rate){
+  if(!text || (DB.settings && DB.settings.mute)) return false;
+  if(/\[\[[a-z]{1,2}\]\]/.test(String(text))){ runSeq(text, rate); return true; }
+  SEQ++; stopClip();
+  return say0(text, rate);
+};
+
+/* a single tile tap plays the sound if one is recorded, otherwise stays quiet
+   (a wrong sound is worse than none) */
+window.V85.playSound = l => { SEQ++; return playClip(l); };
+window.V85.hasSound = has;
+
+/* "This is the letter M" now also says the sound when it is recorded */
+const sayPhonics0 = sayPhonics;
+window.sayPhonics = sayPhonics = function(letter, word){
+  const l = String(letter || '').toLowerCase();
+  if(!has(l)) return sayPhonics0(letter, word);
+  const ex = (PHONICS_EXAMPLES[l] || [word]).slice(0, 3).join(', ');
+  return say('This is the letter ' + l.toUpperCase() + '. It says [[' + l + ']]. Listen to the beginning of these words: ' + ex + '. Which picture starts the same way? Tap your answer.', 0.78);
+};
+/* blending: "listen to the sounds" uses the recordings too */
+const blend0 = blendItems;
+window.blendItems = blendItems = function(n, fams){
+  return blend0(n, fams).map(it => {
+    const w = String(it.key || '').replace(/^blend:/, '');
+    if(/^[a-z]{2,4}$/.test(w)) it.say = 'Listen. ' + w.split('').map(c => '[[' + c + ']]').join(', ') + '. Now say the sounds fast. Which picture is that word?';
+    return it;
+  });
+};
+
+/* =====================================================================
+   Recording screen
+   ===================================================================== */
+const el = id => document.getElementById(id);
+let busy = false;
+function card(l){
+  const r = has(l);
+  return '<div class="snd-card' + (r ? ' done' : '') + '" data-l="' + l + '">' +
+    '<div class="snd-top"><b>' + l + '</b><span>' + (r ? '✓' : '') + '</span></div>' +
+    '<small>/' + l + '/ as in <i>' + WORD[l] + '</i></small>' +
+    '<p>' + HOW[l] + '</p>' +
+    '<div class="snd-btns"><button class="rec">🎙 ' + (r ? 'Redo' : 'Record') + '</button><button class="play"' + (r ? '' : ' disabled') + '>▶</button></div></div>';
+}
+function paintSounds(){
+  el('sndGrid').innerHTML = LETTERS.map(card).join('');
+  el('sndCount').textContent = count() + ' of 26 recorded';
+  [...el('sndGrid').querySelectorAll('.snd-card')].forEach(c => {
+    const l = c.dataset.l;
+    c.querySelector('.rec').onclick = () => record(l, c);
+    c.querySelector('.play').onclick = () => playClip(l);
+  });
+  paintSoundPanel();
+}
+function paintSoundPanel(){
+  const n = count(), s = el('v86SndStatus'); if(!s) return;
+  s.innerHTML = n === 26 ? '✓ All 26 sounds recorded in your voice.'
+    : n ? n + ' of 26 sounds recorded. Missing sounds fall back to the letter and a key word ("m, as in map").'
+    : '<b>Not set up yet.</b> The tablet voice cannot say letter sounds on their own, so sound-it-out work currently uses the letter and a key word instead. Recording takes about 5 minutes.';
+}
+window.v86paintSoundPanel = paintSoundPanel;
+async function record(l, c){
+  if(busy) return;
+  document.querySelectorAll('.snd-btns button').forEach(b => b.disabled = true);
+  if(!(navigator.mediaDevices && window.MediaRecorder)){ alert('This browser cannot record audio.'); return; }
+  busy = true; SEQ++; stopClip();
+  try{ speechSynthesis.cancel(); }catch(e){}
+  const msg = c.querySelector('p'), old = msg.textContent;
+  let stream;
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false, noiseSuppression:true, autoGainControl:true}});
+  }catch(e){ busy = false; alert('The microphone is blocked. Allow microphone access for this site, then try again.'); return; }
+  try{
+    for(const t of ['3','2','1']){ msg.innerHTML = '<b class="snd-cd">' + t + '</b>'; await wait(450); }
+    let mr; try{ mr = new MediaRecorder(stream, {audioBitsPerSecond: 32000}); }catch(e){ mr = new MediaRecorder(stream); }
+    const chunks = [];
+    mr.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
+    const stopped = new Promise(r => mr.onstop = r);
+    c.classList.add('live');
+    msg.innerHTML = '<b class="snd-now">Say /' + l + '/ now</b>';
+    mr.start();
+    await wait(1500);
+    mr.stop(); await stopped;
+    c.classList.remove('live');
+    const blob = new Blob(chunks, {type: mr.mimeType || 'audio/webm'});
+    const buf = await audio().decodeAudioData((await blob.arrayBuffer()).slice(0));
+    const data = buf.getChannelData(0);
+    let peak = 0; for(let i = 0; i < data.length; i++){ const v = Math.abs(data[i]); if(v > peak) peak = v; }
+    if(peak < 0.02){ msg.textContent = 'I did not hear anything. Hold the tablet closer and try again.'; return; }
+    const th = Math.max(0.015, peak * 0.12), sr = buf.sampleRate;
+    let a = 0, b = data.length - 1;
+    while(a < data.length && Math.abs(data[a]) < th) a++;
+    while(b > a && Math.abs(data[b]) < th) b--;
+    const d = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(blob); });
+    REC[l] = {d, s: Math.max(0, a / sr - 0.03), e: Math.min(buf.duration, b / sr + 0.08), g: Math.min(5, 0.85 / peak), t: Date.now()};
+    if(!saveRec()){ delete REC[l]; return; }
+    delete cache[l];
+    msg.textContent = 'Saved — listen…';
+    await playClip(l);
+  }catch(e){
+    console.warn(e); msg.textContent = old; alert('Recording did not work on this device: ' + (e && e.message || e));
+  }finally{
+    try{ stream.getTracks().forEach(t => t.stop()); }catch(e){}
+    busy = false;
+    paintSounds();
+  }
+}
+el('sndClose').onclick = () => { SEQ++; stopClip(); show('parent'); };
+el('sndPlayAll').onclick = () => say(LETTERS.filter(has).map(l => '[[' + l + ']]').join(', ') || 'Nothing recorded yet.');
+el('sndTest').onclick = () => say('Listen: [[c]], [[a]], [[t]]. Cat!');
+el('v86SndGo').onclick = () => { paintSounds(); show('sounds'); };
+const paintParent1 = paintParent;
+window.paintParent = paintParent = function(){ paintParent1(); try{ paintSoundPanel(); }catch(e){} };
 })();
 
 </script>
