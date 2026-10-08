@@ -5439,8 +5439,10 @@ function tenPartnerItem(){
 function tensItem(lo, hi, ask){
   ask = ask || pick(['number','number','tens','ones']);
   let n = lo + rnd(hi - lo + 1);
-  if(ask === 'ones' && n % 10 === 0) n = Math.min(hi, n + 1 + rnd(8));
   if(ask === 'tens' && n < 10) n = 10 + rnd(10);
+  let g = 0;
+  while(ask === 'ones' && n % 10 === 0 && g++ < 50) n = lo + rnd(hi - lo + 1);
+  if(ask === 'ones' && n % 10 === 0) n = Math.max(lo, n - 1);
   const t = Math.floor(n/10), o = n % 10;
   if(ask === 'number'){
     const s = new Set([n]);
@@ -5679,6 +5681,7 @@ function tilesUI(it, o){
   o = o || {};
   if(!Array.isArray(it.partial)) it.partial = [];
   if(!Array.isArray(it.used)) it.used = [];
+  if(it._clearTiles){ it.partial = []; it.used = []; it.given = ''; delete it._clearTiles; }
   if(!it.given && it.partial.length >= it.word.length){ it.partial = []; it.used = []; }
   if(it.given && it.partial.join('') !== it.given){
     it.partial = String(it.given).split(''); it.used = [];
@@ -5758,7 +5761,12 @@ function v85cell(it, i, single, n){
       '<p class="hint" style="margin-top:8px">Grown-up taps. "Read it" means she read every word herself, even if slowly.</p>' + markHTML(it);
     [...d.querySelectorAll('.v85aloudbtns button')].forEach(b => {
       b.disabled = locked;
-      b.onclick = e => { e.stopPropagation(); it.given = b.dataset.v; sel = i; afterAnswer(); };
+      b.onclick = e => {
+        e.stopPropagation(); it.given = b.dataset.v; sel = i;
+        try{ me.aloudLog = (me.aloudLog || []).filter(x => !(x.d === dayKey() && x.text === it.text));
+             me.aloudLog.push({d:dayKey(), level:sheet.level, text:it.text, ok:it.given === 'ok'}); me.aloudLog = me.aloudLog.slice(-60); }catch(err){}
+        afterAnswer();
+      };
     });
   }
   const s = d.querySelector('.v85spk'); if(s) s.onclick = e => { e.stopPropagation(); speakItem(it); };
@@ -5773,14 +5781,18 @@ window.usable = usable = function(it){
   if(it && window.V85_KINDS.has(it.kind)){
     if(it.kind === 'tiles') return typeof it.word === 'string' && Array.isArray(it.bank);
     if(it.kind === 'aloud') return false;
-    return typeof it.a === 'number' && Array.isArray(it.opts);
+    if(typeof it.a !== 'number' || !Array.isArray(it.opts)) return false;
+    if(it.kind === 'bond') return typeof it.whole === 'number' && Array.isArray(it.parts);
+    if(it.kind === 'story') return !!it.type && typeof it.x === 'number' && typeof it.y === 'number' && !!it.e;
+    if(it.kind === 'tens') return typeof it.n === 'number' && !!it.ask;
+    return true;
   }
   return usable0(it);
 };
 const isRight0 = isRight;
 window.isRight = isRight = function(it){
   if(it && it.kind === 'tiles') return String(it.given || '') === it.word;
-  if(it && it.kind === 'aloud') return it.given === 'ok';
+  if(it && it.kind === 'aloud') return it.given === 'ok' || it.given === 'help';   /* logged for the grown-up, never blocks mastery */
   if(it && NUM_KINDS.has(it.kind)) return Number(it.given) === it.a;
   return isRight0(it);
 };
@@ -5789,6 +5801,20 @@ const render0 = render;
 window.render = render = function(){
   render0();
   document.querySelectorAll('#paper .v4numline .hot').forEach(x => x.classList.remove('hot'));
+};
+/* a tiles answer that is still wrong after a fix round starts empty again */
+const markFix0 = markFix;
+window.markFix = markFix = function(){
+  try{ sheet.items.forEach(it => { if(it.kind === 'tiles' && it.wrong && !isRight(it)) it._clearTiles = true; }); }catch(e){}
+  return markFix0();
+};
+/* saved worksheets keep what the new question types need to be practised again */
+const EXTRA_FIELDS = ['whole','parts','miss','partner','frame','noFrame','type','x','y','e','ask','bank','readWord','pic','words','lv','say','audioRate'];
+const snapshotSheet0 = snapshotSheet;
+window.snapshotSheet = snapshotSheet = function(){
+  const snap = snapshotSheet0();
+  try{ snap.items.forEach((o, k) => { const it = sheet.items[k]; if(it) EXTRA_FIELDS.forEach(f => { if(it[f] !== undefined) o[f] = it[f]; }); }); }catch(e){}
+  return snap;
 };
 const buildSheet0 = buildSheet;
 window.buildSheet = buildSheet = function(subject){
@@ -5985,7 +6011,7 @@ function sampleItems(L, n){
   out.forEach(it => count[it.kind] = (count[it.kind] || 0) + 1);
   const main = Object.keys(count).sort((a, b) => count[b] - count[a])[0];
   const mains = out.filter(it => it.kind === main), others = out.filter(it => it.kind !== main);
-  const ordered = others.length ? [mains[0], others[0], mains[1] || mains[0]] : mains;
+  const ordered = others.length ? [mains[0], others[0], mains[1] || others[1]] : mains;
   return ordered.filter(Boolean).slice(0, n);
 }
 
@@ -6001,7 +6027,7 @@ function stepsFor(L, subject, example){
 }
 function openLearn(subject, gate, opt){
   opt = opt || {};
-  if(!gate && sheet && document.getElementById('work').classList.contains('on') && phase !== 'mark'){
+  if(!gate && sheet && document.getElementById('work').classList.contains('on') && (phase === 'work' || phase === 'fix')){
     elapsed += (Date.now() - t0) / 1000;   /* keep sheet time honest while the lesson is open */
   }
   const L = lvl(subject, me[subject]);
@@ -6151,7 +6177,7 @@ function finishLearn(){
   if(!me.seen.includes(tag)){ me.seen.push(tag); }
   save();
   if(LN.gate) openSheet(LN.subject);
-  else { show('work'); if(sheet && phase !== 'mark') startClock(true); }
+  else { show('work'); if(sheet && (phase === 'work' || phase === 'fix')) startClock(true); }
 }
 
 /* ---------- buttons ---------- */
@@ -6290,12 +6316,7 @@ function finishCheckup(){
   me.checkups = me.checkups.filter(c => !(c.subject === sub && c.month === monthKey()));
   me.checkups.push({month:monthKey(), d:todayKey(), subject:sub, score, total, secs, slipped});
   me.checkups = me.checkups.slice(-36);
-  me.reviewQueue = me.reviewQueue || [];
-  slipped.forEach(lv => {
-    const missed = l.filter(it => (it.lv || sheet.level) === lv && it.firstWrong).map(cleanItem).filter(usable);
-    if(missed.length) me.reviewQueue.push({subject:sub, level:lv, due:addDays(1), gap:1, items:missed.slice(0, 2), fromCheckup:true});
-  });
-  me.reviewQueue = me.reviewQueue.slice(-80);
+  /* the missed questions are already in her practice queue (they come back on the next sheets until right) */
   me.sheets = me.sheets || [];
   try{ me.sheets.unshift(snapshotSheet()); me.sheets = me.sheets.slice(0, KEEP_SHEETS); }catch(e){}
   me.stars = (me.stars || 0) + 5;
@@ -6457,6 +6478,9 @@ function paintV85Parent(){
       (c.slipped.length ? c.slipped.map(id => H(id + ' ' + lvl(c.subject, id).skill)).join('<br>') : 'Nothing — all retained') + '</td></tr>').join('') + '</tbody></table>'
     : '<p class="hint" style="text-align:left">No check-ups yet. The first automatic one runs ' + (me.checkupStart ? 'next month' : 'on the first practice day of the month') + '. You can run one any time below.</p>';
   el('v85Flu').innerHTML = fluHistHTML();
+  const al = (me.aloudLog || []).slice(-10);
+  if(al.length) el('v85Flu').insertAdjacentHTML('afterbegin', '<p class="hint" style="text-align:left;margin:0 0 8px;color:var(--ink)"><b>Read-to-me checks:</b> read on her own ' +
+    al.filter(x => x.ok).length + ' of the last ' + al.length + ' times.</p>');
   const due = ['math','english'].filter(checkupDue);
   el('v85CkNote').textContent = due.length ? 'A check-up is due now for ' + due.map(s => s === 'math' ? 'Math' : 'Reading').join(' and ') + '. It will start the next time she opens that subject.' : '';
 }
@@ -6482,6 +6506,14 @@ el('v85RunMath').onclick = () => openCheckupIntro('math', true);
 el('v85RunEng').onclick = () => openCheckupIntro('english', true);
 el('v85FluGo').onclick = openFluency;
 
+/* students added from now on start on the new path already */
+const addStudent0 = addStudent;
+window.addStudent = addStudent = function(name, age){
+  const s = addStudent0(name, age);
+  s.v85 = todayKey(); s.checkupStart = monthKey(); save();
+  return s;
+};
+
 /* home screen badges */
 const paintHome0 = paintHome;
 window.paintHome = paintHome = function(){
@@ -6505,7 +6537,7 @@ window.migrate = migrate = function(){
     s.v85 = todayKey();
     s.checkupStart = monthKey();
     const m = /^3A-(\d+)$/.exec(s.english || '');
-    if(m && +m[1] >= 1 && +m[1] <= 12){
+    if(m && +m[1] >= 1 && +m[1] <= 12 && !(s.testDue && s.testDue.english)){
       s.english = '3A-' + m[1] + 't';
       s.seen = (s.seen || []).filter(x => x !== 'e:' + s.english);
     }
