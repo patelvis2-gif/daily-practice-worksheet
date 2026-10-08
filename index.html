@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Practice">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
-<title>Daily Practice — V8.4</title>
+<title>Daily Practice — V8.5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -323,7 +323,7 @@ td{padding:7px 0;border-top:1px solid var(--rule);font-weight:600;font-variant-n
 <section id="who" class="screen on"><div class="wrap">
   <h1>Who's practicing?</h1>
   <div class="date" id="whoDate"></div>
-  <div class="date" style="margin-top:4px;font-size:.72rem">Daily Practice V8.4</div>
+  <div class="date" style="margin-top:4px;font-size:.72rem">Daily Practice V8.5</div>
   <div class="kids" id="kids"></div>
   <button class="linkish" id="toParent">Parent settings</button>
 </div></section>
@@ -476,6 +476,30 @@ td{padding:7px 0;border-top:1px solid var(--rule);font-weight:600;font-variant-n
     <p class="hint" style="text-align:left;margin-top:4px">Mastery first: a child advances only after strong first-try accuracy is repeated across 3 different days, including a later retention check. Perfect or fast work never skips a level.</p>
   </div>
   <div class="panel">
+    <h4>Jump to a level</h4>
+    <label class="hint" style="display:block;text-align:left;margin:0 0 4px">Math</label>
+    <select class="inp" id="v85SelMath"></select>
+    <label class="hint" style="display:block;text-align:left;margin:10px 0 4px">Reading &amp; Writing</label>
+    <select class="inp" id="v85SelEng"></select>
+    <div class="rowbtns"><button id="v85SetLv">Move her to these levels</button></div>
+    <p class="hint" style="text-align:left;margin-top:8px">Use this when a level is clearly too hard or too easy. Her history is kept, and the new level opens with its Learn it lesson.</p>
+  </div>
+  <div class="panel">
+    <h4>How to teach her current levels</h4>
+    <div id="v85Tips"></div>
+  </div>
+  <div class="panel">
+    <h4>Monthly check-ups</h4>
+    <p class="hint" id="v85CkNote" style="text-align:left;margin:0 0 8px;color:var(--ink)"></p>
+    <div id="v85Checks"></div>
+    <div class="rowbtns" style="margin-top:10px"><button id="v85RunMath">Math check-up now</button><button id="v85RunEng">Reading check-up now</button></div>
+    <p class="hint" style="text-align:left;margin-top:8px">Runs on its own the first time she opens each subject in a new month: about 15 mixed questions from everything she has mastered. It never changes her level. Anything that slipped goes back into her practice.</p>
+    <h4 style="margin-top:16px">1-minute reading check</h4>
+    <div id="v85Flu"></div>
+    <div class="rowbtns" style="margin-top:10px"><button id="v85FluGo">Start a 1-minute reading check</button></div>
+    <p class="hint" style="text-align:left;margin-top:8px">Once she is reading short sentences, do this once a month. You listen and tap; the app counts words read correctly per minute and shows the trend.</p>
+  </div>
+  <div class="panel">
     <h4>Catching up on missed days</h4>
     <div class="rowbtns" id="catchRow"></div>
     <p class="hint" style="text-align:left;margin-top:8px">How far back she may go to finish missed sheets. Catch-up work restores the day streak, and it is always counted on the real day she did it, so it never shortens the retention wait between mastery passes.</p>
@@ -586,6 +610,47 @@ td{padding:7px 0;border-top:1px solid var(--rule);font-weight:600;font-variant-n
     <h4>Remove a student</h4>
     <ul class="sheetlist" id="wipeList"></ul>
     <p class="hint" style="text-align:left;margin-top:10px">Erasing removes that student’s levels, history and saved sheets. It cannot be undone.</p>
+  </div>
+</div></section>
+
+<section id="learn" class="screen scroll"><div class="wrap">
+  <div class="learn-card">
+    <div class="ln-head"><span class="newtag" id="lnTag">NEW SKILL</span><span class="ln-dots" id="lnDots"></span></div>
+    <div class="ln-mode" id="lnMode">Watch me</div>
+    <h2 id="lnTitle"></h2>
+    <div class="ln-stage" id="lnStage"></div>
+    <div class="ln-fb" id="lnFeedback"></div>
+    <p class="ln-say" id="lnSay"></p>
+  </div>
+  <div class="ln-nav">
+    <button class="big ln-back" id="lnBack">◀</button>
+    <button class="big ln-hear" id="lnHear">🔊 Hear it</button>
+    <button class="big gold ln-next" id="lnNext">Next ▶</button>
+  </div>
+  <button class="linkish" id="lnSkip" style="display:block;margin:18px auto 0;width:100%;text-align:center">Not today</button>
+</div></section>
+
+<section id="checkup" class="screen"><div class="wrap" style="margin:auto;text-align:center">
+  <div class="ck-star">🌟</div>
+  <h2 id="ckTitle" style="margin:6px 0 8px;font-size:1.6rem">Check-up</h2>
+  <p id="ckBody" class="ck-body"></p>
+  <button class="big gold" id="ckStart" style="max-width:420px">Start the check-up</button>
+  <button class="big" id="ckLater" style="background:transparent;color:var(--ink-soft);max-width:420px">Not today</button>
+</div></section>
+
+<section id="fluency" class="screen scroll"><div class="wrap">
+  <div class="top">
+    <div><div class="hello">1-minute reading check</div><div class="date" id="fluTitle"></div></div>
+    <button class="gear" id="fluClose">✕</button>
+  </div>
+  <p class="hint" style="text-align:left;margin:4px 0 12px">She reads the story out loud to you for one minute. You follow along here. Tap any word she skips, misreads, or that you have to tell her (wait about 3 seconds first). Self-corrections count as right.</p>
+  <div class="flu-bar"><b id="fluClock">1:00</b><button class="big gold" id="fluStart">Start</button><button class="big" id="fluStop" style="display:none">She finished early</button></div>
+  <p class="hint" id="fluMsg" style="text-align:left;margin:8px 0"></p>
+  <div class="flu-text" id="fluText"></div>
+  <div class="panel" style="margin-top:14px">
+    <h4>Past checks</h4>
+    <div id="fluHist"></div>
+    <p class="hint" style="text-align:left;margin-top:8px">Words correct per minute is how schools track reading growth. The trend matters more than any one score. Roughly, a typical first grader reads about 30 by mid-year and about 60 by the end of the year (national norms, Hasbrouck &amp; Tindal). Accuracy should stay above 95%; if it drops, the passage is too hard to judge speed.</p>
   </div>
 </div></section>
 
@@ -4897,7 +4962,7 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   });
 }
 /* ---------- go ---------- */
-load().then(()=>{
+document.addEventListener('DOMContentLoaded', ()=>load().then(()=>{
   initStages();
   migrate(); save();
   setTimeout(paintBackupSafety,0);
@@ -4905,7 +4970,7 @@ load().then(()=>{
   setTimeout(pickVoice, 600);
   if(!DB.students.length) show('who');
   else { me = DB.students.find(s=>s.id===DB.last) || null; show('who'); }
-});
+}));
 
 </script>
 
@@ -4994,5 +5059,1460 @@ ensureV4();
 })();
 </script>
 
+<style>
+/* ===== V8.5 styles ===== */
+/* Learn it */
+#learn{background:var(--desk)}
+.learn-card{background:#fff;border-radius:20px;padding:18px 18px 14px;box-shadow:0 3px 12px rgba(18,40,75,.1);min-height:58vh;display:flex;flex-direction:column}
+.ln-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ln-dots{display:flex;gap:6px;margin-left:auto}
+.ln-dots i{width:10px;height:10px;border-radius:50%;background:var(--rule)}
+.ln-dots i.try{border-radius:3px}
+.ln-dots i.done{background:var(--pass)}
+.ln-dots i.on{background:var(--gold);transform:scale(1.25)}
+.ln-mode{margin-top:10px;font-weight:800;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--me)}
+.learn-card h2{margin:4px 0 10px;font-size:1.45rem}
+.ln-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:8px 0}
+.ln-stage .demo{width:100%}
+.ln-sub{color:var(--ink-soft);font-weight:700;font-size:1rem;margin:0}
+.ln-say{margin:10px 0 0;color:var(--ink-soft);font-weight:700;font-size:.95rem;line-height:1.45;text-align:center;min-height:1.4em}
+.ln-big{font-size:clamp(2rem,9vw,3rem);font-weight:800;font-variant-numeric:tabular-nums;line-height:1.25}
+.ln-big .ok,.ln-stage .ok{color:var(--pass)}
+.ln-big .blank{display:inline-block;min-width:1.4em;border-bottom:4px solid var(--gold);color:var(--gold)}
+.ln-stepline{font-size:1.15rem;font-weight:700;line-height:1.45;margin:4px 0;max-width:560px}
+.ln-line{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;max-width:620px}
+.ln-line span{min-width:34px;padding:6px 2px;border-radius:8px;background:var(--desk);font-weight:800;font-size:1.05rem;font-variant-numeric:tabular-nums}
+.ln-line span.s{background:var(--me);color:#fff}
+.ln-line span.h{background:#FFE8A3}
+.ln-line span.e{background:var(--pass);color:#fff}
+.ln-groups{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.ln-groups span{background:var(--desk);border-radius:12px;padding:6px 10px;color:var(--me);font-size:1.2rem;letter-spacing:2px}
+.ln-things{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;font-size:2.6rem}
+.ln-things span{position:relative}
+.ln-things i{position:absolute;right:-6px;bottom:-4px;background:var(--ink);color:#fff;font-style:normal;font-size:.8rem;font-weight:800;border-radius:10px;padding:1px 6px}
+.ln-words{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.ln-words>span{font-size:2rem;font-weight:800;background:var(--desk);border-radius:12px;padding:6px 16px}
+.ln-sounds{display:inline-flex;gap:6px;font-size:2.2rem;font-weight:800}
+.ln-sounds span{border-bottom:4px solid var(--rule);padding:0 6px;color:var(--ink-soft)}
+.ln-sounds span.on{border-color:var(--gold);color:var(--ink)}
+.ln-words .ln-sounds{font-size:1.6rem}
+.ln-list li{opacity:.45}.ln-list li.on{opacity:1}.ln-list li.done{opacity:.7}
+.ln-fb{min-height:0;border-radius:12px;font-weight:700;line-height:1.45;font-size:1.05rem;text-align:center}
+.ln-fb.ok,.ln-fb.try,.ln-fb.help{padding:12px 14px;margin-top:8px}
+.ln-fb.ok{background:#E8F7EC;color:#1B6E31}
+.ln-fb.try{background:#FFF4D6;color:#7A5600}
+.ln-fb.help{background:#EAF2FD;color:var(--ink)}
+.ln-nav{display:grid;grid-template-columns:72px 1fr 1.4fr;gap:10px;margin-top:14px}
+.ln-nav .big{margin:0}
+.ln-back{background:#fff;color:var(--ink)}
+.ln-back:disabled{opacity:.35}
+.ln-hear{background:#fff;color:var(--ink);border:2px solid var(--rule)}
+.ln-next:disabled{opacity:.4}
+.ln-try{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px}
+.ln-ans{display:inline-block;min-width:1.4em;border-bottom:4px solid var(--gold);color:var(--me)}
+.ln-pad{max-width:340px;width:100%;grid-template-columns:repeat(3,1fr)!important}
+.ln-q{font-size:1.25rem;font-weight:800}
+.ln-opts{width:100%;max-width:520px}
+.ln-nums{gap:10px}
+.ln-nums .num{min-width:62px;font-size:1.7rem}
+
+/* new question types */
+.v85word{font-size:1.9rem;font-weight:800;letter-spacing:.02em}
+.v85pic{font-size:clamp(3.4rem,18vw,5rem);line-height:1.1;margin:4px 0}
+.v85visual{display:flex;flex-direction:column;align-items:center;gap:10px;margin:6px 0 10px}
+.v85q{font-weight:800}
+.v85bond{width:220px;margin:0 auto}
+.v85bond .top{display:flex;justify-content:center}
+.v85bond .row{display:flex;justify-content:space-between}
+.v85bond b{width:62px;height:62px;border-radius:50%;border:4px solid var(--me);display:grid;place-items:center;font-size:1.7rem;font-weight:800;background:#fff}
+.v85bond b.miss{border-style:dashed;border-color:var(--gold);color:var(--gold)}
+.v85bond svg{display:block;width:100%;height:30px;margin:-2px 0}
+.v85bond line{stroke:var(--me);stroke-width:4;stroke-linecap:round}
+.v85frame{display:grid;grid-template-columns:repeat(5,44px);gap:4px;padding:6px;border:3px solid var(--ink);border-radius:8px;background:#fff}
+.v85frame .c{width:44px;height:44px;border-radius:6px;background:#F3F6FB;position:relative}
+.v85frame .c.a::after,.v85frame .c.b::after{content:'';position:absolute;inset:7px;border-radius:50%}
+.v85frame .c.a::after{background:var(--me)}
+.v85frame .c.b::after{background:var(--gold)}
+.v85frame .c.q::after{content:'';position:absolute;inset:7px;border-radius:50%;border:3px dashed var(--gold)}
+.v85tens{display:flex;align-items:flex-end;gap:6px;justify-content:center;flex-wrap:wrap;max-width:560px}
+.v85tens .rod{display:flex;flex-direction:column;gap:2px;padding:2px;background:#C9DBF4;border-radius:4px}
+.v85tens .rod i,.v85tens .ones i{width:16px;height:16px;background:var(--me);border-radius:3px;display:block}
+.v85tens .rod.lit{background:var(--pass)}
+.v85tens .ones{display:grid;grid-template-columns:repeat(2,16px);gap:3px;margin-left:8px}
+.v85tens .ones i{background:var(--gold)}
+.v85tens .ones i.lit{background:var(--pass)}
+.v85bignum{font-size:2.6rem;font-weight:800}
+.v85story{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;font-size:2.1rem}
+.v85story .grp{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;max-width:260px}
+.v85story .come{background:#FFF4D6;border-radius:10px;padding:2px 4px}
+.v85story .t.gone{opacity:.35;position:relative}
+.v85story .t.gone::after{content:'';position:absolute;left:-2px;right:-2px;top:50%;border-top:4px solid var(--pen);transform:rotate(-30deg)}
+.v85story .op{font-weight:800;color:var(--ink-soft)}
+.v85story .hide{min-width:56px;min-height:48px;border:3px dashed var(--gold);border-radius:10px;display:grid;place-items:center;color:var(--gold);font-weight:800}
+.v85story .lbl{width:100%;text-align:center;font-size:.9rem;font-weight:800;color:var(--ink-soft)}
+.v85story b{color:var(--pass)}
+.prob.v85prob{text-align:center}
+.grid .prob.v85wide{grid-column:1/-1;display:block!important}
+.grid .prob.v85prob .numrow{flex-wrap:wrap}
+
+/* sound boxes */
+.v85tiles{display:flex;flex-direction:column;align-items:center;gap:18px;margin-top:6px}
+.v85boxes{display:flex;gap:10px;justify-content:center}
+.v85box{width:64px;height:76px;border:3px solid var(--ink);border-radius:10px;background:#fff;font-size:2.4rem;font-weight:800;color:var(--me);display:grid;place-items:center}
+.v85box.next{border-color:var(--gold);box-shadow:0 0 0 4px #FFE8A3}
+.v85box.on{background:#F3F8FF}
+.ln-static .v85box{display:inline-grid}
+.v85bank{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:420px}
+.v85tile{width:60px;height:60px;border-radius:12px;background:#FFF4D6;border:2px solid #E8C460;font-size:2rem;font-weight:800;color:var(--ink);box-shadow:0 3px 0 #E8C460}
+.v85tile:disabled{opacity:.25;box-shadow:none}
+
+/* read to me */
+.v85aloud{font-size:1.6rem;line-height:1.6;font-weight:700;background:#F8FAFD;border:2px solid var(--rule);border-radius:14px;padding:14px 16px;margin:10px 0;text-align:left}
+.v85aloudbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.v85aloudbtns button{padding:14px;border-radius:12px;border:3px solid var(--rule);background:#fff;font-weight:800;font-size:1rem}
+.v85aloudbtns button.pick{border-color:var(--me);background:#EAF2FD}
+
+/* heart words */
+.v85heart{display:inline-flex;gap:2px}
+.v85heart span{padding:0 1px}
+.v85heart b{color:var(--pen);position:relative}
+.v85heart b i{position:absolute;top:-.75em;left:50%;transform:translateX(-50%);font-style:normal;font-size:.5em}
+
+/* check-up + fluency */
+.ck-star{font-size:4.5rem}
+.ck-body{font-size:1.15rem;line-height:1.55;font-weight:700;color:var(--ink-soft);max-width:460px;margin:0 auto 18px}
+.badge.ck{background:var(--me);color:#fff}
+.flu-bar{display:flex;align-items:center;gap:12px}
+.flu-bar b{font-size:2rem;font-variant-numeric:tabular-nums;min-width:3.2em}
+.flu-bar .big{margin:0;flex:1}
+.flu-text{background:#fff;border-radius:14px;padding:16px;font-size:1.35rem;line-height:2;font-weight:700}
+.flu-text span{padding:2px 3px;border-radius:6px;cursor:pointer}
+.flu-text span.err{background:#FFE0E0;color:var(--pen);text-decoration:line-through}
+.flu-text span.last{background:var(--gold);color:var(--ink)}
+.flu-text span.after{opacity:.35}
+.v85tip{background:#FFF9E6;border-left:5px solid var(--gold);border-radius:0 12px 12px 0;padding:12px 14px;margin-bottom:10px;line-height:1.5;font-size:.9rem}
+.v85tip p{margin:6px 0}
+.v85tip small{color:var(--ink-soft);font-weight:700}
+
+.v85cell .numrow{flex-wrap:wrap;justify-content:center;max-width:600px;margin-left:auto;margin-right:auto}
+.paper.single .v85cell .num{min-width:72px;font-size:2rem}
+.paper.single .v85cell{padding-top:8px!important}
+.paper.single{align-items:safe center}
+.lvchip{white-space:nowrap}
+@media(max-width:480px){.v85story{font-size:1.6rem}.v85story .grp{max-width:200px}}
+</style>
+<script>
+/* =====================================================================
+   V8.5 — Learn-it lessons, Singapore-style math, guess-proof reading,
+   sound-box spelling, monthly check-ups and the 1-minute reading check.
+   Everything here layers on top of V8.4 without changing saved progress.
+   ===================================================================== */
+(function(){
+'use strict';
+
+/* ---------- small helpers ---------- */
+const H = s => esc(String(s == null ? '' : s));
+const todayKey = () => dayKey();
+const monthKey = () => todayKey().slice(0, 7);
+const range = (a, b) => { const o = []; for(let x = a; x <= b; x++) o.push(x); return o; };
+const NUMWORD = ['zero','one','two','three','four','five','six','seven','eight','nine','ten',
+  'eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
+const nw = n => NUMWORD[n] || String(n);
+const sound = c => (PHONEME_SAY[c] || c);
+const V85_KINDS = new Set(['tiles','bond','tens','story','aloud']);
+const NUM_KINDS = new Set(['bond','tens','story']);
+window.V85_KINDS = V85_KINDS;
+
+/* =====================================================================
+   READING — words a child must actually read, not guess
+   ===================================================================== */
+const ODD_WORDS = new Set(['gun','pun','din','kin','cog','bog','rig','jig','tot','sap','rap','ban','gap']);
+const WORDSET = [...new Set([].concat(CVC, CVCPIC.map(r=>r[0]), ...FAMILIES.map(f=>f[1]))
+  .map(w=>String(w).toLowerCase()))].filter(w=>w.length === 3 && !ODD_WORDS.has(w));
+
+/* Two wrong answers, each built to defeat one shortcut:
+   one shares the first letter (beats "I only looked at the start"),
+   one shares the ending (beats "I only looked at the end"). */
+function closeWords(w){
+  const others = WORDSET.filter(x => x !== w);
+  const vowelSwap = others.filter(x => x[0]===w[0] && x[2]===w[2] && x[1]!==w[1]);
+  const sameStart = others.filter(x => x[0]===w[0]);
+  const sameEnd   = others.filter(x => x.slice(1)===w.slice(1));
+  const picks = [];
+  const a = vowelSwap.length ? vowelSwap : sameStart;
+  if(a.length) picks.push(pick(a));
+  const b = sameEnd.filter(x => !picks.includes(x));
+  if(b.length) picks.push(pick(b));
+  let guard = 0;
+  while(picks.length < 2 && guard++ < 50){
+    const pool = sameStart.length > picks.length ? sameStart : others;
+    const x = pick(pool); if(!picks.includes(x)) picks.push(x);
+  }
+  return picks;
+}
+const bigWord = w => '<span class="v85word">' + H(w) + '</span>';
+function picToWordItem(row){
+  const w = row[0];
+  const words = shuffle([w].concat(closeWords(w)));
+  return {kind:'choice', q:'<div class="v85pic">'+row[1]+'</div><div>Read every word. Which one is the picture?</div>',
+    opts: words.map(bigWord), words, a: words.indexOf(w), key:'pw:'+w, readWord:w, pic:row[1]};
+}
+/* Word on the page, pick the picture — but the wrong pictures now start
+   with the same letter or end the same way, when such pictures exist. */
+function wordToPicItem(row){
+  const w = row[0];
+  const near = CVCPIC.filter(x => x[0]!==w && (x[0][0]===w[0] || x[0].slice(1)===w.slice(1)) && !cvcConfusable(x[0], w));
+  if(near.length < 2) return picToWordItem(row);
+  const d = sample(near, 2);
+  const opts = shuffle([row[1], d[0][1], d[1][1]]);
+  return {kind:'pic', q:'Sound it out, then tap the picture. <div style="font-size:2.2rem;font-weight:800;margin-top:10px">'+w+'</div>',
+    opts, a: opts.indexOf(row[1]), key:'readw:'+w, readWord:w, pic:row[1]};
+}
+function readItemsFor(n, fams){
+  const pool = cvcPool(fams).length ? cvcPool(fams) : CVCPIC;
+  const out = [], used = {};
+  let guard = 0;
+  while(out.length < n && guard++ < 300){
+    const row = pick(pool);
+    if(used[row[0]] && Object.keys(used).length < pool.length) continue;
+    used[row[0]] = 1;
+    out.push(Math.random() < .6 ? picToWordItem(row) : wordToPicItem(row));
+  }
+  return out;
+}
+window.readWordItems = readWordItems = function(n, fams){ return readItemsFor(n, fams); };
+
+/* Sight words: the two wrong choices start with the same letter
+   (the / they / them), so she has to look past the first letter. */
+const ALL_SIGHT = [...new Set(SIGHT_SETS.flat().concat(SIGHT))];
+function sightChoices(w){
+  const pool = ALL_SIGHT.filter(x => x.toLowerCase() !== w.toLowerCase());
+  const same = pool.filter(x => x[0].toLowerCase() === w[0].toLowerCase());
+  const picks = sample(same, Math.min(2, same.length));
+  while(picks.length < 2){ const x = pick(pool); if(!picks.includes(x)) picks.push(x); }
+  return shuffle([w].concat(picks));
+}
+ENG.filter(L => /^4A-[1-5]$/.test(L.id)).forEach(L => {
+  const set = L.id === '4A-5' ? SIGHT_SETS.flat() : SIGHT_SETS[+L.id.slice(3) - 1];
+  if(!set) return;
+  L.build = n => Array.from({length:n}, () => {
+    const w = pick(set), opts = sightChoices(w);
+    return {kind:'choice', say:w, q:'Tap the word you hear', opts, a:opts.indexOf(w), key:'sw:'+w};
+  });
+});
+/* Heart-word teaching: decode the regular part, memorise only the odd part. */
+const HEART = {the:['th','e'],said:['s','ai','d'],was:['w','a','s'],of:['o','f'],to:['t','o'],you:['y','ou'],
+  are:['ar','e'],they:['th','ey'],have:['h','a','v','e'],what:['wh','a','t'],come:['c','o','m','e'],
+  some:['s','o','m','e'],from:['f','r','o','m'],here:['h','e','r','e'],there:['th','ere'],their:['th','eir'],
+  were:['w','ere'],would:['w','oul','d'],could:['c','oul','d'],should:['sh','oul','d'],again:['a','g','ai','n'],
+  many:['m','a','n','y'],any:['a','n','y'],does:['d','oe','s'],one:['one'],two:['t','w','o'],your:['y','our'],
+  because:['b','e','c','au','se'],know:['kn','ow'],little:['l','i','tt','le'],every:['e','v','e','r','y'],
+  people:['p','eo','p','le'],friend:['f','r','ie','n','d'],school:['s','ch','oo','l'],give:['g','i','v','e'],live:['l','i','v','e']};
+const HEART_PART = {the:1,said:1,was:1,of:0,to:1,you:1,are:1,they:1,have:3,what:1,come:1,some:1,from:2,here:3,
+  there:1,their:1,were:1,would:1,could:1,should:1,again:2,many:1,any:0,does:1,one:0,two:1,your:1,because:3,
+  know:0,little:3,every:0,people:1,friend:2,school:1,give:3,live:3};
+function heartHTML(w){
+  const lw = String(w).toLowerCase();
+  const parts = HEART[lw];
+  if(!parts) return '<span class="v85heart">'+H(w)+'</span>';
+  const odd = HEART_PART[lw];
+  return '<span class="v85heart">' + parts.map((p,k) => k===odd ? '<b>'+H(p)+'<i>♥</i></b>' : '<span>'+H(p)+'</span>').join('') + '</span>';
+}
+window.v85heartHTML = heartHTML;
+function sightLesson85(set, n){
+  return {title:'Heart words — set ' + n, sub:'Sound out what you can. Learn the tricky part by heart.',
+    demo:'<div class="say">' + set.slice(0,3).map(heartHTML).join(' &nbsp; ') + '</div>' +
+         '<div class="cap">The part with the ♥ does not follow the rules. Everything else you can sound out.</div>',
+    steps:['Say the word.','Sound out the letters that follow the rules.','Remember the ♥ part by heart.'],
+    tip:'These used to be taught as shapes to memorise, but research shows children remember a word by linking its letters to its sounds. ' +
+        'Most of each word is regular — only one or two letters are "heart" letters. Say the word, tap each sound, and point out the heart part. ' +
+        'Have her write the word once after reading it; writing locks it in faster than looking.'};
+}
+ENG.filter(L => /^4A-[1-4]$/.test(L.id)).forEach(L => { const i = +L.id.slice(3); L.lesson = sightLesson85(SIGHT_SETS[i-1], i); });
+
+/* ---------- sound boxes: build the word with letter tiles ---------- */
+const CONFUSE = {b:'d',d:'b',p:'b',m:'n',n:'m',f:'v',v:'f',c:'g',k:'g',g:'j',j:'g',t:'d',s:'z',z:'s',r:'l',l:'r',h:'n',w:'v',y:'j',x:'z'};
+/* letters that make the same sound never appear as each other's distractor */
+const SAME_SOUND = {c:'k',k:'c'};
+function tileBank(word){
+  const letters = word.split('');
+  const vowels = 'aeiou'.split('').filter(v => !letters.includes(v));
+  const extra = [pick(vowels)];
+  const c1 = CONFUSE[letters[0]]; if(c1 && !letters.includes(c1)) extra.push(c1);
+  const cons = 'bcdfghlmnprstw'.split('').filter(x => !letters.includes(x) && !extra.includes(x) && !letters.some(l => SAME_SOUND[l] === x));
+  while(extra.length < 3){ const x = pick(cons); if(!extra.includes(x)) extra.push(x); }
+  return shuffle(letters.concat(extra));
+}
+function tilesItem(w){
+  const sentence = wordAudioSentence(w, '');
+  return {kind:'tiles', word:w, a:w, bank:tileBank(w), key:'tile:'+w,
+    q:'Build the word you hear', say:'Build the word ' + w + '. ' + sentence + ' Build ' + w + '.', audioRate:0.8};
+}
+window.v85tilesItem = tilesItem;
+
+/* Build levels: read the family first, then build it with tiles. */
+function buildLevel(i){
+  const f = FAMILIES[i], fam = f[0].replace('-',''), words = f[1].filter(w => !ODD_WORDS.has(w));
+  return {id:'3A-'+(i+1)+'t', skill:'Build the ' + f[0] + ' words', n:SHEET_N, sct:480, audio:1,
+    lesson:{title:'Build the ' + f[0] + ' words', sub:'Hear it, say each sound, put a letter in each box',
+      demo:'<div class="say">' + words.slice(0,3).join(' &nbsp; ') + '</div><div class="cap">One box for each sound you hear.</div>',
+      steps:['Listen to the word.','Say it slowly — one sound for each box.','Tap the letter for each sound.'],
+      tip:'This is the step before writing. She hears the word, stretches it out (n-a-p), and taps one letter for each sound, so spelling and handwriting are not both on her at once. ' +
+          'At the table, do the same with three boxes drawn on paper and a penny for each sound. Once building is quick, the writing sheet that follows will feel easy.'},
+    build(n){
+      const reads = cvcPool([fam]).length ? readItemsFor(Math.min(3, cvcPool([fam]).length), [fam]) : [];
+      const out = reads.slice();
+      let deck = [];
+      while(out.length < n){ if(!deck.length) deck = shuffle(words.slice()); out.push(tilesItem(deck.pop())); }
+      return out;
+    }};
+}
+function buildMixedLevel(){
+  const all = FAMILIES.flatMap(f => f[1]).filter(w => !ODD_WORDS.has(w));
+  return {id:'3A-12t', skill:'Build short words, mixed', n:SHEET_N, sct:500, audio:1,
+    lesson:{title:'Build any short word', sub:'Every vowel, in any order',
+      demo:'<div class="say">cat &nbsp; pig &nbsp; bed</div><div class="cap">Listen hard to the middle sound — that is the tricky one.</div>',
+      steps:['Listen to the word.','Say each sound slowly.','Tap a letter for each sound — check the middle one twice.'],
+      tip:'Mixed families are where the middle vowel gets hard. If she builds "pag" for pig, say the word slowly with her and stretch the middle sound: "p-iiii-g".'},
+    build(n){ return sample(all, n).map(tilesItem); }};
+}
+
+/* Writing sheets: same words, now written by hand inside sound boxes. */
+ENG.filter(L => /^3A-(\d|1[01])$/.test(L.id)).forEach(L => {
+  const i = +L.id.slice(3) - 1, f = FAMILIES[i];
+  if(!f) return;
+  L.lesson = {title:'Write the ' + f[0] + ' words', sub:'You built them — now write them',
+    demo:'<div class="say">' + f[1].slice(0,3).join(' &nbsp; ') + '</div><div class="cap">One letter in each box, one box for each sound.</div>',
+    steps:['Listen to the word.','Say it slowly — one sound for each box.','Write the letter for each sound in its box.'],
+    tip:'She has already built these words with tiles, so the spelling is not new — the work here is forming the letters. ' +
+        'If she freezes, let her say the sounds and point to each box before she writes. Mark it right if every letter is readable and in the right order; neatness comes with practice.'};
+});
+
+/* ---------- read-to-me: a grown-up hears her read ---------- */
+function aloudItem(text, key){
+  return {kind:'aloud', text, a:'ok', key:'aloud:'+(key||text.slice(0,16)),
+    q:'Read this out loud to a grown-up', say:'Read this out loud to a grown-up. Point to each word as you read.'};
+}
+const ALOUD_LEVELS = new Set(['5A-5','5A-6','4A-6','B-3','D-1','D-2']);
+function addAloud(sheetObj){
+  if(!sheetObj || sheetObj.subject !== 'english' || !ALOUD_LEVELS.has(sheetObj.level) || sheetObj.isTest) return sheetObj;
+  const p = sheetObj.items.find(i => i.kind === 'passage');
+  let text = p ? p.text : '';
+  if(!text){
+    const s = sheetObj.items.find(i => /^sent:/.test(i.key||''));
+    if(s){ const m = /<div[^>]*>([^<]+)<\/div>/.exec(s.q||''); if(m) text = m[1]; }
+  }
+  if(text) sheetObj.items.push(aloudItem(text));
+  return sheetObj;
+}
+
+/* =====================================================================
+   MATH — Singapore-style: number bonds, ten-frames, tens & ones,
+   picture story problems
+   ===================================================================== */
+const optsUpTo = (max, min) => range(min === undefined ? 1 : min, max);
+
+/* number bonds */
+function bondItem(whole, opt){
+  opt = opt || {};
+  const p1 = opt.p1 || (1 + rnd(whole - 1)), p2 = whole - p1;
+  const missWhole = !!opt.missWhole;
+  const missIdx = missWhole ? -1 : (Math.random() < .5 ? 0 : 1);
+  const parts = [p1, p2];
+  const a = missWhole ? whole : parts[missIdx];
+  const frame = opt.frame || (whole <= 5 ? 'five' : 'ten');
+  const q = missWhole ? (p1 + ' and ' + p2 + ' make how many?') : (parts[1-missIdx] + ' and what make ' + whole + '?');
+  const say = missWhole ? (nw(p1) + ' and ' + nw(p2) + '. Put the parts together. How many in all?')
+    : ('The whole is ' + nw(whole) + '. One part is ' + nw(parts[1-missIdx]) + '. What is the other part?');
+  return {kind:'bond', whole, parts, miss: missWhole ? 'w' : missIdx, frame, noFrame: !!opt.noFrame, a, q, say, audioRate:0.82,
+    opts: optsUpTo(10), key:'bond:'+(missWhole ? 'w' : 'p'+missIdx)+':'+parts.join('+')+'='+whole};
+}
+function tenPartnerItem(){
+  const k = 1 + rnd(9);
+  if(Math.random() < .4){ const b = bondItem(10, {p1:k}); b.key = 'tenb:' + b.key; return b; }
+  return {kind:'bond', whole:10, parts:[k, 10-k], miss:1, frame:'ten', partner:true, a:10-k,
+    q:'How many more to make 10?', say:'Look at the ten frame. ' + nw(k) + ' are filled. How many more make ten?', audioRate:0.82,
+    opts: optsUpTo(9), key:'ten:'+k};
+}
+
+/* tens and ones */
+function tensItem(lo, hi, ask){
+  ask = ask || pick(['number','number','tens','ones']);
+  let n = lo + rnd(hi - lo + 1);
+  if(ask === 'ones' && n % 10 === 0) n = Math.min(hi, n + 1 + rnd(8));
+  if(ask === 'tens' && n < 10) n = 10 + rnd(10);
+  const t = Math.floor(n/10), o = n % 10;
+  if(ask === 'number'){
+    const s = new Set([n]);
+    const rev = o*10 + t; if(o > 0 && rev !== n && rev >= 10 && rev <= 99) s.add(rev);
+    [n+10, n-10, n+1, n-1].forEach(x => { if(s.size < 4 && x >= 10 && x <= 99) s.add(x); });
+    return {kind:'tens', n, ask, a:n, opts: shuffle([...s]),
+      q:'How many? Count the tens, then the ones.', say:'Each long stick is ten. Each little cube is one. Count the tens, then the ones. How many in all?',
+      audioRate:0.82, key:'tens:n:'+n};
+  }
+  if(ask === 'tens') return {kind:'tens', n, ask, a:t, opts: optsUpTo(9),
+      q:'How many tens are in ' + n + '?', say:'How many tens are in ' + n + '?', audioRate:0.82, key:'tens:t:'+n};
+  return {kind:'tens', n, ask:'ones', a:o, opts: optsUpTo(9),
+      q:'How many ones are in ' + n + '?', say:'How many ones are in ' + n + '?', audioRate:0.82, key:'tens:o:'+n};
+}
+
+/* picture story problems */
+const STORY_CTX = [
+  {e:'🦆',m:'ducks',one:'duck',place:'in the pond',come:'swim over',come1:'swims over',go:'swim away',go1:'swims away'},
+  {e:'🍎',m:'apples',one:'apple',place:'in the bowl',come:'are put in',come1:'is put in',go:'get eaten',go1:'gets eaten'},
+  {e:'🚗',m:'cars',one:'car',place:'in the parking lot',come:'drive in',come1:'drives in',go:'drive away',go1:'drives away'},
+  {e:'🎈',m:'balloons',one:'balloon',place:'at the party',come:'are blown up',come1:'is blown up',go:'pop',go1:'pops'},
+  {e:'🐟',m:'fish',one:'fish',place:'in the tank',come:'are put in',come1:'is put in',go:'are taken out',go1:'is taken out'},
+  {e:'🍪',m:'cookies',one:'cookie',place:'on the plate',come:'are put on',come1:'is put on',go:'get eaten',go1:'gets eaten'},
+  {e:'🐝',m:'bees',one:'bee',place:'on the flower',come:'fly over',come1:'flies over',go:'fly away',go1:'flies away'},
+  {e:'⭐',m:'stars',one:'star',place:'on the chart',come:'are added',come1:'is added',go:'fall off',go1:'falls off'}
+];
+const thereAre = (n, c) => n === 1 ? 'There is 1 ' + c.one : 'There are ' + n + ' ' + c.m;
+function storyItem(type, x, y, max){
+  const c = pick(STORY_CTX);
+  max = max || 10;
+  let a, text;
+  if(type === 'join'){ a = x + y; text = thereAre(x, c) + ' ' + c.place + '. ' + y + ' more ' + (y === 1 ? c.come1 : c.come) + '. How many ' + c.m + ' are there now?'; }
+  else if(type === 'sep'){ a = x - y; text = thereAre(x, c) + ' ' + c.place + '. ' + y + ' ' + (y === 1 ? c.go1 : c.go) + '. How many ' + c.m + ' are left?'; }
+  else { a = x - y; text = thereAre(x, c) + ' in all. ' + y + (y === 1 ? ' is ' : ' are ') + c.place + '. The rest are hiding. How many are hiding?'; }
+  return {kind:'story', type, x, y, e:c.e, a, text, q:text, say:text, audioRate:0.8,
+    opts: optsUpTo(Math.max(10, max)), key:'story:'+type+':'+x+':'+y+':'+c.m};
+}
+function randomStory(types, max){
+  max = max || 10;
+  const type = pick(types);
+  if(type === 'join'){ const x = 1 + rnd(max-2), y = 1 + rnd(Math.max(1, max - x - 0)); return storyItem('join', x, Math.min(y, max-x), max); }
+  const x = 3 + rnd(max-2); const y = 1 + rnd(x-1);
+  return storyItem(type, x, y, max);
+}
+window.v85storyItem = storyItem;
+
+/* ---------- new math levels ---------- */
+const MATH_NEW = {};
+MATH_NEW.tens = {id:'5A-5t', skill:'Tens and ones', n:SHEET_N, sct:480, audio:1,
+  lesson:{title:'Tens and ones', sub:'Every big number is tens plus ones',
+    demo:'<div class="say">57 = 5 tens and 7 ones</div><div class="cap">Five sticks of ten, seven little cubes.</div>',
+    steps:['Count the long sticks by tens: 10, 20, 30…','Then count the little cubes by ones.','Tens first, then ones — that is the number.'],
+    tip:'This is the idea that makes every bigger number make sense: 57 is not "five-seven", it is 5 tens and 7 ones. ' +
+        'Bundle real things to make it concrete — straws or popsicle sticks in rubber bands of ten, or ten pennies traded for a dime. ' +
+        'When she reads a number, ask "how many tens? how many ones?" until it is automatic.'},
+  gen(){ return tensItem(11, 60); }};
+
+MATH_NEW.b1 = {id:'4A-B1', skill:'Number bonds to 5', n:SHEET_N, sct:420, audio:1,
+  lesson:{title:'Parts of 5', sub:'A number bond shows a whole and its two parts',
+    demo:'<div class="say">5 = 3 and 2</div><div class="cap">The whole on top, the parts underneath.</div>',
+    steps:['The top circle is the whole.','The two bottom circles are the parts.','The parts put together make the whole.'],
+    tip:'Number bonds are the heart of Singapore Math. A child who knows that 5 is 3 and 2, or 4 and 1, never has to count on her fingers to add or take away within 5. ' +
+        'Use five real things: hide some under your hand and ask how many are hiding.'},
+  gen(){ return bondItem(3 + rnd(3)); }};
+MATH_NEW.b2 = {id:'4A-B2', skill:'Number bonds: parts of 6 to 9', n:SHEET_N, sct:440, audio:1,
+  lesson:{title:'Parts of bigger numbers', sub:'6, 7, 8 and 9 split into two parts',
+    demo:'<div class="say">8 = 5 and 3</div><div class="cap">Five fills a row; three more is eight.</div>',
+    steps:['Look at the whole on top.','Find the part you know.','How many more make the whole? That is the other part.'],
+    tip:'Notice how often 5 shows up: 7 is 5 and 2, 8 is 5 and 3. Seeing the five inside a number is what lets children stop counting by ones. The ten frame makes that five visible.'},
+  gen(){ return bondItem(6 + rnd(4)); }};
+MATH_NEW.b3 = {id:'4A-B3', skill:'Partners of 10', n:SHEET_N, sct:400, audio:1,
+  lesson:{title:'Make 10', sub:'Which two numbers make ten?',
+    demo:'<div class="say">7 and 3 make 10</div><div class="cap">Count the empty boxes in the ten frame.</div>',
+    steps:['Look at the ten frame.','Count the empty boxes.','Those make 10 with the filled ones.'],
+    tip:'The partners of 10 (1+9, 2+8, 3+7, 4+6, 5+5) are the single most useful facts in early math — later she will add 8 + 5 by making a ten first. ' +
+        'An egg carton with two rows cut to ten is a perfect ten frame at home.'},
+  gen(){ return tenPartnerItem(); }};
+MATH_NEW.b4 = {id:'4A-B4', skill:'Number bonds to 10, mixed', n:SHEET_N, sct:440, audio:1,
+  lesson:{title:'Number bonds, all mixed', sub:'Sometimes a part is missing, sometimes the whole',
+    demo:'<div class="say">4 and 6 make ?</div><div class="cap">When the whole is missing, put the parts together.</div>',
+    steps:['Find the empty circle.','Top empty? Put the parts together.','Bottom empty? Whole take away the part you know.'],
+    tip:'When the whole is missing she is adding; when a part is missing she is taking away. Same picture, two directions — that is why bonds make subtraction easier later.'},
+  gen(){ const w = 3 + rnd(8); return Math.random() < .4 ? bondItem(w, {missWhole:true, noFrame:true}) : bondItem(w, {noFrame:true}); }};
+MATH_NEW.s1 = {id:'4A-S1', skill:'Story problems: putting together', n:8, sct:520, audio:1,
+  lesson:{title:'Math stories', sub:'Listen, picture it, then solve',
+    demo:'<div class="say">3 🦆 + 2 more 🦆 = 5 🦆</div><div class="cap">The story tells you what to do.</div>',
+    steps:['Listen to the story.','Look at the picture.','Put the groups together, or find the missing part.'],
+    tip:'Word problems are where Singapore Math is strongest. The habit to build now: listen, picture it, then decide what to do. ' +
+        'Act stories out with toys at home — "3 cars in the garage, 2 more drive in" — and ask her to make up one for you.'},
+  gen(){ return randomStory(['join','join','part'], 10); }};
+MATH_NEW.s2 = {id:'2A-S1', skill:'Story problems: taking away', n:8, sct:520, audio:1,
+  lesson:{title:'Take-away stories', sub:'Some go away — how many are left?',
+    demo:'<div class="say">7 🍎 − 3 eaten = 4 🍎</div><div class="cap">Cross out the ones that go away.</div>',
+    steps:['Listen to the story.','Cross out the ones that go away.','Count what is left.'],
+    tip:'Mix in "how many are hiding?" stories too — those are the part-whole stories from number bonds, and they are the ones children find hardest.'},
+  gen(){ return randomStory(['sep','sep','part'], 10); }};
+window.V85_MATH_NEW = MATH_NEW;
+
+/* ---------- ladder insertion ---------- */
+function insertBefore(list, id, items){ const i = list.findIndex(l => l.id === id); if(i < 0) return false; list.splice(i, 0, ...items); return true; }
+function insertAfter(list, id, items){ const i = list.findIndex(l => l.id === id); if(i < 0) return false; list.splice(i+1, 0, ...items); return true; }
+if(!MATH.some(l => l.id === '5A-5t')){
+  insertAfter(MATH, '5A-5', [MATH_NEW.tens]);
+  insertBefore(MATH, '4A-1', [MATH_NEW.b1, MATH_NEW.b2, MATH_NEW.b3, MATH_NEW.b4, MATH_NEW.s1]);
+  insertBefore(MATH, '2A-1', [MATH_NEW.s2]);
+}
+if(!ENG.some(l => l.id === '3A-1t')){
+  FAMILIES.forEach((f, i) => insertBefore(ENG, '3A-'+(i+1), [buildLevel(i)]));
+  insertBefore(ENG, '3A-12', [buildMixedLevel()]);
+}
+MATH_PLACE.forEach(r => { if(r[1] === '4A-1') r[1] = '4A-B1'; });
+const startLevels0 = startLevels;
+window.startLevels = startLevels = function(age){ const s = startLevels0(age); if(s.math === '4A-1') s.math = '4A-B1'; return s; };
+
+/* mixed into existing sheets once she reaches them */
+const TENS_MIX = {'5A-6':[11,70],'5A-7':[11,80],'5A-8':[11,90],'5A-9':[11,99],'5A':[11,99]};
+const STORY_ADD_BANDS = new Set(['4A','3A']), STORY_SUB_BANDS = new Set(['2A']);
+function mixIntoMath(sh){
+  if(!sh || sh.subject !== 'math' || sh.isTest || sh.isCheckup) return sh;
+  const lv = sh.level, slots = sh.items.map((it,k)=>k).filter(k => !sh.items[k].review && sh.items[k].kind !== 'passage');
+  const swap = (k, it) => { sh.items[k] = Object.assign({given:''}, it); };
+  if(TENS_MIX[lv]){
+    const [lo, hi] = TENS_MIX[lv];
+    const L = lvl('math', lv), want = L.n || 10;
+    let added = 0;
+    while(sh.items.length < want && added < 4){ sh.items.splice(Math.min(sh.items.length, 2 + added * 3), 0, Object.assign({given:''}, tensItem(lo, hi))); added++; }
+    if(!added) [2, 5, 8].forEach(p => { const k = slots[p]; if(k !== undefined) swap(k, tensItem(lo, hi)); });
+    return sh;
+  }
+  const b = band(lv);
+  if(/-[BS]\d/.test(lv)) return sh;
+  if(STORY_ADD_BANDS.has(b) || STORY_SUB_BANDS.has(b) || lv === 'A-3'){
+    [3, 7].forEach(p => {
+      const k = slots[p], base = k !== undefined ? sh.items[k] : null;
+      if(!base || base.kind !== 'math') return;
+      if(base.op === '−' && base.top - base.bottom < 1) return;
+      const max = Math.max(10, base.top + (base.op === '+' ? base.bottom : 0));
+      const st = base.op === '+' ? storyItem('join', base.top, base.bottom, max)
+               : base.op === '−' ? storyItem('sep', base.top, base.bottom, max) : null;
+      if(st) swap(k, st);
+    });
+  }
+  return sh;
+}
+
+/* teaching tips for the counting-to-100 levels (the old ones were notes about the app, not teaching) */
+['5A-1','5A-1b','5A-2','5A-3','5A-3b','5A-4','5A-4b','5A-5','5A-6','5A-7','5A-8','5A-9'].forEach(id => {
+  const L = MATH.find(l => l.id === id); if(!L) return;
+  L.lesson.tip = 'Count this decade out loud together, forwards and backwards, and practise the change at the end (like 59 → 60) on purpose. ' +
+    'Point to the first digit and ask what it means: in 57, the 5 means five tens. A 1–100 chart on the fridge is the best tool here — cover a number with a sticky note and ask what is hiding.';
+});
+
+/* ---------- export for the other V8.5 parts ---------- */
+window.V85 = {H, range, nw, sound, todayKey, monthKey, tilesItem, tensItem, bondItem, tenPartnerItem,
+  storyItem, randomStory, aloudItem, addAloud, mixIntoMath, heartHTML, readItemsFor, NUM_KINDS};
+})();
+
+/* ===== V8.5 part 2: drawing the new question types on the worksheet ===== */
+(function(){
+'use strict';
+const {H, range, nw, sound, mixIntoMath, addAloud, NUM_KINDS} = window.V85;
+
+/* ---------- visuals ---------- */
+function frameHTML(total, a, b, opt){
+  opt = opt || {};
+  const cells = total <= 5 ? 5 : 10;
+  let s = '<div class="v85frame' + (cells === 5 ? ' five' : '') + '">';
+  for(let k = 0; k < cells; k++){
+    let cls = 'c';
+    if(k < a) cls += ' a';
+    else if(k < a + b) cls += opt.hideB ? ' q' : ' b';
+    else if(k < total && opt.hideRest) cls += ' q';
+    s += '<i class="' + cls + '"></i>';
+  }
+  return s + '</div>';
+}
+function bondDiagram(whole, parts, miss, opt){
+  opt = opt || {};
+  const show = (v, isMiss) => isMiss && !opt.solved ? '<b class="miss">?</b>' : '<b>' + v + '</b>';
+  return '<div class="v85bond">' +
+    '<div class="top">' + show(whole, miss === 'w') + '</div>' +
+    '<svg viewBox="0 0 200 46" preserveAspectRatio="none" aria-hidden="true"><line x1="100" y1="0" x2="38" y2="46"/><line x1="100" y1="0" x2="162" y2="46"/></svg>' +
+    '<div class="row">' + show(parts[0], miss === 0) + show(parts[1], miss === 1) + '</div></div>';
+}
+function bondVisual(it, opt){
+  opt = opt || {};
+  const solved = !!opt.solved;
+  let frame;
+  if(it.partner) frame = frameHTML(10, it.parts[0], solved ? it.parts[1] : 0, {hideRest: !solved});
+  else if(it.miss === 'w') frame = frameHTML(it.whole, it.parts[0], it.parts[1]);
+  else {
+    const known = it.parts[1 - it.miss];
+    frame = frameHTML(it.whole, known, it.whole - known, {hideB: !solved});
+  }
+  if(it.noFrame && !solved) frame = '';
+  return (it.partner ? '' : bondDiagram(it.whole, it.parts, it.miss, {solved})) + frame;
+}
+function tensVisual(n, opt){
+  opt = opt || {};
+  const t = Math.floor(n / 10), o = n % 10;
+  let s = '<div class="v85tens">';
+  for(let k = 0; k < t; k++) s += '<span class="rod' + (opt.litTens > k ? ' lit' : '') + '">' + '<i></i>'.repeat(10) + '</span>';
+  s += '<span class="ones">';
+  for(let k = 0; k < o; k++) s += '<i class="' + (opt.litOnes > k ? 'lit' : '') + '"></i>';
+  s += '</span></div>';
+  return s;
+}
+function tensPrompt(it){
+  if(it.ask === 'number') return tensVisual(it.n);
+  return '<div class="v85bignum">' + it.n + '</div>' + tensVisual(it.n);
+}
+function storyVisual(it, opt){
+  opt = opt || {};
+  const e = '<span class="t">' + it.e + '</span>';
+  if(it.type === 'join')
+    return '<div class="v85story"><span class="grp">' + e.repeat(it.x) + '</span><span class="op">+</span><span class="grp come">' + e.repeat(it.y) + '</span>' +
+      (opt.solved ? '<span class="op">=</span><b>' + it.a + '</b>' : '') + '</div>';
+  if(it.type === 'sep'){
+    let s = '<div class="v85story"><span class="grp">';
+    for(let k = 0; k < it.x; k++) s += '<span class="t' + (k >= it.x - it.y ? ' gone' : '') + '">' + it.e + '</span>';
+    return s + '</span>' + (opt.solved ? '<span class="op">=</span><b>' + it.a + '</b>' : '') + '</div>';
+  }
+  return '<div class="v85story"><div class="lbl">' + it.x + ' in all</div><span class="grp">' + e.repeat(it.y) +
+    '</span><span class="op">+</span><span class="hide">' + (opt.solved ? e.repeat(it.a) : '?') + '</span></div>';
+}
+function promptVisual(it, opt){
+  if(it.kind === 'bond') return bondVisual(it, opt);
+  if(it.kind === 'tens') return tensPrompt(it);
+  if(it.kind === 'story') return storyVisual(it, opt);
+  return '';
+}
+window.V85.ui = {frameHTML, bondDiagram, bondVisual, tensVisual, storyVisual, promptVisual};
+
+/* ---------- sound boxes ---------- */
+function tilesUI(it, o){
+  o = o || {};
+  if(!Array.isArray(it.partial)) it.partial = [];
+  if(!Array.isArray(it.used)) it.used = [];
+  if(!it.given && it.partial.length >= it.word.length){ it.partial = []; it.used = []; }
+  if(it.given && it.partial.join('') !== it.given){
+    it.partial = String(it.given).split(''); it.used = [];
+    it.partial.forEach(ch => { const k = it.bank.findIndex((b, ix) => b === ch && !it.used.includes(ix)); if(k > -1) it.used.push(k); });
+  }
+  const full = it.partial.length >= it.word.length;
+  const w = document.createElement('div'); w.className = 'v85tiles';
+  const boxes = document.createElement('div'); boxes.className = 'v85boxes';
+  for(let k = 0; k < it.word.length; k++){
+    const b = document.createElement('button');
+    b.className = 'v85box' + (k === it.partial.length && !o.locked ? ' next' : '') + (it.partial[k] ? ' on' : '');
+    b.textContent = it.partial[k] || '';
+    b.setAttribute('aria-label', 'Sound box ' + (k+1));
+    b.onclick = e => {
+      e.stopPropagation();
+      if(o.locked || k >= it.partial.length) return;
+      it.partial = it.partial.slice(0, k); it.used = it.used.slice(0, k); it.given = '';
+      if(o.onChange) o.onChange();
+    };
+    boxes.appendChild(b);
+  }
+  w.appendChild(boxes);
+  const bank = document.createElement('div'); bank.className = 'v85bank';
+  it.bank.forEach((c, ix) => {
+    const t = document.createElement('button');
+    t.className = 'v85tile'; t.textContent = c;
+    t.disabled = !!o.locked || it.used.includes(ix) || full;
+    t.onclick = e => {
+      e.stopPropagation();
+      if(it.partial.length >= it.word.length) return;
+      it.partial.push(c); it.used.push(ix);
+      say(sound(c), 0.7);
+      if(it.partial.length >= it.word.length){ it.given = it.partial.join(''); if(o.onFull) o.onFull(); else if(o.onChange) o.onChange(); }
+      else if(o.onChange) o.onChange();
+    };
+    bank.appendChild(t);
+  });
+  w.appendChild(bank);
+  if(it.reveal) w.insertAdjacentHTML('beforeend', '<div class="note">' + H(it.word) + '</div>');
+  return w;
+}
+window.V85.ui.tilesUI = tilesUI;
+
+/* ---------- worksheet cells for the new kinds ---------- */
+function speakItem(it){ if(it.say) say(it.say, it.audioRate || 0.8); }
+function v85cell(it, i, single, n){
+  const d = document.createElement('div');
+  const isNum = NUM_KINDS.has(it.kind);
+  d.className = 'v85cell ' + (isNum && !single ? 'prob v85prob' : 'item') + (it.kind === 'story' && !single ? ' v85wide' : '') +
+                (i === sel ? ' sel' : '') + (phase === 'fix' && it.wrong ? ' redo' : '');
+  if(single) d.style.cssText = 'border:none;text-align:center;padding:18px 16px';
+  const num = single ? '' : '<span class="n">' + (n || i+1) + '</span>' + (it.review ? '<span class="rev">REVIEW</span>' : '');
+  const locked = phase === 'mark' || (phase === 'fix' && !it.wrong);
+  const spk = '<div style="margin:8px 0"><button class="speak v85spk">🔊 ' + (it.kind === 'story' ? 'Hear the story' : it.kind === 'tiles' ? 'Hear the word' : 'Hear it') + '</button></div>';
+
+  if(isNum){
+    d.innerHTML = num + spk + '<div class="v85visual">' + promptVisual(it) + '</div>' +
+      '<div class="q v85q">' + H(it.q) + '</div>' + numRow(it) + markHTML(it) +
+      '<span class="fix' + (it.reveal ? ' show' : '') + '">' + (it.reveal ? it.a : '') + '</span>';
+    wireNums(d, it, i);
+  }
+  else if(it.kind === 'tiles'){
+    d.innerHTML = num + spk + '<div class="note" style="margin:4px 0 10px"><b>Directions:</b> Listen. Say the word slowly. Tap a letter for each sound.</div>';
+    d.appendChild(tilesUI(it, {locked,
+      onChange: () => { sel = i; render(); },
+      onFull: () => { sel = i; if(sheet.single) afterAnswer(); else render(); }}));
+    d.insertAdjacentHTML('beforeend', markHTML(it));
+    d.onclick = () => selectMe(i);
+  }
+  else if(it.kind === 'aloud'){
+    const who = (me && me.name) ? H(me.name) : 'She';
+    d.innerHTML = num + '<div class="q">📖 Read this out loud to a grown-up</div>' +
+      '<div class="v85aloud">' + H(it.text) + '</div>' +
+      '<div class="v85aloudbtns">' +
+        '<button data-v="ok" class="' + (it.given === 'ok' ? 'pick' : '') + '">✓ ' + who + ' read it</button>' +
+        '<button data-v="help" class="' + (it.given === 'help' ? 'pick' : '') + '">Needed help</button></div>' +
+      '<p class="hint" style="margin-top:8px">Grown-up taps. "Read it" means she read every word herself, even if slowly.</p>' + markHTML(it);
+    [...d.querySelectorAll('.v85aloudbtns button')].forEach(b => {
+      b.disabled = locked;
+      b.onclick = e => { e.stopPropagation(); it.given = b.dataset.v; sel = i; afterAnswer(); };
+    });
+  }
+  const s = d.querySelector('.v85spk'); if(s) s.onclick = e => { e.stopPropagation(); speakItem(it); };
+  return d;
+}
+
+/* ---------- hook the new kinds into the existing engine ---------- */
+const cell0 = cell;
+window.cell = cell = function(it, i, single, n){ return (it && window.V85_KINDS.has(it.kind)) ? v85cell(it, i, single, n) : cell0(it, i, single, n); };
+const usable0 = usable;
+window.usable = usable = function(it){
+  if(it && window.V85_KINDS.has(it.kind)){
+    if(it.kind === 'tiles') return typeof it.word === 'string' && Array.isArray(it.bank);
+    if(it.kind === 'aloud') return false;
+    return typeof it.a === 'number' && Array.isArray(it.opts);
+  }
+  return usable0(it);
+};
+const isRight0 = isRight;
+window.isRight = isRight = function(it){
+  if(it && it.kind === 'tiles') return String(it.given || '') === it.word;
+  if(it && it.kind === 'aloud') return it.given === 'ok';
+  if(it && NUM_KINDS.has(it.kind)) return Number(it.given) === it.a;
+  return isRight0(it);
+};
+/* the number line under early math must not light up the answer */
+const render0 = render;
+window.render = render = function(){
+  render0();
+  document.querySelectorAll('#paper .v4numline .hot').forEach(x => x.classList.remove('hot'));
+};
+const buildSheet0 = buildSheet;
+window.buildSheet = buildSheet = function(subject){
+  let sh = buildSheet0(subject);
+  sh = mixIntoMath(sh);
+  sh = addAloud(sh);
+  return sh;
+};
+})();
+
+/* ===== V8.5 part 3: "Learn it" — watch me, try two with me, then the sheet ===== */
+(function(){
+'use strict';
+const {H, range, nw, sound} = window.V85;
+const U = window.V85.ui;
+
+/* ---------- worked-example builders ---------- */
+const big = s => '<div class="ln-big">' + s + '</div>';
+function numberLine(lo, hi, marks){
+  marks = marks || {};
+  let s = '<div class="ln-line">';
+  for(let x = lo; x <= hi; x++){
+    let c = '';
+    if(x === marks.start) c = 's';
+    else if(marks.hops && marks.hops.includes(x)) c = (x === marks.end ? 'e' : 'h');
+    s += '<span class="' + c + '">' + x + '</span>';
+  }
+  return s + '</div>';
+}
+function lineRange(a, b){ const hi = Math.max(10, a, b); const lo = Math.max(0, Math.min(a, b) - 2); return [hi - lo > 14 ? Math.max(0, hi - 14) : lo, hi]; }
+function soundsHTML(w, upto){
+  return '<div class="ln-sounds">' + w.split('').map((c,k) => '<span class="' + (upto === undefined || k <= upto ? 'on' : '') + '">' + c + '</span>').join('') + '</div>';
+}
+function boxesHTML(w, filled){
+  return '<div class="v85boxes ln-static">' + w.split('').map((c,k) => '<span class="v85box' + (k < filled ? ' on' : '') + '">' + (k < filled ? c : '') + '</span>').join('') + '</div>';
+}
+
+let explainSteps = function(it, L, subject){
+  const b0 = band(L.id);
+  if(it.kind === 'math'){
+    const a = it.top, b = it.bottom, op = it.op, ans = it.a;
+    if(op === '+' && (b0 === '4A' || b0 === '3A') && ans <= 20){
+      const [lo, hi] = lineRange(a, ans), hops = range(a+1, ans);
+      return [
+        {html: big(a + ' + ' + b + ' = ?'), say: nw(a) + ' plus ' + nw(b) + '. Let’s work it out.'},
+        {html: big(a + ' + ' + b) + numberLine(lo, hi, {start:a}), say: 'Start at ' + nw(a) + '. Put it in your head.'},
+        {html: big(a + ' + ' + b) + numberLine(lo, hi, {start:a, hops, end:ans}), say: 'Count on ' + nw(b) + ': ' + hops.map(nw).join(', ') + '.'},
+        {html: big(a + ' + ' + b + ' = <b class="ok">' + ans + '</b>'), say: nw(a) + ' plus ' + nw(b) + ' is ' + nw(ans) + '.'}];
+    }
+    if(op === '−' && b0 === '2A' && a <= 20){
+      const [lo, hi] = lineRange(ans, a), hops = range(ans, a-1).reverse();
+      return [
+        {html: big(a + ' − ' + b + ' = ?'), say: nw(a) + ' take away ' + nw(b) + '. Let’s work it out.'},
+        {html: big(a + ' − ' + b) + numberLine(lo, hi, {start:a}), say: 'Start at ' + nw(a) + '.'},
+        {html: big(a + ' − ' + b) + numberLine(lo, hi, {start:a, hops, end:ans}), say: 'Count back ' + nw(b) + ': ' + hops.map(nw).join(', ') + '.'},
+        {html: big(a + ' − ' + b + ' = <b class="ok">' + ans + '</b>'), say: nw(a) + ' take away ' + nw(b) + ' is ' + nw(ans) + '.'}];
+    }
+    if(op === '×' && b0 === 'C'){
+      const groups = '<div class="ln-groups">' + Array(a).fill('<span>' + '●'.repeat(b) + '</span>').join('') + '</div>';
+      const skips = range(1, a).map(k => k*b);
+      return [
+        {html: big(a + ' × ' + b + ' = ?'), say: a + ' times ' + b + '.'},
+        {html: big(a + ' × ' + b) + groups, say: a + ' times ' + b + ' means ' + a + ' groups of ' + b + '.'},
+        {html: big(skips.join(', ')), say: 'Skip count by ' + b + ': ' + skips.join(', ') + '.'},
+        {html: big(a + ' × ' + b + ' = <b class="ok">' + ans + '</b>'), say: a + ' times ' + b + ' is ' + ans + '.'}];
+    }
+    if(op === '÷' && b0 === 'D'){
+      const skips = range(1, ans).map(k => k*b);
+      return [
+        {html: big(a + ' ÷ ' + b + ' = ?'), say: a + ' divided by ' + b + '.'},
+        {html: big('How many ' + b + 's make ' + a + '?'), say: 'Ask: how many groups of ' + b + ' make ' + a + '?'},
+        {html: big(skips.join(', ')), say: 'Count by ' + b + ' until you reach ' + a + ': ' + skips.join(', ') + '. That was ' + ans + ' jumps.'},
+        {html: big(a + ' ÷ ' + b + ' = <b class="ok">' + ans + '</b>'), say: a + ' divided by ' + b + ' is ' + ans + '.'}];
+    }
+    const prob = (op === '+' || op === '−') ? '<div class="demo" style="margin:0">' + demoStack(a, b, op, 0, '') + '</div>' : big(a + ' ' + op + ' ' + b);
+    return L.lesson.steps.map(s => ({html: prob + '<p class="ln-stepline">' + H(s) + '</p>', say: s}))
+      .concat([{html: big(a + ' ' + op + ' ' + b + ' = <b class="ok">' + ans + '</b>'), say: 'So the answer is ' + ans + '.'}]);
+  }
+  if(it.kind === 'seq'){
+    const shown = it.run.map(v => v === '▢' ? '<span class="blank">?</span>' : v).join(', ');
+    const filled = it.run.map(v => v === '▢' ? '<b class="ok">' + it.a + '</b>' : v).join(', ');
+    const spoken = it.run.map(v => v === '▢' ? 'hmm' : v).join(', ');
+    const prev = it.a - 1;
+    return [
+      {html: big(shown), say: 'Read the numbers out loud: ' + spoken + '.'},
+      {html: big(shown), say: 'What comes right after ' + prev + '? Count one more.'},
+      {html: big(filled), say: 'After ' + prev + ' comes ' + it.a + '. The answer is ' + it.a + '.'}];
+  }
+  if(it.kind === 'count'){
+    const things = '<div class="ln-things">' + Array(it.n).fill(it.emoji).map((e,k) => '<span>' + e + '<i>' + (k+1) + '</i></span>').join('') + '</div>';
+    return [
+      {html: '<div class="ln-things">' + Array(it.n).fill('<span>' + it.emoji + '</span>').join('') + '</div>', say: 'How many are there?'},
+      {html: things, say: 'Touch each one as you count: ' + range(1, it.n).map(nw).join(', ') + '.'},
+      {html: things + big('<b class="ok">' + it.n + '</b>'), say: 'The last number you say is how many. There are ' + nw(it.n) + '.'}];
+  }
+  if((it.kind === 'choice' || it.kind === 'pic') && it.readWord){
+    const w = it.readWord;
+    if(it.words){
+      return [
+        {html: '<div class="v85pic">' + it.pic + '</div>' + '<div class="ln-words">' + it.words.map(x => '<span>' + x + '</span>').join('') + '</div>', say: 'Look at the picture. Then read every word.'},
+        {html: '<div class="ln-words">' + it.words.map(x => soundsHTML(x)).join('') + '</div>', say: it.words.map(x => x.split('').map(sound).join(', ') + '. ' + x + '.').join(' ')},
+        {html: '<div class="v85pic">' + it.pic + '</div>' + big('<b class="ok">' + w + '</b>'), say: 'The picture is a ' + w + '. ' + w.split('').map(sound).join(', ') + ' says ' + w + '.'}];
+    }
+    return [
+      {html: big(w), say: 'Here is a word. Let’s sound it out.'},
+      {html: soundsHTML(w), say: w.split('').map(sound).join(', ') + '. Now say it fast: ' + w + '.'},
+      {html: big(w) + '<div class="v85pic">' + it.pic + '</div>', say: w + '. Find the picture of the ' + w + '.'}];
+  }
+  if(it.kind === 'choice' && /^sw:/.test(it.key || '')){
+    const w = it.opts[it.a];
+    return [
+      {html: big(H(w)), say: 'Listen: ' + w + '.'},
+      {html: '<div class="ln-words">' + it.opts.map(x => '<span>' + H(x) + '</span>').join('') + '</div>', say: 'These words all look alike at the start. Check every letter, not just the first one.'},
+      {html: '<div class="ln-big">' + window.V85.heartHTML(w) + '</div>', say: 'Sound out the parts you can. The part with the heart is tricky, so we learn it by heart. ' + w + '.'}];
+  }
+  if(it.kind === 'tiles' || it.kind === 'spell'){
+    const w = it.word, snd = w.split('').map(sound);
+    const steps = [
+      {html: big('🔊 ' + w), say: 'Listen. The word is ' + w + '.'},
+      {html: boxesHTML(w, 0), say: 'Say it slowly: ' + snd.join(', ') + '. That is ' + nw(w.length) + ' sounds, so ' + nw(w.length) + ' boxes.'}];
+    w.split('').forEach((c, k) => steps.push({html: boxesHTML(w, k+1), say: snd[k] + '. The letter ' + c + ' makes that sound.'}));
+    steps.push({html: boxesHTML(w, w.length) + big('<b class="ok">' + w + '</b>'), say: snd.join(', ') + '. ' + w + '!' + (it.kind === 'spell' || it.fromSpell ? ' Next you will write each letter in its box.' : '')});
+    return steps;
+  }
+  if(it.kind === 'bond'){
+    const {whole, parts, miss} = it;
+    if(it.partner) return [
+      {html: U.frameHTML(10, parts[0], 0, {hideRest:true}), say: 'A ten frame has ten boxes. ' + nw(parts[0]) + ' are filled.'},
+      {html: U.frameHTML(10, parts[0], 0, {hideRest:true}), say: 'Count the empty boxes: ' + range(1, parts[1]).map(nw).join(', ') + '.'},
+      {html: U.frameHTML(10, parts[0], parts[1]) + big(parts[0] + ' and <b class="ok">' + parts[1] + '</b> make 10'), say: nw(parts[0]) + ' and ' + nw(parts[1]) + ' make ten.'}];
+    if(miss === 'w') return [
+      {html: U.bondVisual(it), say: 'This is a number bond. The parts are ' + nw(parts[0]) + ' and ' + nw(parts[1]) + '. The whole is missing.'},
+      {html: U.bondVisual(it), say: it.noFrame ? 'Put the parts together: ' + nw(parts[0]) + ' and ' + nw(parts[1]) + '. Start at the bigger part and count on.'
+                                               : 'Put the parts together. Count all the dots: ' + range(1, whole).map(nw).join(', ') + '.'},
+      {html: U.bondVisual(it, {solved:true}), say: nw(parts[0]) + ' and ' + nw(parts[1]) + ' make ' + nw(whole) + '.'}];
+    const known = parts[1-miss];
+    return [
+      {html: U.bondVisual(it), say: 'This is a number bond. The whole is ' + nw(whole) + ' on top. The parts are underneath.'},
+      {html: U.bondVisual(it), say: it.noFrame ? 'One part is ' + nw(known) + '. What goes with ' + nw(known) + ' to make ' + nw(whole) + '? Think of the bond you know.'
+                                               : 'One part is ' + nw(known) + '. Count the dots that are left: ' + range(1, it.a).map(nw).join(', ') + '.'},
+      {html: U.bondVisual(it, {solved:true}), say: nw(known) + ' and ' + nw(it.a) + ' make ' + nw(whole) + '. The missing part is ' + nw(it.a) + '.'}];
+  }
+  if(it.kind === 'tens'){
+    const n = it.n, t = Math.floor(n/10), o = n % 10;
+    const tensSay = range(1, t).map(k => k*10).join(', ');
+    const onesSay = range(1, o).map(k => t*10 + k).join(', ');
+    const tw = t === 1 ? '1 ten' : t + ' tens', ow = o === 1 ? '1 one' : o + ' ones';
+    const end = it.ask === 'tens' ? 'There ' + (t === 1 ? 'is ' : 'are ') + tw + ' in ' + n + '.' : it.ask === 'ones' ? 'There ' + (o === 1 ? 'is ' : 'are ') + ow + ' in ' + n + '.' : tw + ' and ' + ow + ' is ' + n + '.';
+    return [
+      {html: U.tensVisual(n), say: 'Each long stick is ten. Each little cube is one.'},
+      {html: U.tensVisual(n, {litTens:t}), say: 'Count the sticks by tens: ' + tensSay + '.'},
+      {html: U.tensVisual(n, {litTens:t, litOnes:o}), say: o ? 'Now count on the cubes: ' + onesSay + '.' : 'There are no extra cubes.'},
+      {html: U.tensVisual(n, {litTens:t, litOnes:o}) + big(tw + ' + ' + ow + ' = <b class="ok">' + n + '</b>'), say: end}];
+  }
+  if(it.kind === 'story'){
+    const head = {html: U.storyVisual(it) + '<p class="ln-stepline">' + H(it.text) + '</p>', say: it.text};
+    if(it.type === 'join') return [head,
+      {html: U.storyVisual(it), say: 'Put the two groups together: ' + nw(it.x) + ' and ' + nw(it.y) + '.'},
+      {html: U.storyVisual(it, {solved:true}) + big(it.x + ' + ' + it.y + ' = <b class="ok">' + it.a + '</b>'), say: nw(it.x) + ' and ' + nw(it.y) + ' make ' + nw(it.a) + '.'}];
+    if(it.type === 'sep') return [head,
+      {html: U.storyVisual(it), say: 'Cross out the ' + nw(it.y) + ' that go away. Count what is left.'},
+      {html: U.storyVisual(it, {solved:true}) + big(it.x + ' − ' + it.y + ' = <b class="ok">' + it.a + '</b>'), say: nw(it.x) + ' take away ' + nw(it.y) + ' leaves ' + nw(it.a) + '.'}];
+    return [head,
+      {html: U.storyVisual(it), say: 'We know there are ' + nw(it.x) + ' in all, and we can see ' + nw(it.y) + '. The hiding part is what is missing.'},
+      {html: U.storyVisual(it, {solved:true}) + big(it.y + ' + <b class="ok">' + it.a + '</b> = ' + it.x), say: nw(it.y) + ' and ' + nw(it.a) + ' make ' + nw(it.x) + '. ' + nw(it.a) + ' are hiding.'}];
+  }
+  return null;
+}
+const capSay = s => String(s).replace(/(^|[.!?]\s+)([a-z])/g, (m, p, c) => p + c.toUpperCase());
+const explainSteps0 = explainSteps;
+explainSteps = function(it, L, subject){ const r = explainSteps0(it, L, subject); return r ? r.map(x => ({html:x.html, say:capSay(x.say)})) : r; };
+window.V85.explainSteps = explainSteps;
+
+/* ---------- picking example and practice problems ---------- */
+const TRYABLE = new Set(['math','seq','count','choice','pic','tiles','spell','bond','tens','story']);
+function sampleItems(L, n){
+  let raw = [];
+  try {
+    if(typeof L.gen === 'function'){ let g = 0; while(raw.length < n*3 && g++ < 60) raw.push(L.gen()); }
+    else raw = L.build(Math.max(6, n*3));
+  } catch(e){ raw = []; }
+  if(raw.some(i => i.kind === 'passage')) return [];
+  const out = [], keys = new Set();
+  raw.forEach(it => {
+    if(!it || !TRYABLE.has(it.kind) || keys.has(it.key) || (it.q && keys.has('q:' + it.q + it.a))) return;
+    if(it.q) keys.add('q:' + it.q + it.a);
+    if(it.kind === 'seq'){ seqSafe(it); }
+    if(it.kind === 'spell'){ it = window.V85.tilesItem(it.word); it.fromSpell = true; if(keys.has(it.key)) return; }
+    if((it.kind === 'choice' || it.kind === 'pic') && !Array.isArray(it.opts)) return;
+    keys.add(it.key); out.push(it);
+  });
+  /* the example and the last practice use the level's main question type */
+  const count = {};
+  out.forEach(it => count[it.kind] = (count[it.kind] || 0) + 1);
+  const main = Object.keys(count).sort((a, b) => count[b] - count[a])[0];
+  const mains = out.filter(it => it.kind === main), others = out.filter(it => it.kind !== main);
+  const ordered = others.length ? [mains[0], others[0], mains[1] || mains[0]] : mains;
+  return ordered.filter(Boolean).slice(0, n);
+}
+
+/* ---------- the Learn it screen ---------- */
+let LN = null;
+const el = id => document.getElementById(id);
+function stepsFor(L, subject, example){
+  const intro = {html: (L.lesson.demo ? '<div class="demo">' + L.lesson.demo + '</div>' : '') + '<p class="ln-sub">' + H(L.lesson.sub) + '</p>',
+                 say: L.lesson.title + '. ' + L.lesson.sub + '.'};
+  let ex = example ? explainSteps(example, L, subject) : null;
+  if(!ex) ex = L.lesson.steps.map((s, k) => ({html: '<ol class="steps ln-list">' + L.lesson.steps.map((x, j) => '<li class="' + (j === k ? 'on' : j < k ? 'done' : '') + '">' + H(x) + '</li>').join('') + '</ol>', say: s}));
+  return [intro].concat(ex);
+}
+function openLearn(subject, gate, opt){
+  opt = opt || {};
+  if(!gate && sheet && document.getElementById('work').classList.contains('on') && phase !== 'mark'){
+    elapsed += (Date.now() - t0) / 1000;   /* keep sheet time honest while the lesson is open */
+  }
+  const L = lvl(subject, me[subject]);
+  const pool = sampleItems(L, 3);
+  const example = pool[0] || null;
+  const tries = gate ? pool.slice(1, 3) : [];
+  LN = {subject, L, gate, steps: stepsFor(L, subject, example), i:0, phase:'watch', tries, t:0, wrongs:0, solved:false, mode: opt.mode || 'learn'};
+  el('lnTag').textContent = gate ? 'NEW SKILL — ' + L.id : 'LESSON — ' + L.id;
+  el('lnTitle').textContent = L.lesson.title;
+  el('lnSkip').style.display = gate ? '' : 'none';
+  show('learn');
+  paint();
+}
+window.openLearn = openLearn;
+window.V85._ln = () => LN;
+
+function dots(){
+  const total = LN.steps.length + LN.tries.length;
+  const at = LN.phase === 'watch' ? LN.i : LN.steps.length + LN.t;
+  return Array.from({length: total}, (_, k) => '<i class="' + (k < at ? 'done' : k === at ? 'on' : '') + (k >= LN.steps.length ? ' try' : '') + '"></i>').join('');
+}
+function paint(){
+  el('lnDots').innerHTML = dots();
+  const next = el('lnNext'), back = el('lnBack'), hear = el('lnHear');
+  const stage = el('lnStage'), fb = el('lnFeedback');
+  fb.innerHTML = ''; fb.className = 'ln-fb';
+  if(LN.phase === 'watch'){
+    const st = LN.steps[LN.i];
+    el('lnMode').textContent = LN.i === 0 ? 'Watch me' : 'Watch me · step ' + LN.i + ' of ' + (LN.steps.length - 1);
+    stage.innerHTML = st.html;
+    el('lnSay').textContent = st.say;
+    back.disabled = LN.i === 0;
+    hear.style.display = '';
+    next.disabled = false;
+    const last = LN.i === LN.steps.length - 1;
+    next.textContent = !last ? 'Next ▶' : LN.tries.length ? 'Let’s try one ▶' : LN.gate ? 'Start my sheet ▶' : 'Back to my sheet ▶';
+    say(st.say, 0.82);
+    return;
+  }
+  if(LN.phase === 'try'){
+    const it = LN.tries[LN.t];
+    el('lnMode').textContent = 'Try it with me · ' + (LN.t + 1) + ' of ' + LN.tries.length;
+    el('lnSay').textContent = '';
+    back.disabled = true;
+    hear.style.display = it.say || it.kind === 'math' ? '' : 'none';
+    next.disabled = !LN.solved;
+    next.textContent = LN.t < LN.tries.length - 1 ? 'Next one ▶' : 'Start my sheet ▶';
+    stage.innerHTML = '';
+    stage.appendChild(tryView(it));
+    if(!LN.spoke){ LN.spoke = true; speakTry(it); }
+    return;
+  }
+}
+function speakTry(it){
+  if(it.kind === 'math') return say(nw(it.top) + ' ' + ({'+':'plus','−':'take away','×':'times','÷':'divided by'}[it.op] || it.op) + ' ' + nw(it.bottom) + '. What is the answer?', 0.82);
+  if(it.kind === 'tiles') return say(it.say, 0.8);
+  if(it.kind === 'seq') return say(it.say || 'What number is missing?', 0.82);
+  if(it.kind === 'count') return say('How many? Touch each one and count.', 0.82);
+  if((it.kind === 'pic' || it.kind === 'choice') && it.say) return say(/^sw:/.test(it.key||'') ? 'Find the word ' + it.say + '.' : it.say, 0.8);
+  if(it.say) return say(it.say, it.audioRate || 0.8);
+  if(it.readWord) return say(it.words ? 'Read every word. Which one is the picture?' : 'Sound out the word, then tap the picture.', 0.82);
+}
+
+function tryView(it){
+  const box = document.createElement('div'); box.className = 'ln-try';
+  const lock = LN.solved;
+  if(it.kind === 'math'){
+    box.innerHTML = big(it.top + ' ' + it.op + ' ' + it.bottom + ' = <span class="ln-ans">' + (LN.entry || '?') + '</span>');
+    const pad = document.createElement('div'); pad.className = 'pad ln-pad';
+    ['1','2','3','4','5','6','7','8','9','⌫','0','✓'].forEach(k => {
+      const b = document.createElement('button'); b.className = 'key' + (k === '✓' ? ' go' : ''); b.textContent = k; b.disabled = lock;
+      b.onclick = () => {
+        if(k === '⌫') LN.entry = String(LN.entry || '').slice(0, -1);
+        else if(k === '✓'){ if(String(LN.entry || '').length) check(Number(LN.entry) === it.a); return; }
+        else if(String(LN.entry || '').length < 4) LN.entry = String(LN.entry || '') + k;
+        paint();
+      };
+      pad.appendChild(b);
+    });
+    box.appendChild(pad);
+    return box;
+  }
+  if(it.kind === 'tiles'){
+    box.insertAdjacentHTML('beforeend', '<p class="ln-stepline">Say it slowly. Tap a letter for each sound.</p>');
+    box.appendChild(U.tilesUI(it, {locked: lock, onChange: paint, onFull: () => check(it.given === it.word)}));
+    if(LN.solved) box.insertAdjacentHTML('beforeend', big('<b class="ok">' + it.word + '</b>'));
+    return box;
+  }
+  let head = '';
+  if(it.kind === 'seq') head = big(it.run.map(v => v === '▢' ? '<span class="blank">' + (LN.solved ? it.a : '?') + '</span>' : v).join(', '));
+  else if(it.kind === 'count') head = '<div class="ln-things">' + Array(it.n).fill('<span>' + it.emoji + '</span>').join('') + '</div>';
+  else if(window.V85.NUM_KINDS.has(it.kind)) head = '<div class="v85visual">' + U.promptVisual(it, {solved: LN.solved}) + '</div><p class="ln-stepline">' + H(it.q) + '</p>';
+  else head = '<div class="q ln-q">' + it.q + '</div>';
+  box.innerHTML = head;
+  const opts = document.createElement('div');
+  const isPic = it.kind === 'pic';
+  opts.className = (it.kind === 'choice' || isPic) ? 'opts ln-opts' + (isPic ? ' pics' : '') : 'numrow ln-nums';
+  (it.opts || []).forEach((o, k) => {
+    const b = document.createElement('button');
+    b.className = (it.kind === 'choice' || isPic) ? 'opt' + (isPic ? ' pic' : '') : 'num';
+    b.innerHTML = o;
+    const right = (it.kind === 'choice' || isPic) ? k === it.a : o === it.a;
+    if(LN.solved && right) b.classList.add('correct');
+    if(LN.reveal && right) b.classList.add('correct');
+    if(LN.missed && LN.missed.includes(k)) b.classList.add('miss');
+    b.disabled = lock;
+    b.onclick = () => { if(!right){ LN.missed = (LN.missed || []).concat(k); } check(right); };
+    opts.appendChild(b);
+  });
+  box.appendChild(opts);
+  return box;
+}
+function check(right){
+  const it = LN.tries[LN.t];
+  const ex = explainSteps(it, LN.L, LN.subject) || [];
+  const hint = ex[1] ? ex[1].say : 'Look again carefully.';
+  const why = ex.length ? ex[ex.length-1].say : '';
+  const fb = el('lnFeedback');
+  if(right){
+    LN.solved = true;
+    paint();
+    el('lnFeedback').className = 'ln-fb ok';
+    el('lnFeedback').innerHTML = '<b>✓ Yes!</b> ' + H(why);
+    SOUND && SOUND.done && SOUND.done();
+    say('Yes! ' + why, 0.82);
+    return;
+  }
+  LN.wrongs++;
+  if(it.kind === 'tiles'){ it.partial = []; it.used = []; it.given = ''; }
+  LN.entry = '';
+  if(LN.wrongs >= 2){
+    LN.solved = true; LN.reveal = true;
+    if(it.kind === 'tiles'){ it.partial = it.word.split(''); it.given = it.word; it.used = []; }
+    paint();
+    el('lnFeedback').className = 'ln-fb help';
+    el('lnFeedback').innerHTML = '<b>Here’s how.</b> ' + H(why);
+    say('That’s okay. Here’s how. ' + why, 0.8);
+    return;
+  }
+  paint();
+  el('lnFeedback').className = 'ln-fb try';
+  el('lnFeedback').innerHTML = '<b>Not quite.</b> ' + H(hint);
+  say('Not quite. ' + hint + ' Try again.', 0.8);
+}
+function finishLearn(){
+  const tag = (LN.subject === 'math' ? 'm:' : 'e:') + LN.L.id;
+  if(!me.seen.includes(tag)){ me.seen.push(tag); }
+  save();
+  if(LN.gate) openSheet(LN.subject);
+  else { show('work'); if(sheet && phase !== 'mark') startClock(true); }
+}
+
+/* ---------- buttons ---------- */
+el('lnNext').onclick = () => {
+  if(LN.phase === 'watch'){
+    if(LN.i < LN.steps.length - 1){ LN.i++; return paint(); }
+    if(LN.tries.length){ LN.phase = 'try'; LN.t = 0; LN.solved = false; LN.wrongs = 0; LN.entry = ''; LN.missed = []; LN.reveal = false; LN.spoke = false; return paint(); }
+    return finishLearn();
+  }
+  if(LN.phase === 'try'){
+    if(!LN.solved) return;
+    if(LN.t < LN.tries.length - 1){ LN.t++; LN.solved = false; LN.wrongs = 0; LN.entry = ''; LN.missed = []; LN.reveal = false; LN.spoke = false; return paint(); }
+    return finishLearn();
+  }
+};
+el('lnBack').onclick = () => { if(LN.phase === 'watch' && LN.i > 0){ LN.i--; paint(); } };
+el('lnHear').onclick = () => {
+  if(LN.phase === 'watch') say(LN.steps[LN.i].say, 0.82);
+  else speakTry(LN.tries[LN.t]);
+};
+el('lnSkip').onclick = () => { try{ speechSynthesis.cancel(); }catch(e){} show('home'); };
+
+/* every new level now opens "Learn it"; the 📖 button replays the example */
+window.openLesson = openLesson = function(subject, gate){ openLearn(subject, gate); };
+})();
+
+/* ===== V8.5 part 4: monthly check-ups, 1-minute reading check, parent tools ===== */
+(function(){
+'use strict';
+const {H, nw, todayKey, monthKey} = window.V85;
+const el = id => document.getElementById(id);
+const addDays = n => { const d = new Date(); d.setDate(d.getDate() + n); return dayKey(d); };
+const CLEAN_KEYS = ['given','marked','wrong','firstWrong','reveal','tries','ink','manual','partial','used','reads','spoke','review','retention','note'];
+const cleanItem = it => { const z = JSON.parse(JSON.stringify(it)); CLEAN_KEYS.forEach(k => delete z[k]); return z; };
+const monthName = k => { try{ return new Date(k + '-15T12:00:00').toLocaleDateString(undefined, {month:'long', year:'numeric'}); }catch(e){ return k; } };
+
+/* =====================================================================
+   MONTHLY CHECK-UP — everything she has mastered, mixed, ~15 questions
+   ===================================================================== */
+const CHECK_N = 15;
+function masteredLevels(sub){
+  const list = ladder(sub), cur = list.findIndex(l => l.id === me[sub]);
+  const done = new Set();
+  (me.history || []).forEach(h => { if(h.subject === sub && h.mastered) done.add(h.level); });
+  Object.keys(me.skillStats || {}).forEach(k => {
+    const i = k.indexOf(':'), s = k.slice(0, i), lv = k.slice(i+1), v = me.skillStats[k];
+    if(s === sub && v && v.passes >= 1) done.add(lv);
+  });
+  return list.filter((l, ix) => ix < cur && done.has(l.id));
+}
+function checkItemFrom(L){
+  let raw = [];
+  try {
+    if(typeof L.gen === 'function'){ for(let g = 0; g < 6; g++) raw.push(L.gen()); }
+    else raw = L.build(6);
+  } catch(e){ return null; }
+  if(raw.some(i => i && i.kind === 'passage')) return null;
+  const ok = raw.filter(it => it && ['math','seq','count','choice','pic','spell','tiles','bond','tens','story'].includes(it.kind));
+  if(!ok.length) return null;
+  let it = JSON.parse(JSON.stringify(pick(ok)));
+  if(it.kind === 'spell') it = window.V85.tilesItem(it.word);
+  if(L.stack && it.kind === 'math') it.stack = L.stack;
+  return it;
+}
+function buildCheckup(sub){
+  const lv = masteredLevels(sub);
+  const recent = lv.slice(-10), older = lv.slice(0, -10);
+  const chosen = recent.concat(sample(older, Math.min(5, older.length)));
+  const items = [], keys = new Set();
+  const addFrom = L => {
+    for(let g = 0; g < 4; g++){
+      const it = checkItemFrom(L);
+      if(!it || keys.has(it.key)) continue;
+      keys.add(it.key); it.lv = L.id; items.push(it); return true;
+    }
+    return false;
+  };
+  chosen.forEach(addFrom);
+  for(let pass = 0; pass < 2 && items.length < CHECK_N; pass++) recent.slice().reverse().forEach(L => { if(items.length < CHECK_N) addFrom(L); });
+  const final = shuffle(items.slice(0, CHECK_N));
+  final.forEach(it => {
+    it.given = (it.kind === 'choice' || it.kind === 'pic') ? null : '';
+    seqSafe(it);
+    if(writeMode() && it.kind === 'math') it.penMath = true;
+  });
+  return {subject:sub, level:me[sub], skill:'Monthly check-up · ' + monthName(monthKey()), isCheckup:true,
+    sct: Math.max(600, final.length * 50), single:true, items:final, assignedFor:todayKey(),
+    firstScore:undefined, firstTime:undefined};
+}
+function checkupDue(sub){
+  if(!me) return false;
+  const mk = monthKey();
+  if(me.checkupStart && mk <= me.checkupStart) return false;   /* first automatic one is next month */
+  if((me.checkups || []).some(c => c.subject === sub && c.month === mk)) return false;
+  if(me.checkupSnooze && me.checkupSnooze[sub] === todayKey()) return false;
+  return masteredLevels(sub).length >= 3;
+}
+window.v85checkupDue = checkupDue;
+let ckSubject = null, ckForced = false;
+function openCheckupIntro(sub, forced){
+  ckSubject = sub; ckForced = !!forced;
+  const n = Math.min(CHECK_N, masteredLevels(sub).length * 2);
+  el('ckTitle').textContent = (sub === 'math' ? 'Math' : 'Reading') + ' check-up';
+  el('ckBody').textContent = 'Once a month we check that everything you learned is still there. ' +
+    (n ? 'About ' + n + ' questions' : 'A few questions') + ' about things you already know. Some might be tricky — that is okay. Just do your best!';
+  show('checkup');
+  say('Check-up time! Once a month we check that everything you learned is still there. Some questions might be tricky. That is okay. Just do your best.', 0.84);
+}
+window.openCheckupIntro = openCheckupIntro;
+function openCheckup(sub){
+  sheet = buildCheckup(sub);
+  if(!sheet.items.length){ alert('Not enough finished levels yet for a check-up.'); return show('home'); }
+  workAheadDay = null; phase = 'work';
+  sel = sheet.items.findIndex(i => i.kind !== 'passage');
+  $('sheetId').textContent = (sub === 'math' ? 'Math' : 'Reading') + ' check-up';
+  $('sheetSkill').textContent = monthName(monthKey());
+  $('clock').textContent = '0:00'; $('clock').style.color = '';
+  $('bar').style.width = '0%';
+  show('work'); render(); startClock(false);
+}
+el('ckStart').onclick = () => openCheckup(ckSubject);
+el('ckLater').onclick = () => {
+  me.checkupSnooze = me.checkupSnooze || {};
+  me.checkupSnooze[ckSubject] = todayKey(); save();
+  try{ speechSynthesis.cancel(); }catch(e){}
+  if(ckForced) show('home'); else startSubject(ckSubject);
+};
+function finishCheckup(){
+  clearInterval(ticker);
+  const l = live(), sub = sheet.subject;
+  const secs = Math.round(sheet.firstTime || elapsed), score = sheet.firstScore, total = sheet.total;
+  const byLv = {};
+  l.forEach(it => { const k = it.lv || sheet.level; byLv[k] = byLv[k] || {n:0, ok:0}; byLv[k].n++; if(!it.firstWrong) byLv[k].ok++; });
+  const slipped = Object.keys(byLv).filter(k => byLv[k].ok < byLv[k].n);
+  me.checkups = me.checkups || [];
+  me.checkups = me.checkups.filter(c => !(c.subject === sub && c.month === monthKey()));
+  me.checkups.push({month:monthKey(), d:todayKey(), subject:sub, score, total, secs, slipped});
+  me.checkups = me.checkups.slice(-36);
+  me.reviewQueue = me.reviewQueue || [];
+  slipped.forEach(lv => {
+    const missed = l.filter(it => (it.lv || sheet.level) === lv && it.firstWrong).map(cleanItem).filter(usable);
+    if(missed.length) me.reviewQueue.push({subject:sub, level:lv, due:addDays(1), gap:1, items:missed.slice(0, 2), fromCheckup:true});
+  });
+  me.reviewQueue = me.reviewQueue.slice(-80);
+  me.sheets = me.sheets || [];
+  try{ me.sheets.unshift(snapshotSheet()); me.sheets = me.sheets.slice(0, KEEP_SHEETS); }catch(e){}
+  me.stars = (me.stars || 0) + 5;
+  save();
+  const pct = total ? score / total : 0;
+  $('stamp').textContent = '🌟';
+  $('stamp').classList.toggle('pass', pct >= 0.9);
+  $('rScore').textContent = score + '/' + total;
+  $('rTime').textContent = mmss(secs);
+  $('rStars').textContent = '+5 ⭐';
+  $('rMsg').textContent = 'Check-up finished! You remembered ' + score + ' of ' + total + '. ' +
+    (slipped.length ? 'The few that slipped will come back in your practice over the next days.' : 'Everything you learned is still there!') +
+    ' (Grown-ups: the details are in Parent → Monthly check-ups.)';
+  $('rDone').textContent = 'Back to today';
+  $('rDone').onclick = () => { workAheadDay = null; show('home'); };
+  SOUND.levelup();
+  say(slipped.length ? 'Check-up finished. Great work!' : 'Check-up finished. You remembered everything!', 0.84);
+  show('result');
+}
+
+/* =====================================================================
+   Hooks: check-up gate, Learn-it replay, failed retention goes back in
+   ===================================================================== */
+const startSubject0 = startSubject;
+window.startSubject = startSubject = function(subject){
+  if(me){
+    const L = lvl(subject, me[subject]);
+    const tag = (subject === 'math' ? 'm:' : 'e:') + L.id;
+    const due = me.lnReplay && me.lnReplay[tag];
+    if(due && due <= todayKey()){ me.seen = me.seen.filter(x => x !== tag); delete me.lnReplay[tag]; save(); }
+    if(!workAheadDay && !(me.testDue && me.testDue[subject]) && checkupDue(subject)) return openCheckupIntro(subject, false);
+  }
+  return startSubject0(subject);
+};
+const finish0 = finish;
+window.finish = finish = function(){
+  if(sheet && sheet.isCheckup) return finishCheckup();
+  const sub = sheet.subject, lvBefore = sheet.level, isTest = !!sheet.isTest;
+  const tag = (sub === 'math' ? 'm:' : 'e:') + lvBefore;
+  const dueBefore = (me.reviewQueue || []).filter(r => r.subject === sub && r.due <= todayKey()).map(r => JSON.parse(JSON.stringify(r)));
+  const ret = sheet.items.filter(i => i.retention && i.kind !== 'passage');
+  finish0();
+  let changed = false;
+  /* a missed spaced review goes back into practice two days later */
+  if(ret.length && dueBefore.length){
+    const ok = ret.filter(i => !i.firstWrong).length / ret.length;
+    if(ok < 0.9){ dueBefore.forEach(r => { r.due = addDays(2); r.gap = 2; me.reviewQueue.push(r); }); changed = true; }
+  }
+  /* Learn it replays the next day only after two weak sheets in a row */
+  if(!isTest && !me.seen.includes(tag)){
+    me.seen.push(tag);
+    const same = (me.history || []).filter(h => h.subject === sub && h.level === lvBefore);
+    const twoWeak = same.length >= 2 && !same[0].accuracyMastered && !same[1].accuracyMastered;
+    if(twoWeak && me[sub] === lvBefore){
+      me.lnReplay = me.lnReplay || {};
+      if(!me.lnReplay[tag]) me.lnReplay[tag] = addDays(1);
+    }
+    changed = true;
+  }
+  if(changed) save();
+};
+
+/* =====================================================================
+   1-MINUTE READING CHECK (oral reading fluency)
+   ===================================================================== */
+let FL = null;
+function fluPassage(){
+  const list = ladder('english'), idx = list.findIndex(l => l.id === me.english), eIdx = list.findIndex(l => l.id === 'E-1');
+  const n = (me.fluency || []).length;
+  if(idx < eIdx){
+    const pool = CVC_STORIES.concat(SIGHT_STORIES);
+    const a = pool[n % pool.length], b = pool[(n+1) % pool.length], c = pool[(n+2) % pool.length];
+    return {title:a.t, text:[a.x, b.x, c.x].join(' ')};
+  }
+  const s = SHORT_STORIES[n % SHORT_STORIES.length];
+  return {title:s.t, text:s.x};
+}
+function openFluency(){
+  const p = fluPassage();
+  FL = {title:p.title, words:p.text.split(/\s+/).filter(Boolean), errs:new Set(), state:'ready', secs:60, t0:0, timer:null, last:-1};
+  el('fluTitle').textContent = p.title;
+  paintFluency();
+  paintFluHist();
+  show('fluency');
+}
+window.openFluency = openFluency;
+function paintFluency(){
+  const box = el('fluText');
+  box.innerHTML = FL.words.map((w, k) => '<span data-k="' + k + '" class="' + (FL.errs.has(k) ? 'err' : '') + (k === FL.last ? ' last' : '') + (FL.last > -1 && k > FL.last ? ' after' : '') + '">' + H(w) + '</span>').join(' ');
+  [...box.querySelectorAll('span')].forEach(s => s.onclick = () => {
+    const k = +s.dataset.k;
+    if(FL.state === 'running'){ FL.errs.has(k) ? FL.errs.delete(k) : FL.errs.add(k); paintFluency(); }
+    else if(FL.state === 'pickLast'){ FL.last = k; FL.errs.forEach(e => { if(e > k) FL.errs.delete(e); }); FL.state = 'done'; scoreFluency(); }
+  });
+  const btn = el('fluStart'), stop = el('fluStop');
+  el('fluClock').textContent = mmss(Math.max(0, FL.secs));
+  if(FL.state === 'ready'){ btn.style.display = ''; btn.textContent = 'Start — she reads now'; stop.style.display = 'none'; el('fluMsg').textContent = 'Tap Start when she says the first word. Tap any word she misses or that you have to tell her.'; }
+  if(FL.state === 'running'){ btn.style.display = 'none'; stop.style.display = ''; el('fluMsg').textContent = 'Tap words she misses. Tap again to undo.'; }
+  if(FL.state === 'pickLast'){ btn.style.display = 'none'; stop.style.display = 'none'; el('fluMsg').textContent = 'Now tap the last word she reached.'; }
+  if(FL.state === 'done'){ btn.style.display = ''; btn.textContent = 'Do it again'; stop.style.display = 'none'; }
+}
+function stopFluency(early){
+  clearInterval(FL.timer);
+  FL.used = early ? Math.max(5, Math.round((Date.now() - FL.t0) / 1000)) : 60;
+  if(early){ FL.last = FL.words.length - 1; FL.state = 'done'; paintFluency(); scoreFluency(); }
+  else { FL.state = 'pickLast'; SOUND.done(); paintFluency(); }
+}
+function scoreFluency(){
+  const read = FL.last + 1, errs = [...FL.errs].filter(k => k <= FL.last).length;
+  const wcpm = Math.max(0, Math.round((read - errs) * 60 / (FL.used || 60)));
+  const acc = read ? Math.round((read - errs) / read * 100) : 0;
+  me.fluency = me.fluency || [];
+  me.fluency.push({d:todayKey(), title:FL.title, wcpm, errors:errs, words:read, secs:FL.used, acc});
+  me.fluency = me.fluency.slice(-24);
+  save();
+  el('fluMsg').innerHTML = '<b>' + wcpm + ' words correct per minute</b> · ' + acc + '% accurate (' + errs + ' missed of ' + read + ').';
+  paintFluency(); el('fluMsg').innerHTML = '<b>' + wcpm + ' words correct per minute</b> · ' + acc + '% accurate (' + errs + ' missed of ' + read + ').';
+  paintFluHist();
+}
+function fluHistHTML(){
+  const f = (me.fluency || []).slice(-6).reverse();
+  if(!f.length) return '<p class="hint" style="text-align:left">No reading checks yet.</p>';
+  return '<table><thead><tr><th>Date</th><th>Words/min</th><th>Accuracy</th><th>Passage</th></tr></thead><tbody>' +
+    f.map(x => '<tr><td>' + H(x.d) + '</td><td><b>' + x.wcpm + '</b></td><td>' + (x.acc === undefined ? '' : x.acc + '%') + '</td><td>' + H(x.title) + '</td></tr>').join('') + '</tbody></table>';
+}
+function paintFluHist(){ el('fluHist').innerHTML = fluHistHTML(); }
+el('fluStart').onclick = () => {
+  if(FL.state === 'done'){ return openFluency(); }
+  FL.state = 'running'; FL.t0 = Date.now(); FL.secs = 60;
+  FL.timer = setInterval(() => {
+    FL.secs = 60 - Math.floor((Date.now() - FL.t0) / 1000);
+    el('fluClock').textContent = mmss(Math.max(0, FL.secs));
+    if(FL.secs <= 0) stopFluency(false);
+  }, 250);
+  paintFluency();
+};
+el('fluStop').onclick = () => stopFluency(true);
+el('fluClose').onclick = () => { if(FL) clearInterval(FL.timer); show('parent'); };
+
+/* =====================================================================
+   PARENT SCREEN — jump to a level, teaching tips, check-up history
+   ===================================================================== */
+function levelOptions(sub){
+  return ladder(sub).map(L => '<option value="' + H(L.id) + '"' + (L.id === me[sub] ? ' selected' : '') + '>' + H(L.id + ' — ' + L.skill) + '</option>').join('');
+}
+function paintV85Parent(){
+  if(!me || !el('v85SelMath')) return;
+  el('v85SelMath').innerHTML = levelOptions('math');
+  el('v85SelEng').innerHTML = levelOptions('english');
+  const tip = sub => {
+    const L = lvl(sub, me[sub]), list = ladder(sub), i = list.findIndex(l => l.id === L.id), nx = list[i+1];
+    return '<div class="v85tip"><b>' + (sub === 'math' ? 'Math' : 'Reading & Writing') + ' · ' + H(L.id) + ' — ' + H(L.skill) + '</b>' +
+      '<p>' + H(L.lesson.tip) + '</p>' + (nx ? '<small>Up next: ' + H(nx.id + ' — ' + nx.skill) + '</small>' : '') + '</div>';
+  };
+  el('v85Tips').innerHTML = tip('math') + tip('english');
+  const cks = (me.checkups || []).slice(-8).reverse();
+  el('v85Checks').innerHTML = cks.length ? '<table><thead><tr><th>Month</th><th>Subject</th><th>Score</th><th>Slipped — now back in practice</th></tr></thead><tbody>' +
+    cks.map(c => '<tr><td>' + H(monthName(c.month)) + '</td><td>' + (c.subject === 'math' ? 'Math' : 'Reading') + '</td><td><b>' + c.score + '/' + c.total + '</b></td><td>' +
+      (c.slipped.length ? c.slipped.map(id => H(id + ' ' + lvl(c.subject, id).skill)).join('<br>') : 'Nothing — all retained') + '</td></tr>').join('') + '</tbody></table>'
+    : '<p class="hint" style="text-align:left">No check-ups yet. The first automatic one runs ' + (me.checkupStart ? 'next month' : 'on the first practice day of the month') + '. You can run one any time below.</p>';
+  el('v85Flu').innerHTML = fluHistHTML();
+  const due = ['math','english'].filter(checkupDue);
+  el('v85CkNote').textContent = due.length ? 'A check-up is due now for ' + due.map(s => s === 'math' ? 'Math' : 'Reading').join(' and ') + '. It will start the next time she opens that subject.' : '';
+}
+const paintParent0 = paintParent;
+window.paintParent = paintParent = function(){ paintParent0(); try{ paintV85Parent(); }catch(e){ console.error(e); } };
+el('v85SetLv').onclick = () => {
+  const m = el('v85SelMath').value, e = el('v85SelEng').value;
+  if(m === me.math && e === me.english) return;
+  const msg = 'Move ' + me.name + ' to:\n\nMath ' + m + ' — ' + lvl('math', m).skill + '\nReading ' + e + ' — ' + lvl('english', e).skill +
+    '\n\nHer history and saved sheets stay. The new level starts with its Learn it lesson.';
+  if(!confirm(msg)) return paintV85Parent();
+  ['math','english'].forEach(sub => {
+    const v = sub === 'math' ? m : e;
+    if(v === me[sub]) return;
+    me[sub] = v;
+    if(me.testDue) delete me.testDue[sub];
+    const tag = (sub === 'math' ? 'm:' : 'e:') + v;
+    me.seen = (me.seen || []).filter(x => x !== tag);
+  });
+  save(); paintParent();
+};
+el('v85RunMath').onclick = () => openCheckupIntro('math', true);
+el('v85RunEng').onclick = () => openCheckupIntro('english', true);
+el('v85FluGo').onclick = openFluency;
+
+/* home screen badges */
+const paintHome0 = paintHome;
+window.paintHome = paintHome = function(){
+  paintHome0();
+  ['Math','Eng'].forEach(k => {
+    const b = el('new' + k); if(!b) return;
+    b.innerHTML = b.innerHTML.replace('NEW — LESSON', 'NEW — LEARN IT');
+    const sub = k === 'Math' ? 'math' : 'english';
+    if(!(me.testDue && me.testDue[sub]) && checkupDue(sub)) b.innerHTML = '<span class="badge ck">CHECK-UP</span>';
+  });
+};
+
+/* =====================================================================
+   One-time move onto the new path — nothing is erased
+   ===================================================================== */
+const migrate0 = migrate;
+window.migrate = migrate = function(){
+  migrate0();
+  DB.students.forEach(s => {
+    if(s.v85) return;
+    s.v85 = todayKey();
+    s.checkupStart = monthKey();
+    const m = /^3A-(\d+)$/.exec(s.english || '');
+    if(m && +m[1] >= 1 && +m[1] <= 12){
+      s.english = '3A-' + m[1] + 't';
+      s.seen = (s.seen || []).filter(x => x !== 'e:' + s.english);
+    }
+  });
+};
+})();
+
+</script>
 </body>
 </html>
