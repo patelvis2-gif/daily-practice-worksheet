@@ -123,6 +123,16 @@ function barHTML(it, solved){
       '<div class="r"><i>' + H(it.p1) + '</i><div class="track">' + seg(x, n(x)) + '</div></div>' +
       '<div class="r"><i>' + H(it.p2) + '</i><div class="track">' + seg(y, n(y), 'b2') + seg(x - y, Q, 'unk dash') + '</div></div></div>';
   }
+  if(t === 'groups' || t === 'share' || t === 'groupsOf'){
+    const k = t === 'groups' ? x : t === 'share' ? y : x / y, each = t === 'groups' ? y : t === 'share' ? x / y : y;
+    const whole = t === 'groups' ? Q : n(x);
+    const lab = j => (t === 'share' ? (solved ? '<b class="okv">' + each + '</b>' : (j === 0 ? '<b class="qv">?</b>' : '')) : n(each));
+    const shown = Math.min(k, 10);
+    let segs = '';
+    for(let j = 0; j < shown; j++) segs += seg(1, j === shown - 1 && k > 10 ? '…' : lab(j));
+    const cap = t === 'groupsOf' ? '<div class="v87cnt">' + (solved ? '<b class="okv">' + k + '</b>' : '<b class="qv">?</b>') + ' bags</div>' : '';
+    return '<div class="v87bar"><div class="whole"><span>' + whole + '</span></div><div class="track">' + segs + '</div>' + cap + '</div>';
+  }
   /* compMore: p2 has y more than p1 (x) */
   return '<div class="v87cmp">' +
     '<div class="r"><i>' + H(it.p1) + '</i><div class="track">' + seg(x, n(x)) + seg(y, '', 'void') + '</div></div>' +
@@ -179,6 +189,9 @@ function story2(type, x, y){
   else if(type === 'compMore'){ a = x + y; text = p1 + ' has ' + x + ' ' + th + '. ' + p2 + ' has ' + y + ' more than ' + p1 + '. How many ' + th + ' does ' + p2 + ' have?'; }
   else if(type === 'sep'){ a = x - y; text = p1 + ' has ' + x + ' ' + th + '. ' + p1 + ' gives ' + y + ' to ' + p2 + '. How many ' + th + ' does ' + p1 + ' have left?'; }
   else if(type === 'partP'){ a = x - y; text = p1 + ' has ' + x + ' ' + th + '. ' + y + ' of them are red and the rest are blue. How many are blue?'; }
+  else if(type === 'groups'){ a = x * y; const box = pick(['bags','boxes','plates','jars']); text = 'There are ' + x + ' ' + box + '. Each one has ' + y + ' ' + th + '. How many ' + th + ' are there in all?'; }
+  else if(type === 'share'){ a = x / y; text = p1 + ' has ' + x + ' ' + th + ' and shares them equally with ' + y + ' friends. How many ' + th + ' does each friend get?'; }
+  else if(type === 'groupsOf'){ a = x / y; text = p1 + ' has ' + x + ' ' + th + ' and puts ' + y + ' in each bag. How many bags does ' + p1 + ' fill?'; }
   else { type = 'comp'; a = x - y; text = p1 + ' has ' + x + ' ' + th + '. ' + p2 + ' has ' + y + ' ' + th + '. How many more ' + th + ' does ' + p1 + ' have than ' + p2 + '?'; }
   return {kind:'story2', type, x, y, a, p1, p2, th, text, q:text, say:text, audioRate:0.86, key:'s2:' + type + ':' + x + ':' + y};
 }
@@ -189,6 +202,8 @@ function storyFromMath(it){
   if(!(x >= 2 && y >= 2) || it.a >= 1000) return null;
   if(it.op === '+') return story2(pick(ADD_TYPES), x, y);
   if(it.op === '−' && x - y >= 1) return story2(pick(SUB_TYPES), x, y);
+  if(it.op === '×') return story2('groups', x, y);
+  if(it.op === '÷' && x % y === 0 && x / y >= 2) return story2(pick(['share','groupsOf']), x, y);
   return null;
 }
 window.v87story2 = story2;
@@ -367,7 +382,7 @@ function mixItems(n, keys, single){
   }
   return out;
 }
-const storyLevel = lv => /^B-\d+$/.test(lv) || lv === 'A-1' || lv === 'A-2' || lv === 'E-1' || lv === 'E-2';
+const storyLevel = lv => /^B-\d+$/.test(lv) || /^[CD]-\d+$/.test(lv) || lv === 'A-1' || lv === 'A-2' || lv === 'E-1' || lv === 'E-2';
 function daysAtLevel(sub, lv){
   return new Set((me.history || []).filter(h => h.subject === sub && h.level === lv).map(h => h.d)).size;
 }
@@ -573,6 +588,21 @@ function blocksSteps(it){
 }
 function storySteps(it){
   const t = it.type, x = it.x, y = it.y, a = it.a;
+  if(t === 'groups' || t === 'share' || t === 'groupsOf'){
+    const head0 = '<p class="ln-stepline">' + H(it.text) + '</p>';
+    const hint = t === 'groups' ? 'Draw ' + x + ' equal parts, with ' + y + ' in each part. We want the whole.'
+               : t === 'share' ? 'The whole is ' + x + '. Split it into ' + y + ' equal parts. We want how many in one part.'
+               : 'The whole is ' + x + '. Each part is ' + y + '. We want how many parts.';
+    const sum = t === 'groups' ? x + ' × ' + y : x + ' ÷ ' + y;
+    const how = t === 'groups' ? x + ' groups of ' + y + ' is ' + x + ' times ' + y + '. Skip count by ' + y + ': ' + range(1, x).map(k => k * y).join(', ') + '.'
+              : 'Sharing into equal groups is dividing: ' + x + ' divided by ' + y + '. Ask: ' + y + ' times what makes ' + x + '?';
+    const end = t === 'groups' ? 'There are ' + a + ' in all.' : t === 'share' ? 'Each friend gets ' + a + '.' : 'That fills ' + a + ' bags.';
+    return [
+      {html: head0, say: it.text},
+      {html: head0 + barHTML(it, false), say: hint},
+      {html: barHTML(it, false) + big(sum), say: how},
+      {html: barHTML(it, true) + big(sum + ' = <b class="ok">' + a + '</b>'), say: sum.replace('×', 'times').replace('÷', 'divided by') + ' is ' + a + '. ' + end}];
+  }
   const head = '<p class="ln-stepline">' + H(it.text) + '</p>';
   const hint = {join:'Draw a bar with two parts: ' + x + ' and ' + y + '. We want the whole bar.',
     partW:'Two parts: ' + x + ' red and ' + y + ' blue. We want the whole bar.',

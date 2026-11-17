@@ -1,0 +1,27 @@
+/* ===== V8.7 work space ===== */
+:root{--v88col:52px}
+.v88stack{min-width:150px}
+.v88work{position:relative;display:flex;justify-content:flex-end;padding:0 2px}
+.v88work .gw{position:relative;display:inline-block}
+.v88work .g{display:grid;font-weight:800;font-size:2.3rem;line-height:1.2;font-variant-numeric:tabular-nums}
+.v88work .g span{text-align:center}
+.v88work .g .op{text-align:left;color:var(--ink-soft)}
+.v88work .g .d.m{height:34px;border-bottom:1px dashed #E2E8F0}
+.v88work .v88mk{position:absolute;left:-10px;top:-6px;width:calc(100% + 20px);height:calc(100% + 8px);cursor:crosshair;z-index:2}
+.v88work .v88clr{position:absolute;top:-4px;left:-34px;z-index:3;width:26px;height:26px;border-radius:50%;background:#F1F3F5;color:var(--ink-soft);font-size:.8rem;font-weight:800;line-height:26px;padding:0}
+.v88rev{margin:6px 0 4px;justify-content:flex-start;flex-direction:column;align-items:flex-start;max-width:220px}
+.v88rev small{font-weight:800;color:var(--ink-soft);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em}
+.grid.math-column .prob .v88stack{flex:0 0 auto}
+.v88cells{display:inline-flex;gap:4px;justify-content:flex-end}
+.v88cells .c{width:36px;height:44px;border-bottom:3px solid var(--rule);display:inline-flex;align-items:flex-end;justify-content:center;font-size:2rem;font-weight:800;color:var(--me)}
+.v88cells .c.f{border-color:var(--ink)}
+.v88cells .c.cur{border-color:var(--gold);background:#FFF8E1;border-radius:6px 6px 0 0}
+#v88scratch{position:fixed;inset:0;z-index:80;background:#fff;display:none;flex-direction:column}
+#v88scratch.on{display:flex}
+#v88scratch .bar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:2px solid var(--rule);background:#FFFDF5}
+#v88scratch .bar b{font-size:1.1rem}
+#v88scratch .bar span{flex:1;color:var(--ink-soft);font-size:.85rem;font-weight:700}
+#v88scratch .bar button{padding:10px 16px;border-radius:10px;background:var(--desk);font-weight:800}
+#v88scratch .bar button.go{background:var(--gold)}
+#v88scratch canvas{flex:1;width:100%;background-image:linear-gradient(#EEF2F7 1px,transparent 1px),linear-gradient(90deg,#EEF2F7 1px,transparent 1px);background-size:32px 32px;touch-action:none}
+@media(max-width:480px){:root{--v88col:44px} .v88work .g{font-size:2rem} #v88scratch .bar span{display:none}}

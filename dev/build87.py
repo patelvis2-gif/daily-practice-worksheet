@@ -73,8 +73,10 @@ rep("function tryView(it){\n  const box = document.createElement('div'); box.cla
 rep("['math','seq','count','choice','pic','spell','tiles','bond','tens','story'].includes(it.kind)",
     "['math','seq','count','choice','pic','spell','tiles','bond','tens','story','story2','trade','money'].includes(it.kind)")
 
-tail = '<style>\n' + (d / 'v87.css').read_text() + '</style>\n<script>\n' + (d / 'v87.js').read_text() + '\n</script>\n'
+tail = '<style>\n' + (d / 'v87.css').read_text() + (d / 'v87-work.css').read_text() + (d / 'v87-content.css').read_text() + '</style>\n<script>\n' + (d / 'v87.js').read_text() + '\n' + (d / 'v87-content.js').read_text() + '\n' + (d / 'v87-work.js').read_text() + '\n</script>\n'
 assert out.count('</body>') == 1
 out = out.replace('</body>', tail + '</body>')
-(d.parent / 'index.html').write_text(out)
+import sys
+dest = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else d.parent / 'index.html'
+dest.write_text(out)
 print('built', len(out))
