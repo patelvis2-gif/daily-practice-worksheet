@@ -52,6 +52,12 @@ rep("""    <h4>Sheets a day</h4>
     <div class="ages" id="qPerRow"></div>
     <div id="perDayRow" style="display:none"></div>""")
 
+# student picker uses the per-subject amounts
+rep("const sk=dayKey(), sg=s.perDay||defaultDailySheets(s.age);",
+    "const sk=dayKey(), sgM=s.perDayMath||s.perDay||defaultDailySheets(s.age), sgE=s.perDayEng||s.perDay||defaultDailySheets(s.age);")
+rep("const dm=sm>=sg, de=se>=sg;", "const dm=sm>=sgM, de=se>=sgE;")
+rep("(sg+' sheets / subject target')", "(sgM===sgE ? sgM+' sheets a subject today' : sgM+' math + '+sgE+' reading sheets today')")
+
 # mastery: judged on this level's own questions
 rep("const accuracyMastered = pct >= (earlyLearner ? 0.90 : 0.90);",
     "const accuracyMastered = (!sheet.isTest && typeof v87AccuracyOK === 'function') ? v87AccuracyOK(score, total) : pct >= 0.90;")

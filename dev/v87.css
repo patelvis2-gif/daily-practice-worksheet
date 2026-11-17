@@ -43,7 +43,7 @@
 
 /* written column */
 .v87col{display:inline-grid;font-family:var(--hand);font-size:2.3rem;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
-.v87col .r{display:grid;grid-template-columns:28px 34px 44px;text-align:right}
+.v87col .r{display:grid;grid-template-columns:28px 26px 34px 44px;text-align:right}
 .v87col .r.m{font-size:1.15rem;color:var(--pen);min-height:1.2em}
 .v87col .r.m .mk{text-align:center}
 .v87col .op{text-align:left;color:var(--ink-soft)}

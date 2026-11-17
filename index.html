@@ -4344,12 +4344,12 @@ function paintWho(){
   DB.students.forEach(s=>{
     const b = document.createElement('button');
     b.className = 'kid';
-    const sk=dayKey(), sg=s.perDay||defaultDailySheets(s.age);
+    const sk=dayKey(), sgM=s.perDayMath||s.perDay||defaultDailySheets(s.age), sgE=s.perDayEng||s.perDay||defaultDailySheets(s.age);
     const sm=(s.history||[]).filter(h=>h.subject==='math'&&(h.assignedFor||h.d)===sk).length;
     const se=(s.history||[]).filter(h=>h.subject==='english'&&(h.assignedFor||h.d)===sk).length;
-    const dm=sm>=sg, de=se>=sg;
+    const dm=sm>=sgM, de=se>=sgE;
     b.innerHTML = '<span class="face" style="background:'+s.color+'22;color:'+s.color+'">'+s.face+'</span>'+
-      '<b>'+esc(s.name)+'</b><small>'+(dm&&de ? '✓ done today' : (sm||se ? 'practice started' : (sg+' sheets / subject target')))+'</small>';
+      '<b>'+esc(s.name)+'</b><small>'+(dm&&de ? '✓ done today' : (sm||se ? 'practice started' : (sgM===sgE ? sgM+' sheets a subject today' : sgM+' math + '+sgE+' reading sheets today')))+'</small>';
     b.onclick = () => { me = s; DB.last = s.id; save(); show('home'); };
     k.appendChild(b);
   });
@@ -6874,7 +6874,7 @@ window.paintParent = paintParent = function(){ paintParent1(); try{ paintSoundPa
 
 /* written column */
 .v87col{display:inline-grid;font-family:var(--hand);font-size:2.3rem;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
-.v87col .r{display:grid;grid-template-columns:28px 34px 44px;text-align:right}
+.v87col .r{display:grid;grid-template-columns:28px 26px 34px 44px;text-align:right}
 .v87col .r.m{font-size:1.15rem;color:var(--pen);min-height:1.2em}
 .v87col .r.m .mk{text-align:center}
 .v87col .op{text-align:left;color:var(--ink-soft)}
@@ -7030,18 +7030,20 @@ function blocksHTML(o){
 function colHTML(x, y, op, st){
   st = st || {};
   const xT = Math.floor(x / 10), xO = x % 10, yT = Math.floor(y / 10), yO = y % 10;
-  const ans = op === '+' ? x + y : x - y, aT = Math.floor(ans / 10), aO = ans % 10;
-  const mark = st.borrow ? '<span class="t mk">' + (xT - 1) + '</span><span class="o"></span>'
-             : st.carry ? '<span class="t mk">1</span><span class="o"></span>' : '<span class="t"></span><span class="o"></span>';
+  const ans = op === '+' ? x + y : x - y, aH = Math.floor(ans / 100), aT = Math.floor(ans / 10) % 10, aO = ans % 10;
+  const cell = (cls, v) => '<span class="' + cls + '">' + v + '</span>';
+  const mark = st.borrow ? cell('h', '') + cell('t mk', xT - 1) + cell('o', '')
+             : st.carry ? cell('h', '') + cell('t mk', '1') + cell('o', '') : cell('h', '') + cell('t', '') + cell('o', '');
   const topT = xT ? (st.borrow ? '<s>' + xT + '</s>' : String(xT)) : '';
   const topO = (st.borrow ? '<sup>1</sup>' : '') + xO;
   const showO = st.ones || st.done, showT = st.tens || st.done;
+  const hiT = st.hiTens ? ' hi' : '', hiO = st.hiOnes ? ' hi' : '';
   return '<div class="v87col">' +
     '<div class="r m"><span class="op"></span>' + mark + '</div>' +
-    '<div class="r"><span class="op"></span><span class="t' + (st.hiTens ? ' hi' : '') + '">' + topT + '</span><span class="o' + (st.hiOnes ? ' hi' : '') + '">' + topO + '</span></div>' +
-    '<div class="r"><span class="op">' + op + '</span><span class="t' + (st.hiTens ? ' hi' : '') + '">' + (yT || '') + '</span><span class="o' + (st.hiOnes ? ' hi' : '') + '">' + yO + '</span></div>' +
+    '<div class="r"><span class="op"></span>' + cell('h', '') + cell('t' + hiT, topT) + cell('o' + hiO, topO) + '</div>' +
+    '<div class="r"><span class="op">' + op + '</span>' + cell('h', '') + cell('t' + hiT, yT || '') + cell('o' + hiO, yO) + '</div>' +
     '<div class="bar"></div>' +
-    '<div class="r a"><span class="op"></span><span class="t">' + (showT && (aT || ans >= 100) ? aT : '') + '</span><span class="o">' + (showO ? aO : '') + '</span></div></div>';
+    '<div class="r a"><span class="op"></span>' + cell('h', showT && aH ? aH : '') + cell('t', showT && ans >= 10 ? aT : '') + cell('o', showO ? aO : '') + '</div></div>';
 }
 const big = s => '<div class="ln-big">' + s + '</div>';
 const pair = (a, b) => '<div class="v87pair">' + a + b + '</div>';
@@ -7129,7 +7131,7 @@ const ADD_TYPES = ['join','partW','compMore'], SUB_TYPES = ['sep','partP','comp'
 function storyFromMath(it){
   if(!it || it.kind !== 'math') return null;
   const x = it.top, y = it.bottom;
-  if(!(x >= 2 && y >= 2)) return null;
+  if(!(x >= 2 && y >= 2) || it.a >= 1000) return null;
   if(it.op === '+') return story2(pick(ADD_TYPES), x, y);
   if(it.op === '−' && x - y >= 1) return story2(pick(SUB_TYPES), x, y);
   return null;
@@ -7149,16 +7151,18 @@ function senseFromMath(it){
     let opts = [0,1,2,3].map(k => start + k * u);
     if(!opts.includes(est)) opts = [est - u, est, est + u, est + 2 * u].filter(v => v > 0);
     const q = 'About how much is <b>' + x + ' ' + op + ' ' + y + '</b>? Do not work it out — think in ' + (u === 10 ? 'tens' : 'hundreds') + '.';
-    return {kind:'choice', sense:'est', q, opts: opts.map(String), a: opts.indexOf(est), key:'sense:e:' + x + op + y, given:null,
+    return {kind:'choice', sense:'est', q, opts: opts.map(String), a: opts.indexOf(est), key:'sense:e:' + x + op + y, given:null, spkLabel:'Hear it',
+      say:'About how much is ' + x + (op === '+' ? ' plus ' : ' minus ') + y + '? Do not work it out. Think in ' + (u === 10 ? 'tens' : 'hundreds') + '.',
       ex:{x, y, op, ans, u, rx:r(x), ry:r(y), est}};
   }
   let q, a, opts;
   if(op === '−'){ q = ans + ' + ' + y + ' = ' + x + '.  So <b>' + x + ' − ' + y + ' = ?</b>'; a = ans; opts = [ans, y, x, x + y]; }
   else { q = x + ' + ' + y + ' = ' + ans + '.  So <b>' + ans + ' − ' + y + ' = ?</b>'; a = x; opts = [x, y, ans, ans + y]; }
   opts = [...new Set(opts)];
-  while(opts.length < 4) opts.push(a + 10 * opts.length);
+  for(let k = 1; opts.length < 4 && k < 40; k++){ const v = a + 10 * k; if(!opts.includes(v)) opts.push(v); }
   opts = shuffle(opts);
-  return {kind:'choice', sense:'inv', q, opts: opts.map(String), a: opts.indexOf(a), key:'sense:i:' + x + op + y, given:null, ex:{x, y, op, ans}};
+  const said = op === '−' ? ans + ' plus ' + y + ' equals ' + x + '. So ' + x + ' minus ' + y + ' equals what?' : x + ' plus ' + y + ' equals ' + ans + '. So ' + ans + ' minus ' + y + ' equals what?';
+  return {kind:'choice', sense:'inv', q, opts: opts.map(String), a: opts.indexOf(a), key:'sense:i:' + x + op + y, given:null, ex:{x, y, op, ans}, say:said, spkLabel:'Hear it'};
 }
 
 /* trade a ten */
@@ -7200,7 +7204,7 @@ function clockItem(){
   const c = new Set([fmt(h, m), fmt(h, 30 - m), m ? fmt(nx, 30) : fmt(nx, 0), m ? fmt(pv, 0) : fmt(pv, 30)]);
   let k = 2; while(c.size < 4){ c.add(fmt((h + k) % 12 + 1, m)); k++; }
   const opts = shuffle([...c]);
-  return {kind:'choice', clock:{h, m}, q:'<div class="v87clkwrap">' + clockSVG(h, m) + '</div>What time is it?', opts, a: opts.indexOf(fmt(h, m)), given:null, key:'clk:' + fmt(h, m)};
+  return {kind:'choice', clock:{h, m}, say:'What time is it? Look at the short hand, then the long hand.', spkLabel:'Hear it', q:'<div class="v87clkwrap">' + clockSVG(h, m) + '</div>What time is it?', opts, a: opts.indexOf(fmt(h, m)), given:null, key:'clk:' + fmt(h, m)};
 }
 
 /* measuring with a ruler */
@@ -7213,7 +7217,7 @@ function rulerItem(){
   let k = 2; while(c.size < 4){ c.add(len + k); k++; }
   const opts = shuffle([...c].filter(v => v >= 1).slice(0, 4));
   while(opts.length < 4){ const v = len + opts.length + 1; if(!opts.includes(v)) opts.push(v); }
-  return {kind:'choice', ruler:{start, end, len, name: th[0]}, q:'<div class="v87rulwrap">' + rulerSVG(start, end, th[1]) + '</div>How long is the ' + th[0] + '?' +
+  return {kind:'choice', ruler:{start, end, len, name: th[0]}, say:'How long is the ' + th[0] + '?' + (start ? ' Careful, look where it starts.' : ''), spkLabel:'Hear it', q:'<div class="v87rulwrap">' + rulerSVG(start, end, th[1]) + '</div>How long is the ' + th[0] + '?' +
     (start ? ' <small>(Careful — look where it starts.)</small>' : ''), opts: opts.map(v => v + (v === 1 ? ' inch' : ' inches')),
     a: opts.indexOf(len), given:null, key:'rul:' + start + ':' + end + ':' + th[0]};
 }
@@ -7286,7 +7290,7 @@ function oneFrom(L, single){
   let raw = [];
   try { if(typeof L.gen === 'function'){ for(let g = 0; g < 5; g++) raw.push(L.gen()); } else raw = L.build(4); } catch(e){ return null; }
   if(raw.some(i => i && i.kind === 'passage')) return null;
-  const ok = raw.filter(it => it && MIX_KINDS.has(it.kind) && !it.hw && !(it.kind === 'choice' && (it.say || it.phoneme) && !single));
+  const ok = raw.filter(it => it && MIX_KINDS.has(it.kind) && !it.hw && !(it.kind === 'choice' && (it.phoneme || (it.say && !it.sense && !it.clock && !it.ruler)) && !single));
   if(!ok.length) return null;
   const it = JSON.parse(JSON.stringify(pick(ok)));
   if(it.kind === 'math'){ it.stack = L.stack; if(writeMode()) it.penMath = true; }
@@ -7376,13 +7380,13 @@ window.buildSheet = buildSheet = function(subject){
   return sh;
 };
 
-/* mastery is judged on this level's questions — review never blocks moving up.
-   At most one slip on the level's own work (two on long sheets). */
+/* mastery is judged on this level's own questions — review never blocks moving up.
+   One slip is allowed when there are at least 6 of them; fewer must all be right. */
 window.v87AccuracyOK = function(score, total){
   const l = live().filter(i => !i.review && !i.retention && !i.mixed);
   if(!l.length) return total ? score / total >= 0.9 : false;
   const miss = l.filter(i => i.firstWrong).length;
-  return miss <= Math.max(1, Math.floor(l.length / 10));
+  return l.length >= 6 ? miss <= Math.max(1, Math.floor(l.length / 10)) : miss === 0;
 };
 
 /* =====================================================================
@@ -7409,7 +7413,7 @@ function padEl(it, i){
       e.stopPropagation();
       if(k === '⌫') it.given = String(it.given || '').slice(0, -1);
       else if(k === '✓'){ if(String(it.given || '').length) return nextOpen(i); return; }
-      else if(String(it.given || '').length < 3) it.given = String(it.given || '') + k;
+      else if(String(it.given || '').length < 4) it.given = String(it.given || '') + k;
       sel = i; render();
     };
     p.appendChild(b);
@@ -7453,6 +7457,13 @@ const isRight1 = isRight;
 window.isRight = isRight = function(it){
   if(it && KINDS.has(it.kind)) return String(it.given || '').trim() !== '' && Number(it.given) === it.a;
   return isRight1(it);
+};
+const asked1 = askedText;
+window.askedText = askedText = function(it){
+  if(it && it.clock) return 'Clock showing ' + fmt(it.clock.h, it.clock.m) + ' — what time is it?';
+  if(it && it.ruler) return 'Ruler: ' + it.ruler.name + ' from ' + it.ruler.start + ' to ' + it.ruler.end + ' in — how long?';
+  if(it && it.kind === 'money') return 'Coins: ' + it.coins.map(c => COIN[c].t).join(' ');
+  return asked1(it);
 };
 const EXTRA = ['type','x','y','p1','p2','th','text','t','o','n','ask','coins','mixed','sense','ex','clock','ruler','lv'];
 const snap1 = snapshotSheet;
@@ -7500,7 +7511,7 @@ function blocksSteps(it){
   else s.push({html: pair(blocksHTML({rods:xT + yT, ones:sum, altRods:yT, altOnes:yO}), colHTML(x, y, op, {ones:true, hiOnes:true})), say:'Write ' + sum + ' in the ones.'});
   const tt = xT + yT + (carry ? 1 : 0);
   s.push({html: pair(blocksHTML({rods:tt, ones:sum % 10, newRod:carry, hiRods:true}), colHTML(x, y, op, {carry, ones:true, tens:true, hiTens:true})),
-    say:'Now the tens: ' + (carry ? '1 plus ' : '') + xT + ' plus ' + yT + ' is ' + tt + '.'});
+    say:'Now the tens: ' + (carry ? '1 plus ' : '') + xT + ' plus ' + yT + ' is ' + tt + '.' + (tt >= 10 ? ' That is ' + tt + ' tens — write ' + (tt % 10) + ' in the tens and 1 in the hundreds, because ten tens make a hundred.' : '')});
   s.push({html: pair(blocksHTML({rods:tt, ones:sum % 10}), colHTML(x, y, op, {carry, done:true})) + big(x + ' + ' + y + ' = <b class="ok">' + ans + '</b>'),
     say: x + ' plus ' + y + ' is ' + ans + '.'});
   return s;
@@ -7603,7 +7614,7 @@ function keypad(LN, onGo, lock){
     b.onclick = () => {
       if(k === '⌫') LN.entry = String(LN.entry || '').slice(0, -1);
       else if(k === '✓'){ if(String(LN.entry || '').length) onGo(Number(LN.entry)); return; }
-      else if(String(LN.entry || '').length < 3) LN.entry = String(LN.entry || '') + k;
+      else if(String(LN.entry || '').length < 4) LN.entry = String(LN.entry || '') + k;
       window.V87._repaint();
     };
     pad.appendChild(b);
@@ -7677,15 +7688,17 @@ window.addStudent = addStudent = function(name, age){
   return s;
 };
 /* after the "Trade a ten" refresher she goes straight back to her level */
+(function(){ const b = document.getElementById('v85SetLv'); if(b) b.addEventListener('click', () => { if(me && me.v87return && me.math !== 'B-6t'){ delete me.v87return; save(); } }); })();
 const finish2 = finish;
 window.finish = finish = function(){
   const lv = sheet && sheet.level, sub = sheet && sheet.subject, skip = !sheet || sheet.isTest || sheet.isCheckup;
   finish2();
   if(skip || sub !== 'math' || !me || !me.v87return) return;
+  const list = ladder('math'), at = id => list.findIndex(l => l.id === id), past = at(me.math) > at('B-6t');
+  if(!past) return;                       /* still on (or stepped back below) the refresher: keep the return point */
   if(lv === 'B-6t'){
-    if(me.math !== 'B-6t'){
-      const list = ladder('math');
-      if(list.findIndex(l => l.id === me.v87return) > list.findIndex(l => l.id === me.math)){
+    {
+      if(at(me.v87return) > at(me.math)){
         me.math = me.v87return;
         try{
           const L = lvl('math', me.math), m = $('rMsg'), note = 'Next time: ' + L.id + ' — ' + L.skill + ' (back to her level after the trade-a-ten refresher).';
@@ -7694,7 +7707,7 @@ window.finish = finish = function(){
       }
       delete me.v87return; save();
     }
-  } else { delete me.v87return; save(); }
+  } else { delete me.v87return; save(); }   /* moved past it some other way (e.g. a parent changed her level) */
 };
 })();
 
