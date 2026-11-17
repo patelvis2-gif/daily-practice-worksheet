@@ -58,6 +58,25 @@ rep("const sk=dayKey(), sg=s.perDay||defaultDailySheets(s.age);",
 rep("const dm=sm>=sg, de=se>=sg;", "const dm=sm>=sgM, de=se>=sgE;")
 rep("(sg+' sheets / subject target')", "(sgM===sgE ? sgM+' sheets a subject today' : sgM+' math + '+sgE+' reading sheets today')")
 
+
+# ---- fixes from the 4–10 sweep ----
+rep("else if(String(it.given||'').length < 4) it.given = String(it.given||'')+k;",
+    "else if(String(it.given||'').length < Math.max(4, String(it.a === undefined ? '' : it.a).length)) it.given = String(it.given||'')+k;")
+rep("const digits = groupStrokes(it.ink).slice(0,4);", "const digits = groupStrokes(it.ink).slice(0,6);")
+rep("else if(String(LN.entry || '').length < 4) LN.entry = String(LN.entry || '') + k;",
+    "else if(String(LN.entry || '').length < 5) LN.entry = String(LN.entry || '') + k;")
+rep("const a=8+rnd(12), b=2+rnd(8); return mkNum(a,b,'−');", "const a=8+rnd(12), b=2+rnd(Math.min(8, a-2)); return mkNum(a,b,'−');")
+rep("key:'pn:'+r[0]})", "key:'pn:'+r[r[4]+1]})", 2)
+rep("q:'Which one is a '+w[0]+'?'", "q:'Which one is '+(/^[aeiou]/.test(w[0])?'an ':'a ')+w[0]+'?'")
+for e in ["['eagle','🦅','e'],", "['ice','🧊','i'],", "['owl','🦉','o'],['orange','🍊','o'],", "['shoe','👟','s'],", "['sheep','🐑','s'],"]:
+    rep(e, '')
+rep("say: L.lesson.title + '. ' + L.lesson.sub + '.'}",
+    "say: (L.lesson.title.replace(/[.?!]$/, '') + '. ' + L.lesson.sub).replace(/([^.?!])$/, '$1.')}")
+rep("nw(it.a) + ' are hiding.'}", "nw(it.a) + (it.a === 1 ? ' is hiding.' : ' are hiding.')}")
+rep("gun:'The toy gun is in the box.'", "gun:'Gum and a gun both start with g.'")
+rep("din:'The room was full of din.'", "din:'The loud din made me cover my ears.'")
+rep("ban:'They ban the game.'", "ban:'A ban means no one may do it.'")
+
 # mastery: judged on this level's own questions
 rep("const accuracyMastered = pct >= (earlyLearner ? 0.90 : 0.90);",
     "const accuracyMastered = (!sheet.isTest && typeof v87AccuracyOK === 'function') ? v87AccuracyOK(score, total) : pct >= 0.90;")

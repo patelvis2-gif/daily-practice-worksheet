@@ -972,7 +972,7 @@ mixLevel('2A-13', '−', [1,2,3,4,5,6,7,8,9], 210),
   steps:['Look at the sign before you look at the numbers.','Plus means it gets bigger. Minus means it gets smaller.','Check your answer makes sense.'],
   tip:'Nearly every mistake here is reading the sign wrong, not the arithmetic. Have her trace the sign with her finger and say it out loud before writing anything.'},
  gen(){ if(Math.random()<.5){ const a=4+rnd(12), b=2+rnd(9); return mkNum(a,b,'+'); }
-        const a=8+rnd(12), b=2+rnd(8); return mkNum(a,b,'−'); }},
+        const a=8+rnd(12), b=2+rnd(Math.min(8, a-2)); return mkNum(a,b,'−'); }},
 
 /* ---------- two digits ---------- */
 {id:'B-1', skill:'2-digit + 1-digit, no carrying', n:SHEET_N, sct:200, stack:1,
@@ -1209,21 +1209,21 @@ const PICWORDS = [
  ['ball','⚽','b'],['bear','🐻','b'],['book','📕','b'],['bus','🚌','b'],['banana','🍌','b'],['bed','🛏️','b'],
  ['cat','🐱','c'],['car','🚗','c'],['cake','🍰','c'],['cow','🐄','c'],['crab','🦀','c'],['carrot','🥕','c'],
  ['dog','🐶','d'],['duck','🦆','d'],['drum','🥁','d'],['dolphin','🐬','d'],['door','🚪','d'],
- ['egg','🥚','e'],['elephant','🐘','e'],['eagle','🦅','e'],
+ ['egg','🥚','e'],['elephant','🐘','e'],
  ['fish','🐟','f'],['frog','🐸','f'],['fire','🔥','f'],['flower','🌸','f'],['foot','🦶','f'],
  ['goat','🐐','g'],['grapes','🍇','g'],['guitar','🎸','g'],['ghost','👻','g'],
  ['hat','🎩','h'],['horse','🐴','h'],['house','🏠','h'],['hand','✋','h'],['heart','❤️','h'],
- ['ice','🧊','i'],['igloo','🛖','i'],
+ ['igloo','🛖','i'],
  ['jam','🫙','j'],['jacket','🧥','j'],
  ['key','🔑','k'],['kite','🪁','k'],['koala','🐨','k'],
  ['leaf','🍃','l'],['lion','🦁','l'],['lemon','🍋','l'],['lamp','💡','l'],['ladder','🪜','l'],
  ['moon','🌙','m'],['mouse','🐭','m'],['milk','🥛','m'],['map','🗺️','m'],['monkey','🐵','m'],
  ['nose','👃','n'],['net','🥅','n'],['nut','🥜','n'],
- ['owl','🦉','o'],['orange','🍊','o'],['octopus','🐙','o'],
+ ['octopus','🐙','o'],
  ['pig','🐷','p'],['pizza','🍕','p'],['pencil','✏️','p'],['panda','🐼','p'],['pear','🍐','p'],
  ['queen','👑','q'],
  ['rocket','🚀','r'],['rabbit','🐰','r'],['rain','🌧️','r'],['ring','💍','r'],
- ['sun','☀️','s'],['star','⭐','s'],['snake','🐍','s'],['shoe','👟','s'],['sock','🧦','s'],['sheep','🐑','s'],
+ ['sun','☀️','s'],['star','⭐','s'],['snake','🐍','s'],['sock','🧦','s'],
  ['tree','🌳','t'],['train','🚂','t'],['turtle','🐢','t'],['tiger','🐅','t'],['tent','⛺','t'],
  ['umbrella','☂️','u'],
  ['van','🚐','v'],['violin','🎻','v'],
@@ -1888,7 +1888,7 @@ const ENG = [
   tip:'Say the word, then say it again slowly in parts, and have her repeat it before choosing. Vocabulary at this age predicts reading later better than almost anything else.'},
  build(n){ return sample(PICWORDS, n).map(w=>{
     const d = sample(PICWORDS.filter(x=>x[0]!==w[0]), 2), opts = shuffle([w,...d]);
-    return {kind:'pic', say:w[0], q:'Which one is a '+w[0]+'?', opts:opts.map(o=>o[1]),
+    return {kind:'pic', say:w[0], q:'Which one is '+(/^[aeiou]/.test(w[0])?'an ':'a ')+w[0]+'?', opts:opts.map(o=>o[1]),
             a:opts.findIndex(o=>o[0]===w[0]), key:'pic:'+w[0]}; }); }},
 {id:'7A-2', skill:'Rhyming words', n:SHEET_N, sct:420, audio:1,
  lesson:{title:'Words that rhyme', sub:'Words that end the same way',
@@ -2120,13 +2120,13 @@ const ENG = [
   demo:'<div class="say">My dog Max is brown.</div><div class="cap">Capital M to start. Capital M for the name.</div>',
   steps:['Every sentence starts with a capital.','Names of people, places, days and months get capitals.','Nothing else does.'],
   tip:'Have her hunt for capitals in a picture book — finding them in real text beats any exercise.'},
- build(n){ return sample(PUNCT, n).map(r=>({kind:'choice', q:r[0], opts:[r[1],r[2],r[3]], a:r[4], key:'pn:'+r[0]})); }},
+ build(n){ return sample(PUNCT, n).map(r=>({kind:'choice', q:r[0], opts:[r[1],r[2],r[3]], a:r[4], key:'pn:'+r[r[4]+1]})); }},
 {id:'C-2', skill:'Full stops and question marks', n:SHEET_N, sct:520,
  lesson:{title:'How a sentence ends', sub:'. or ? or !',
   demo:'<div class="say">Are you coming?</div><div class="cap">A question ends with a question mark.</div>',
   steps:['A telling sentence ends with a period.','A question ends with a question mark.','A shout ends with an exclamation mark.'],
   tip:'Have her read her own writing out loud — her voice drops at the end of a sentence, and that is where the period goes.'},
- build(n){ return sample(PUNCT, n).map(r=>({kind:'choice', q:r[0], opts:[r[1],r[2],r[3]], a:r[4], key:'pn:'+r[0]})); }},
+ build(n){ return sample(PUNCT, n).map(r=>({kind:'choice', q:r[0], opts:[r[1],r[2],r[3]], a:r[4], key:'pn:'+r[r[4]+1]})); }},
 {id:'C-3', skill:'Build a complete sentence', n:8, sct:600,
  lesson:{title:'A complete sentence',sub:'Who or what + what happened',demo:'<div class="sentenceFrame"><div class="model">The dog runs.</div><div class="cap">A sentence tells a complete thought and starts with a capital.</div></div>',steps:['Name who or what the sentence is about.','Tell what the person or thing does.','Start with a capital and finish with punctuation.'],tip:'At this level, one clear sentence is enough. Parent review checks meaning and handwriting; the app does not pretend open-ended writing can be graded perfectly.'},
  build(n){const q=['Write a sentence about a dog.','Write a sentence about your family.','Write a sentence about something you can see.','Write a sentence beginning with “I can”.','Write a sentence about school.','Write a sentence about a favorite food.','Write a sentence about something that moves.','Write a sentence about today.'];return Array.from({length:n},(_,i)=>({kind:'write',q:q[i%q.length],accept:[' '],key:'sent1:'+i}));}},
@@ -2330,7 +2330,7 @@ function groupStrokes(strokes){
 }
 function readInk(it){
   if(!it.ink || !it.ink.length){ it.given = ''; it.reads = null; return; }
-  const digits = groupStrokes(it.ink).slice(0,4);
+  const digits = groupStrokes(it.ink).slice(0,6);
   let str = ''; const reads = [];
   digits.forEach(strokes=>{
     const vec = rasterise(strokes);
@@ -3474,13 +3474,13 @@ const WORD_AUDIO_SENTENCES = Object.assign({
   dog:'The dog can run.', log:'The log is by the fire.', hog:'The hog is in the pen.', jog:'We jog in the park.', fog:'The fog is thick.', cog:'The cog turns in the machine.', bog:'The bog is wet.',
   hot:'The soup is hot.', cot:'The baby sleeps on a cot.', got:'I got a new book.', lot:'There are a lot of stars.', not:'That is not my hat.', tot:'The tot can walk.',
   pig:'The pig is pink.', big:'The truck is big.', dig:'We dig in the sand.', wig:'She wore a wig.', fig:'I ate a fig.', jig:'We danced a jig.', rig:'The rig is on the road.',
-  pin:'Put the pin on the map.', win:'Our team can win.', fin:'The fish has a fin.', bin:'Put the toy in the bin.', tin:'The tin is on the shelf.', din:'The room was full of din.', kin:'Our kin are our family.',
+  pin:'Put the pin on the map.', win:'Our team can win.', fin:'The fish has a fin.', bin:'Put the toy in the bin.', tin:'The tin is on the shelf.', din:'The loud din made me cover my ears.', kin:'Our kin are our family.',
   bug:'The bug is on the leaf.', hug:'Give me a hug.', jug:'The jug is full.', mug:'My mug has milk.', tug:'Tug on the rope.', dug:'The dog dug a hole.',
-  sun:'The sun is bright.', run:'I can run fast.', fun:'The game is fun.', bun:'The bun is warm.', gun:'The toy gun is in the box.', pun:'Dad told a silly pun.',
+  sun:'The sun is bright.', run:'I can run fast.', fun:'The game is fun.', bun:'The bun is warm.', gun:'Gum and a gun both start with g.', pun:'Dad told a silly pun.',
   net:'The ball hit the net.', pet:'The dog is my pet.', wet:'My shoes are wet.', get:'I will get my coat.', jet:'The jet is in the sky.', let:'Let me help you.', set:'Set the cup down.', bet:'I bet it will rain.',
   fed:'I fed the cat.', led:'She led the line.', wed:'They will wed in June.'
 },{
-  van:'I see a van.', ban:'They ban the game.', can:'I can jump.', man:'The man can run.',
+  van:'I see a van.', ban:'A ban means no one may do it.', can:'I can jump.', man:'The man can run.',
   pan:'The pan is hot.', ran:'He ran fast.', fan:'The fan is on.', tan:'The sand is tan.',
   bat:'The bat is black.', cat:'The cat can nap.', hat:'The hat is red.', mat:'The mat is flat.',
   pen:'The pen is blue.', hen:'The hen can peck.', bed:'The bed is soft.', red:'The ball is red.',
@@ -3987,7 +3987,7 @@ function keyIn(k){
   const it = sheet.items[sel]; if(!it) return;
   if(k === '⌫') it.given = String(it.given||'').slice(0,-1);
   else if(k === '▶'){ const l = activeIdx(); const at = l.indexOf(sel); sel = l[(at+1)%l.length]; }
-  else if(String(it.given||'').length < 4) it.given = String(it.given||'')+k;
+  else if(String(it.given||'').length < Math.max(4, String(it.a === undefined ? '' : it.a).length)) it.given = String(it.given||'')+k;
   render();
 }
 function letterIn(c){
@@ -6040,7 +6040,7 @@ let explainSteps = function(it, L, subject){
       {html: U.storyVisual(it, {solved:true}) + big(it.x + ' − ' + it.y + ' = <b class="ok">' + it.a + '</b>'), say: nw(it.x) + ' take away ' + nw(it.y) + ' leaves ' + nw(it.a) + '.'}];
     return [head,
       {html: U.storyVisual(it), say: 'We know there are ' + nw(it.x) + ' in all, and we can see ' + nw(it.y) + '. The hiding part is what is missing.'},
-      {html: U.storyVisual(it, {solved:true}) + big(it.y + ' + <b class="ok">' + it.a + '</b> = ' + it.x), say: nw(it.y) + ' and ' + nw(it.a) + ' make ' + nw(it.x) + '. ' + nw(it.a) + ' are hiding.'}];
+      {html: U.storyVisual(it, {solved:true}) + big(it.y + ' + <b class="ok">' + it.a + '</b> = ' + it.x), say: nw(it.y) + ' and ' + nw(it.a) + ' make ' + nw(it.x) + '. ' + nw(it.a) + (it.a === 1 ? ' is hiding.' : ' are hiding.')}];
   }
   return null;
 }
@@ -6081,7 +6081,7 @@ let LN = null;
 const el = id => document.getElementById(id);
 function stepsFor(L, subject, example){
   const intro = {html: (L.lesson.demo ? '<div class="demo">' + L.lesson.demo + '</div>' : '') + '<p class="ln-sub">' + H(L.lesson.sub) + '</p>',
-                 say: L.lesson.title + '. ' + L.lesson.sub + '.'};
+                 say: (L.lesson.title.replace(/[.?!]$/, '') + '. ' + L.lesson.sub).replace(/([^.?!])$/, '$1.')};
   let ex = example ? explainSteps(example, L, subject) : null;
   if(!ex) ex = L.lesson.steps.map((s, k) => ({html: '<ol class="steps ln-list">' + L.lesson.steps.map((x, j) => '<li class="' + (j === k ? 'on' : j < k ? 'done' : '') + '">' + H(x) + '</li>').join('') + '</ol>', say: s}));
   return [intro].concat(ex);
@@ -6164,7 +6164,7 @@ function tryView(it){
       b.onclick = () => {
         if(k === '⌫') LN.entry = String(LN.entry || '').slice(0, -1);
         else if(k === '✓'){ if(String(LN.entry || '').length) check(Number(LN.entry) === it.a); return; }
-        else if(String(LN.entry || '').length < 4) LN.entry = String(LN.entry || '') + k;
+        else if(String(LN.entry || '').length < 5) LN.entry = String(LN.entry || '') + k;
         paint();
       };
       pad.appendChild(b);
@@ -6941,6 +6941,58 @@ window.paintParent = paintParent = function(){ paintParent1(); try{ paintSoundPa
   .v87pair{gap:12px}
   .v87cmp .r i{width:40px;font-size:.8rem}
 }
+.v87cnt{text-align:center;font-weight:800;margin-top:6px;font-size:1.1rem}
+/* ===== V8.7 work space ===== */
+:root{--v88col:52px}
+.v88stack{min-width:150px}
+.v88work{position:relative;display:flex;justify-content:flex-end;padding:0 2px}
+.v88work .gw{position:relative;display:inline-block}
+.v88work .g{display:grid;font-weight:800;font-size:2.3rem;line-height:1.2;font-variant-numeric:tabular-nums}
+.v88work .g span{text-align:center}
+.v88work .g .op{text-align:left;color:var(--ink-soft)}
+.v88work .g .d.m{height:34px;border-bottom:1px dashed #E2E8F0}
+.v88work .v88mk{position:absolute;left:-10px;top:-6px;width:calc(100% + 20px);height:calc(100% + 8px);cursor:crosshair;z-index:2}
+.v88work .v88clr{position:absolute;top:-4px;left:-34px;z-index:3;width:26px;height:26px;border-radius:50%;background:#F1F3F5;color:var(--ink-soft);font-size:.8rem;font-weight:800;line-height:26px;padding:0}
+.v88rev{margin:6px 0 4px;justify-content:flex-start;flex-direction:column;align-items:flex-start;max-width:220px}
+.v88rev small{font-weight:800;color:var(--ink-soft);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em}
+.grid.math-column .prob .v88stack{flex:0 0 auto}
+.v88cells{display:inline-flex;gap:4px;justify-content:flex-end}
+.v88cells .c{width:36px;height:44px;border-bottom:3px solid var(--rule);display:inline-flex;align-items:flex-end;justify-content:center;font-size:2rem;font-weight:800;color:var(--me)}
+.v88cells .c.f{border-color:var(--ink)}
+.v88cells .c.cur{border-color:var(--gold);background:#FFF8E1;border-radius:6px 6px 0 0}
+#v88scratch{position:fixed;inset:0;z-index:80;background:#fff;display:none;flex-direction:column}
+#v88scratch.on{display:flex}
+#v88scratch .bar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:2px solid var(--rule);background:#FFFDF5}
+#v88scratch .bar b{font-size:1.1rem}
+#v88scratch .bar span{flex:1;color:var(--ink-soft);font-size:.85rem;font-weight:700}
+#v88scratch .bar button{padding:10px 16px;border-radius:10px;background:var(--desk);font-weight:800}
+#v88scratch .bar button.go{background:var(--gold)}
+#v88scratch canvas{flex:1;width:100%;background-image:linear-gradient(#EEF2F7 1px,transparent 1px),linear-gradient(90deg,#EEF2F7 1px,transparent 1px);background-size:32px 32px;touch-action:none}
+@media(max-width:480px){:root{--v88col:44px} .v88work .g{font-size:2rem} #v88scratch .bar span{display:none}}
+/* ===== V8.7 content ===== */
+body.v87young #clock{visibility:hidden}
+.v87quick{display:flex;gap:18px;justify-content:center;align-items:center;margin:6px 0 10px;flex-wrap:wrap}
+.v87dice{width:120px;height:120px}
+.v87dice rect{fill:#fff;stroke:var(--ink);stroke-width:4}
+.v87dice circle{fill:var(--me)}
+.v87grp{display:inline-flex;flex-wrap:wrap;gap:2px;max-width:150px;justify-content:center;font-size:1.8rem;line-height:1.1}
+.opt.pic .v87grp{font-size:1.7rem}
+.v87hc{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;max-width:420px;margin:6px auto;font-weight:800;font-size:.95rem}
+.v87hc span{background:#F1F5FB;border-radius:5px;padding:5px 0;text-align:center}
+.v87hc span.s{background:var(--me);color:#fff}
+.v87hc span.h{background:#FFE8A3}
+.v87hc span.e{background:var(--pass);color:#fff}
+.v87arr{display:grid;width:max-content;gap:6px;margin:6px auto 10px;font-size:1.5rem;line-height:1.2;color:var(--me);text-align:center}
+.v87groups{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:6px 0}
+.v87groups span{border:3px solid var(--rule);border-radius:50%;padding:10px 12px;font-size:1.4rem;color:var(--me);max-width:120px;display:flex;flex-wrap:wrap;justify-content:center;gap:2px}
+.v87read{font-size:1.6rem;line-height:1.5;font-weight:700;background:#F8FAFD;border:2px solid var(--rule);border-radius:14px;padding:12px 16px;margin:4px 0 10px;text-align:left}
+.v87w{font-size:1.8rem;font-weight:800;letter-spacing:.02em}
+b.ph{color:var(--pen)}
+.v87bx{display:inline-flex;gap:4px;vertical-align:middle}
+.v87bx i{width:22px;height:26px;border:3px solid var(--ink);border-radius:5px;display:inline-block}
+.v87bx.big i{width:40px;height:46px}
+.v87bx i.on{background:#FFE8A3}
+.opt.pic small{display:block;font-weight:800;color:var(--ink-soft);margin-top:4px}
 </style>
 <script>
 /* =====================================================================
@@ -7068,6 +7120,16 @@ function barHTML(it, solved){
       '<div class="r"><i>' + H(it.p1) + '</i><div class="track">' + seg(x, n(x)) + '</div></div>' +
       '<div class="r"><i>' + H(it.p2) + '</i><div class="track">' + seg(y, n(y), 'b2') + seg(x - y, Q, 'unk dash') + '</div></div></div>';
   }
+  if(t === 'groups' || t === 'share' || t === 'groupsOf'){
+    const k = t === 'groups' ? x : t === 'share' ? y : x / y, each = t === 'groups' ? y : t === 'share' ? x / y : y;
+    const whole = t === 'groups' ? Q : n(x);
+    const lab = j => (t === 'share' ? (solved ? '<b class="okv">' + each + '</b>' : (j === 0 ? '<b class="qv">?</b>' : '')) : n(each));
+    const shown = Math.min(k, 10);
+    let segs = '';
+    for(let j = 0; j < shown; j++) segs += seg(1, j === shown - 1 && k > 10 ? '…' : lab(j));
+    const cap = t === 'groupsOf' ? '<div class="v87cnt">' + (solved ? '<b class="okv">' + k + '</b>' : '<b class="qv">?</b>') + ' bags</div>' : '';
+    return '<div class="v87bar"><div class="whole"><span>' + whole + '</span></div><div class="track">' + segs + '</div>' + cap + '</div>';
+  }
   /* compMore: p2 has y more than p1 (x) */
   return '<div class="v87cmp">' +
     '<div class="r"><i>' + H(it.p1) + '</i><div class="track">' + seg(x, n(x)) + seg(y, '', 'void') + '</div></div>' +
@@ -7124,6 +7186,9 @@ function story2(type, x, y){
   else if(type === 'compMore'){ a = x + y; text = p1 + ' has ' + x + ' ' + th + '. ' + p2 + ' has ' + y + ' more than ' + p1 + '. How many ' + th + ' does ' + p2 + ' have?'; }
   else if(type === 'sep'){ a = x - y; text = p1 + ' has ' + x + ' ' + th + '. ' + p1 + ' gives ' + y + ' to ' + p2 + '. How many ' + th + ' does ' + p1 + ' have left?'; }
   else if(type === 'partP'){ a = x - y; text = p1 + ' has ' + x + ' ' + th + '. ' + y + ' of them are red and the rest are blue. How many are blue?'; }
+  else if(type === 'groups'){ a = x * y; const box = pick(['bags','boxes','plates','jars']); text = 'There are ' + x + ' ' + box + '. Each one has ' + y + ' ' + th + '. How many ' + th + ' are there in all?'; }
+  else if(type === 'share'){ a = x / y; text = p1 + ' has ' + x + ' ' + th + ' and shares them equally with ' + y + ' friends. How many ' + th + ' does each friend get?'; }
+  else if(type === 'groupsOf'){ a = x / y; text = p1 + ' has ' + x + ' ' + th + ' and puts ' + y + ' in each bag. How many bags does ' + p1 + ' fill?'; }
   else { type = 'comp'; a = x - y; text = p1 + ' has ' + x + ' ' + th + '. ' + p2 + ' has ' + y + ' ' + th + '. How many more ' + th + ' does ' + p1 + ' have than ' + p2 + '?'; }
   return {kind:'story2', type, x, y, a, p1, p2, th, text, q:text, say:text, audioRate:0.86, key:'s2:' + type + ':' + x + ':' + y};
 }
@@ -7134,6 +7199,8 @@ function storyFromMath(it){
   if(!(x >= 2 && y >= 2) || it.a >= 1000) return null;
   if(it.op === '+') return story2(pick(ADD_TYPES), x, y);
   if(it.op === '−' && x - y >= 1) return story2(pick(SUB_TYPES), x, y);
+  if(it.op === '×') return story2('groups', x, y);
+  if(it.op === '÷' && x % y === 0 && x / y >= 2) return story2(pick(['share','groupsOf']), x, y);
   return null;
 }
 window.v87story2 = story2;
@@ -7171,8 +7238,8 @@ function tradeItem(ask){
   const t = 2 + rnd(7), o = rnd(10), n = t * 10 + o;
   ask = ask || pick(['ones','ones','tens','same']);
   if(ask === 'ones') return {kind:'trade', ask, t, o, n, a: o + 10, key:'tr:o:' + n,
-    q: n + ' is ' + tw(t) + ' and ' + ow(o) + '. Trade one ten for ten ones. Now there are ' + tw(t - 1) + ' and how many ones?',
-    say: n + ' is ' + tw(t) + ' and ' + ow(o) + '. Trade one ten for ten ones. Now there are ' + tw(t - 1) + ' and how many ones?'};
+    q: n + ' is ' + tw(t) + ' and ' + ow(o) + '. Trade one ten for ten ones. Now we have ' + tw(t - 1) + ' and how many ones?',
+    say: n + ' is ' + tw(t) + ' and ' + ow(o) + '. Trade one ten for ten ones. Now we have ' + tw(t - 1) + ' and how many ones?'};
   if(ask === 'tens') return {kind:'trade', ask, t, o, n, a: t - 1, key:'tr:t:' + n,
     q: 'Trade one ten in ' + n + ' for ten ones. How many tens are left?', say: 'Trade one ten in ' + n + ' for ten ones. How many tens are left?'};
   return {kind:'trade', ask:'same', t, o, n, a: n, key:'tr:s:' + n,
@@ -7312,7 +7379,7 @@ function mixItems(n, keys, single){
   }
   return out;
 }
-const storyLevel = lv => /^B-\d+$/.test(lv) || lv === 'A-1' || lv === 'A-2' || lv === 'E-1' || lv === 'E-2';
+const storyLevel = lv => /^B-\d+$/.test(lv) || /^[CD]-\d+$/.test(lv) || lv === 'A-1' || lv === 'A-2' || lv === 'E-1' || lv === 'E-2';
 function daysAtLevel(sub, lv){
   return new Set((me.history || []).filter(h => h.subject === sub && h.level === lv).map(h => h.d)).size;
 }
@@ -7413,7 +7480,7 @@ function padEl(it, i){
       e.stopPropagation();
       if(k === '⌫') it.given = String(it.given || '').slice(0, -1);
       else if(k === '✓'){ if(String(it.given || '').length) return nextOpen(i); return; }
-      else if(String(it.given || '').length < 4) it.given = String(it.given || '') + k;
+      else if(String(it.given || '').length < 5) it.given = String(it.given || '') + k;
       sel = i; render();
     };
     p.appendChild(b);
@@ -7489,7 +7556,7 @@ function blocksSteps(it){
       say: need ? 'Always start with the ones. Can we take ' + yO + ' from ' + xO + '? No — there are not enough ones. Trade one ten for ten ones.'
                 : 'Always start with the ones. Can we take ' + yO + ' from ' + xO + '? Yes — there are enough ones.'});
     if(need) s.push({html: pair(blocksHTML({rods:xT - 1, ones:xO + 10, fresh:10}), colHTML(x, y, op, {borrow:true, hiOnes:true})),
-      say:'Break one ten into ten ones. Now there are ' + tens(xT - 1) + ' and ' + ones(xO + 10) + '. On paper, cross out the ' + xT + ', write ' + (xT - 1) + ', and put a little 1 in front of the ' + xO + '.'});
+      say:'Break one ten into ten ones. Now we have ' + tens(xT - 1) + ' and ' + ones(xO + 10) + '. On paper, cross out the ' + xT + ', write ' + (xT - 1) + ', and put a little 1 in front of the ' + xO + '.'});
     const onesNow = need ? xO + 10 : xO, rodsNow = need ? xT - 1 : xT;
     s.push({html: pair(blocksHTML({rods:rodsNow, ones:onesNow, fresh: need ? 10 : 0, goneOnes:yO}), colHTML(x, y, op, {borrow:need, ones:true, hiOnes:true})),
       say: onesNow + ' take away ' + yO + ' is ' + (onesNow - yO) + '. Write ' + (onesNow - yO) + ' in the ones.'});
@@ -7507,7 +7574,7 @@ function blocksSteps(it){
     say: carry ? 'Start with the ones: ' + xO + ' plus ' + yO + ' is ' + sum + '. That is too many for the ones place — bundle ten ones into a new ten.'
                : 'Start with the ones: ' + xO + ' plus ' + yO + ' is ' + sum + '.'});
   if(carry) s.push({html: pair(blocksHTML({rods:xT + yT + 1, ones:sum - 10, newRod:true}), colHTML(x, y, op, {carry:true, ones:true, hiOnes:true})),
-    say:'Ten ones make one ten. Now there are ' + ones(sum - 10) + ' — write ' + (sum - 10) + ' — and carry the new ten: write a little 1 above the tens.'});
+    say:'Ten ones make one ten. Now we have ' + ones(sum - 10) + ' left over — write ' + (sum - 10) + ' — and carry the new ten: write a little 1 above the tens.'});
   else s.push({html: pair(blocksHTML({rods:xT + yT, ones:sum, altRods:yT, altOnes:yO}), colHTML(x, y, op, {ones:true, hiOnes:true})), say:'Write ' + sum + ' in the ones.'});
   const tt = xT + yT + (carry ? 1 : 0);
   s.push({html: pair(blocksHTML({rods:tt, ones:sum % 10, newRod:carry, hiRods:true}), colHTML(x, y, op, {carry, ones:true, tens:true, hiTens:true})),
@@ -7518,6 +7585,21 @@ function blocksSteps(it){
 }
 function storySteps(it){
   const t = it.type, x = it.x, y = it.y, a = it.a;
+  if(t === 'groups' || t === 'share' || t === 'groupsOf'){
+    const head0 = '<p class="ln-stepline">' + H(it.text) + '</p>';
+    const hint = t === 'groups' ? 'Draw ' + x + ' equal parts, with ' + y + ' in each part. We want the whole.'
+               : t === 'share' ? 'The whole is ' + x + '. Split it into ' + y + ' equal parts. We want how many in one part.'
+               : 'The whole is ' + x + '. Each part is ' + y + '. We want how many parts.';
+    const sum = t === 'groups' ? x + ' × ' + y : x + ' ÷ ' + y;
+    const how = t === 'groups' ? x + ' groups of ' + y + ' is ' + x + ' times ' + y + '. Skip count by ' + y + ': ' + range(1, x).map(k => k * y).join(', ') + '.'
+              : 'Sharing into equal groups is dividing: ' + x + ' divided by ' + y + '. Ask: ' + y + ' times what makes ' + x + '?';
+    const end = t === 'groups' ? 'There are ' + a + ' in all.' : t === 'share' ? 'Each friend gets ' + a + '.' : 'That fills ' + a + ' bags.';
+    return [
+      {html: head0, say: it.text},
+      {html: head0 + barHTML(it, false), say: hint},
+      {html: barHTML(it, false) + big(sum), say: how},
+      {html: barHTML(it, true) + big(sum + ' = <b class="ok">' + a + '</b>'), say: sum.replace('×', 'times').replace('÷', 'divided by') + ' is ' + a + '. ' + end}];
+  }
   const head = '<p class="ln-stepline">' + H(it.text) + '</p>';
   const hint = {join:'Draw a bar with two parts: ' + x + ' and ' + y + '. We want the whole bar.',
     partW:'Two parts: ' + x + ' red and ' + y + ' blue. We want the whole bar.',
@@ -7529,7 +7611,7 @@ function storySteps(it){
   const how = add ? 'We know both parts and the whole is missing, so we add: ' + x + ' plus ' + y + '.'
                   : (t === 'comp' ? 'The difference is missing, so we take away: ' + x + ' minus ' + y + '.' : 'A part is missing, so we take away: ' + x + ' minus ' + y + '.');
   const end = {join: it.p1 + ' has ' + a + ' now.', partW: a + ' in all.', compMore: it.p2 + ' has ' + a + '.',
-    sep: it.p1 + ' has ' + a + ' left.', partP: a + ' are blue.', comp: it.p1 + ' has ' + a + ' more.'}[t];
+    sep: it.p1 + ' has ' + a + ' left.', partP: a + (a === 1 ? ' is blue.' : ' are blue.'), comp: it.p1 + ' has ' + a + ' more.'}[t];
   return [
     {html: head, say: it.text},
     {html: head + barHTML(it, false), say: hint},
@@ -7547,7 +7629,7 @@ function tradeSteps(it){
   return [
     {html: blocksHTML({rods:t, ones:o}), say: n + ' is ' + tw(t) + ' and ' + ow(o) + '.'},
     {html: blocksHTML({rods:t, ones:o, tapRods:true}), say:'Break one ten stick into ten ones.'},
-    {html: blocksHTML({rods:t - 1, ones:o + 10, fresh:10}), say:'Now there are ' + tw(t - 1) + ' and ' + ow(o + 10) + '.'},
+    {html: blocksHTML({rods:t - 1, ones:o + 10, fresh:10}), say:'Now we have ' + tw(t - 1) + ' and ' + ow(o + 10) + '.'},
     {html: blocksHTML({rods:t - 1, ones:o + 10, fresh:10}) + big('<b class="ok">' + it.a + '</b>'), say: end + ' It is still ' + n + '.'}];
 }
 function moneySteps(it){
@@ -7614,7 +7696,7 @@ function keypad(LN, onGo, lock){
     b.onclick = () => {
       if(k === '⌫') LN.entry = String(LN.entry || '').slice(0, -1);
       else if(k === '✓'){ if(String(LN.entry || '').length) onGo(Number(LN.entry)); return; }
-      else if(String(LN.entry || '').length < 4) LN.entry = String(LN.entry || '') + k;
+      else if(String(LN.entry || '').length < 5) LN.entry = String(LN.entry || '') + k;
       window.V87._repaint();
     };
     pad.appendChild(b);
@@ -7709,6 +7791,722 @@ window.finish = finish = function(){
     }
   } else { delete me.v87return; save(); }   /* moved past it some other way (e.g. a parent changed her level) */
 };
+})();
+
+/* ===== V8.7 content: number sense, times-table runway, phonics rebuild, early-years levels ===== */
+(function(){
+'use strict';
+const H = s => esc(String(s == null ? '' : s));
+const range = (a, b) => { const o = []; for(let x = a; x <= b; x++) o.push(x); return o; };
+const ins = (list, where, id, items) => { const i = list.findIndex(l => l.id === id); if(i < 0) return false; list.splice(where === 'after' ? i + 1 : i, 0, ...items); return true; };
+const uniqOpts = (a, cands, n) => { const s = [a]; cands.forEach(v => { if(s.length < n && v !== a && !s.includes(v) && v > 0) s.push(v); }); let k = 1; while(s.length < n){ const v = a + k * (k % 2 ? 1 : -1) * Math.ceil(k / 2); if(v > 0 && !s.includes(v)) s.push(v); k++; } return shuffle(s); };
+
+/* =====================================================================
+   MATH
+   ===================================================================== */
+/* ---------- early years: quick look, which has more ---------- */
+const DOTS = {1:[[50,50]],2:[[28,28],[72,72]],3:[[24,24],[50,50],[76,76]],4:[[28,28],[72,28],[28,72],[72,72]],
+  5:[[26,26],[74,26],[50,50],[26,74],[74,74]],6:[[28,22],[72,22],[28,50],[72,50],[28,78],[72,78]]};
+function diceHTML(n){
+  return '<svg viewBox="0 0 100 100" class="v87dice" aria-hidden="true"><rect x="4" y="4" width="92" height="92" rx="16"/>' +
+    DOTS[n].map(p => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="9"/>').join('') + '</svg>';
+}
+function fiveFrameHTML(n){
+  let s = '<div class="v85frame five">';
+  for(let k = 0; k < 5; k++) s += '<i class="c' + (k < n ? ' a' : '') + '"></i>';
+  return s + '</div>';
+}
+function quickItem(){
+  const n = 1 + rnd(6), useFrame = n <= 5 && Math.random() < .4;
+  const opts = shuffle(uniqOpts(n, [n - 1, n + 1, n + 2, n - 2], 3));
+  return {kind:'choice', quick:n, q:'<div class="v87quick">' + (useFrame ? fiveFrameHTML(n) : diceHTML(n)) + '</div>How many dots? Look — do not count!',
+    opts: opts.map(String), a: opts.indexOf(n), say:'How many dots? Look quickly. Try not to count.', spkLabel:'Hear it', audioRate:0.86, key:'quick:' + n + (useFrame ? 'f' : 'd')};
+}
+const MORE_EMOJI = ['🍎','⭐','🐟','🚗','🎈','🐞','🍪','🌸'];
+function moreItem(){
+  let x = 1 + rnd(9), y = 1 + rnd(9); while(y === x) y = 1 + rnd(9);
+  const e1 = pick(MORE_EMOJI), fewer = Math.random() < .3;
+  const g = (n, e) => '<span class="v87grp">' + Array(n).fill(e).join('') + '</span>';
+  const ans = fewer ? (x < y ? 0 : 1) : (x > y ? 0 : 1);
+  return {kind:'pic', more:{x, y, fewer}, q: fewer ? 'Which group has fewer?' : 'Which group has more?',
+    opts:[g(x, e1), g(y, e1)], a: ans, say: fewer ? 'Which group has fewer?' : 'Which group has more?', spkLabel:'Hear it', key:'more:' + x + ':' + y + (fewer ? 'f' : '')};
+}
+const NEWM = {};
+NEWM.quick = {id:'5A-4q', skill:'How many? Quick look', n:SHEET_N, sct:300, audio:1,
+  lesson:{title:'Quick look', sub:'See how many without counting',
+    demo:'<div class="v87quick">' + diceHTML(5) + fiveFrameHTML(3) + '</div><div class="cap">Dice show 5. The frame shows 3.</div>',
+    steps:['Look at the dots for a second.','Say how many you see without counting one by one.','Dice patterns and frames help you see it fast.'],
+    tip:'Seeing small amounts at a glance ("subitizing") is the foundation of number sense — it is how children later see that 7 is 5 and 2. Play with real dice and flash fingers: "how many fingers? quick!"'},
+  gen(){ return quickItem(); }};
+NEWM.more = {id:'5A-4m', skill:'Which has more? Which has fewer?', n:SHEET_N, sct:300, audio:1,
+  lesson:{title:'More and fewer', sub:'Compare two groups',
+    demo:'<div class="v87quick"><span class="v87grp">🍎🍎🍎🍎🍎</span><span class="v87grp">🍎🍎</span></div><div class="cap">5 is more than 2.</div>',
+    steps:['Look at both groups.','Line them up in your head — which one has some left over?','The one with extra has more. The other has fewer.'],
+    tip:'Line up real things side by side ("one for you, one for me") — the group with leftovers has more. "Fewer" is a new word for most 4-year-olds; use it often.'},
+  gen(){ return moreItem(); }};
+
+/* ---------- 2-digit number sense: compare, add or take away tens ---------- */
+function compareItem(){
+  const kind = rnd(3);
+  if(kind < 2){
+    let a = 10 + rnd(90), b = 10 + rnd(90);
+    if(Math.random() < .35) b = a % 10 * 10 + Math.floor(a / 10);   /* 47 vs 74 */
+    if(Math.random() < .1) b = a;
+    if(b < 10) b += 10;
+    const sym = a > b ? '>' : a < b ? '<' : '=';
+    const opts = ['>','<','='];
+    return {kind:'choice', cmp:{a, b}, q:'<div class="ln-big">' + a + ' &nbsp;▢&nbsp; ' + b + '</div>Which sign goes in the box?',
+      opts:['&gt; greater than','&lt; less than','= equal'], labels:null, a: opts.indexOf(sym), sense:'cmp', key:'cmp:' + a + ':' + b,
+      say: 'Compare ' + a + ' and ' + b + '. Which sign goes in the box?', spkLabel:'Hear it'};
+  }
+  const set = new Set(); while(set.size < 3) set.add(10 + rnd(90));
+  const nums = [...set], big = Math.max(...nums);
+  return {kind:'choice', cmp:{nums}, q:'Which number is the greatest?', opts: nums.map(String), a: nums.indexOf(big), sense:'cmp', key:'cmpg:' + nums.join(','),
+    say:'Which number is the greatest?', spkLabel:'Hear it'};
+}
+function hundredChartHTML(start, end){
+  const lo = Math.max(1, Math.floor((Math.min(start, end) - 1) / 10) * 10 + 1), hi = Math.min(100, Math.ceil(Math.max(start, end) / 10) * 10);
+  let s = '<div class="v87hc">';
+  for(let v = lo; v <= hi; v++) s += '<span class="' + (v === start ? 's' : v === end ? 'e' : ((v - start) % 10 === 0 && (v - start) * (end - start) > 0 && Math.abs(v - start) < Math.abs(end - start) ? 'h' : '')) + '">' + v + '</span>';
+  return s + '</div>';
+}
+NEWM.compare = {id:'B-9c', skill:'Compare numbers: greater, less, equal', n:SHEET_N, sct:300,
+  lesson:{title:'Greater or less', sub:'Compare the tens first',
+    demo:'<div class="say">47 &lt; 74</div><div class="cap">4 tens is less than 7 tens.</div>',
+    steps:['Look at the tens first. More tens means a bigger number.','If the tens are the same, compare the ones.','The open side of the sign faces the bigger number.'],
+    tip:'47 and 74 use the same digits but are very different numbers — that is place value. Ask "how many tens?" for each. The sign’s open mouth "eats" the bigger number.'},
+  gen(){ return compareItem(); }};
+NEWM.tens = {id:'B-9m', skill:'Add or take away 10 and 20', n:SHEET_N, sct:240,
+  lesson:{title:'Jump by tens', sub:'Adding 10 changes only the tens',
+    demo:hundredChartHTML(34, 54) + '<div class="cap">34 + 20: jump down two rows to 54.</div>',
+    steps:['Find the number on the hundred chart.','Adding 10 jumps one row down; taking away 10 jumps one row up.','The ones digit stays the same.'],
+    tip:'This is mental math, not column work — encourage her to do it without writing. Ask "what changed, the tens or the ones?" Hundred charts are free to print.'},
+  gen(){
+    const t = pick([10, 10, 20, 30]), plus = Math.random() < .55;
+    const a = plus ? 11 + rnd(89 - t - 10) : t + 1 + rnd(99 - t - 1);
+    return Object.assign(mkNum(a, t, plus ? '+' : '−'), {stack:0, hc:true});
+  }};
+
+/* ---------- times-table runway ---------- */
+function skipItem(){
+  const step = pick([2, 5, 10]), start = step * (rnd(5)), len = 3;
+  const run = range(0, len - 1).map(k => start + step * (k + 1));
+  const a = start + step * (len + 1);
+  const opts = uniqOpts(a, [a + step, a - 1, a + 1, a - step + 1], 4);
+  return {kind:'seq', run: run.concat(['▢']), a, skip: step, opts, say:'Skip count by ' + step + 's. What comes next?', key:'skip:' + step + ':' + start};
+}
+function coinSkipItem(){
+  const c = pick(['n','d']), k = 2 + rnd(6), coins = Array(k).fill(c);
+  return {kind:'money', coins, a: k * (c === 'n' ? 5 : 10), q:'Count by ' + (c === 'n' ? '5s' : '10s') + '. How much money?', say:'Count by ' + (c === 'n' ? 'fives' : 'tens') + '. How much money?', key:'cskip:' + c + k};
+}
+function arrayHTML(r, c, e){
+  let s = '<div class="v87arr" style="grid-template-columns:repeat(' + c + ',1.6rem)">';
+  for(let k = 0; k < r * c; k++) s += '<span>' + (e || '●') + '</span>';
+  return s + '</div>';
+}
+function groupsHTML(g, each, e){
+  return '<div class="v87groups">' + Array.from({length:g}, () => '<span>' + Array(each).fill(e || '●').join('') + '</span>').join('') + '</div>';
+}
+function groupItem(){
+  const g = 2 + rnd(4), each = 2 + rnd(4), a = g * each, type = rnd(3), e = pick(['🍎','⭐','🐞','🍪','●']);
+  if(type === 0){
+    const opts = uniqOpts(a, [g + each, a + each, a - each], 4);
+    return {kind:'choice', grp:{g, each, as:'groups'}, q: groupsHTML(g, each, e) + '<b>' + g + ' groups of ' + each + '.</b> How many in all?', opts: opts.map(String), a: opts.indexOf(a),
+      say: g + ' groups of ' + each + '. How many in all?', spkLabel:'Hear it', key:'grp:' + g + 'x' + each};
+  }
+  if(type === 1){
+    const opts = uniqOpts(a, [g + each, a + g, a - g], 4);
+    return {kind:'choice', grp:{g, each, as:'array'}, q: arrayHTML(g, each, e) + '<b>' + g + ' rows of ' + each + '.</b> How many in all?', opts: opts.map(String), a: opts.indexOf(a),
+      say: g + ' rows of ' + each + '. How many in all?', spkLabel:'Hear it', key:'arr:' + g + 'x' + each};
+  }
+  const rep = Array(g).fill(each).join(' + ');
+  const right = g + ' × ' + each, opts = shuffle([right, each + ' × ' + (g + 1), g + ' + ' + each, (g + 1) + ' × ' + (each + 1)]);
+  return {kind:'choice', grp:{g, each, as:'rep'}, q:'<div class="ln-big">' + rep + '</div>Which is the same?', opts, a: opts.indexOf(right),
+    say: 'Which is the same as ' + rep.replace(/\+/g, 'plus') + '?', spkLabel:'Hear it', key:'rep:' + g + 'x' + each};
+}
+NEWM.skip = {id:'C-0a', skill:'Skip counting by 2s, 5s and 10s', n:SHEET_N, sct:300,
+  lesson:{title:'Skip counting', sub:'Count in jumps of the same size',
+    demo:'<div class="say">5, 10, 15, 20</div><div class="cap">Jump by 5 each time — like counting nickels.</div>',
+    steps:['Find the jump: how much more is each number?','Keep jumping by that much.','2s, 5s and 10s are the first ones to learn.'],
+    tip:'Skip counting is the doorway to times tables: 5, 10, 15 is the 5 table. Count nickels by 5s and dimes by 10s; count socks in pairs by 2s. Even numbers are the ones you land on counting by 2s.'},
+  gen(){ return Math.random() < .3 ? coinSkipItem() : skipItem(); }};
+NEWM.groups = {id:'C-0b', skill:'Equal groups and arrays', n:SHEET_N, sct:360,
+  lesson:{title:'Equal groups', sub:'Times means groups of the same size',
+    demo:groupsHTML(3, 4) + '<div class="cap">3 groups of 4 is 4 + 4 + 4 = 12. That is 3 × 4.</div>',
+    steps:['Count how many groups.','Count how many are in each group — they must all be the same.','Groups × how many in each = how many in all.'],
+    tip:'Before memorising tables, she needs to see what 3 × 4 means. Make groups with real things — 3 plates, 4 grapes on each — and arrays with muffin tins or egg cartons. Turning an array sideways shows 3 × 4 = 4 × 3.'},
+  gen(){ return groupItem(); }};
+window.V87_NEWM = NEWM;
+
+/* ---------- ladder ---------- */
+if(!MATH.some(l => l.id === 'C-0a')){
+  ins(MATH, 'after', 'B-9', [NEWM.compare, NEWM.tens]);
+  ins(MATH, 'before', 'C-1', [NEWM.skip, NEWM.groups]);
+  ins(MATH, 'after', '5A-4', [NEWM.quick, NEWM.more]);
+  /* number bonds to 5 alongside counting, not only after counting to 100 */
+  const b1 = MATH.find(l => l.id === '4A-B1');
+  if(b1) ins(MATH, 'after', '5A-4m', [Object.assign({}, b1, {id:'5A-4b', skill:'Number bonds: parts of 3, 4 and 5'})]);
+}
+
+/* =====================================================================
+   READING — phonics rebuilt with real word banks and short sentences
+   ===================================================================== */
+const GRAPH = ['igh','sh','ch','th','wh','ck','ng','nk','ll','ai','ay','ee','ea','oa','ow','ar','or','er','ir','ur'];
+function markPattern(w, pat){
+  if(pat === 'e'){ /* silent e: highlight the vowel and the final e */
+    const m = /^(.*)([aeiou])([^aeiou]+)e$/.exec(w);
+    return m ? H(m[1]) + '<b class="ph">' + m[2] + '</b>' + H(m[3]) + '<b class="ph">e</b>' : H(w);
+  }
+  if(pat === 'blend'){ const m = /^([^aeiou]{2})(.*)$/.exec(w), n = /^(.*[aeiou])([^aeiou]{2})$/.exec(w);
+    if(m) return '<b class="ph">' + m[1] + '</b>' + H(m[2]); if(n) return H(n[1]) + '<b class="ph">' + n[2] + '</b>'; return H(w); }
+  const i = w.indexOf(pat);
+  return i < 0 ? H(w) : H(w.slice(0, i)) + '<b class="ph">' + pat + '</b>' + H(w.slice(i + pat.length));
+}
+function hearItem(row, lvId){
+  const [w, ds, pat] = row, opts = shuffle([w].concat(ds));
+  return {kind:'choice', ph:{w, pat}, q:'Listen, then tap the word you hear.', opts: opts.map(o => '<span class="v87w">' + H(o) + '</span>'), words: opts, a: opts.indexOf(w),
+    say:'Listen. The word is ' + w + '. ' + w + '. Tap the word you hear.', spkLabel:'Hear the word', audioRate:0.8, key:'ph:' + lvId + ':' + w};
+}
+function sentItem(row, lvId){
+  const [sent, q, ans, d1, d2] = row, opts = shuffle([ans, d1, d2]);
+  return {kind:'choice', phs:true, q:'<div class="v87read">' + H(sent) + '</div>' + H(q), opts: opts.map(H), a: opts.indexOf(ans), key:'phs:' + lvId + ':' + sent.slice(0, 18)};
+}
+function phonicsLevel(id, skill, lesson, words, sents){
+  return {id, skill, n:SHEET_N, sct:520, audio:1, lesson,
+    build(n){
+      const nS = Math.min(3, sents.length), nW = n - nS;
+      const ws = [], deck = shuffle(words.slice());
+      while(ws.length < nW){ if(!deck.length) deck.push(...shuffle(words.slice())); ws.push(deck.pop()); }
+      const items = ws.map(r => hearItem(r, id)).concat(sample(sents, nS).map(r => sentItem(r, id)));
+      return items;
+    }};
+}
+const P = {};
+P.dig = [['ship',['chip','sip'],'sh'],['shop',['chop','sop'],'sh'],['fish',['fich','fis'],'sh'],['dish',['dich','dis'],'sh'],['shed',['ched','sed'],'sh'],
+  ['chin',['shin','cin'],'ch'],['chop',['shop','cop'],'ch'],['chick',['shick','cick'],'ch'],['lunch',['lunsh','lunc'],'ch'],['much',['mush','muc'],'ch'],
+  ['thin',['chin','tin'],'th'],['bath',['bash','bat'],'th'],['math',['mash','mat'],'th'],['with',['wish','wit'],'th'],['this',['chis','tis'],'th'],
+  ['when',['then','wen'],'wh'],['whip',['chip','wip'],'wh'],['which',['wich','shich'],'wh']];
+P.digS = [['The fish is in the dish.','Where is the fish?','in the dish','in the ship','on the chin'],
+  ['Seth has a big ship.','What does Seth have?','a ship','a shop','a shell'],
+  ['Chad can chop the log.','What can Chad do?','chop the log','chat with the log','shop for a log'],
+  ['Beth had a hot bath.','What did Beth have?','a hot bath','a hot dish','a hot chip'],
+  ['When will the shop shut?','What will shut?','the shop','the ship','the shed'],
+  ['The chick is thin.','Who is thin?','the chick','the fish','the moth']];
+P.end = [['duck',['duk','dug'],'ck'],['sock',['sok','sog'],'ck'],['back',['bak','bag'],'ck'],['kick',['kik','kit'],'ck'],['rock',['rok','rot'],'ck'],
+  ['ring',['rig','rin'],'ng'],['sing',['sig','sin'],'ng'],['king',['kig','kin'],'ng'],['long',['log','lon'],'ng'],
+  ['sink',['sik','sing'],'nk'],['bank',['bak','bang'],'nk'],['pink',['pik','ping'],'nk'],
+  ['ball',['bal','bell'],'ll'],['bell',['bel','ball'],'ll'],['hill',['hil','hall'],'ll'],['doll',['dol','dull'],'ll']];
+P.endS = [['The duck is on the rock.','Where is the duck?','on the rock','in the sink','on the bell'],
+  ['The king can sing.','Who can sing?','the king','the duck','the sock'],
+  ['Jack has a pink sock.','What color is the sock?','pink','black','red'],
+  ['The ball hit the bell.','What did the ball hit?','the bell','the hill','the sink'],
+  ['Nick fell on the hill.','Where did Nick fall?','on the hill','in the sink','by the rock'],
+  ['The doll is in the bank.','What is in the bank?','the doll','the duck','the ring']];
+P.blend = [['stop',['sop','top'],'blend'],['flag',['fag','lag'],'blend'],['frog',['fog','rog'],'blend'],['clap',['cap','lap'],'blend'],['drum',['dum','rum'],'blend'],
+  ['spin',['sin','pin'],'blend'],['plug',['pug','lug'],'blend'],['grin',['gin','rin'],'blend'],['step',['sep','tep'],'blend'],['crab',['cab','rab'],'blend'],
+  ['swim',['sim','wim'],'blend'],['snap',['sap','nap'],'blend'],['trip',['tip','rip'],'blend'],['glad',['gad','lad'],'blend'],
+  ['best',['bes','bet'],'blend'],['lamp',['lap','lam'],'blend'],['hand',['had','han'],'blend'],['jump',['jum','jup'],'blend'],['nest',['net','nes'],'blend'],['milk',['mil','mik'],'blend']];
+P.blendS = [['The frog can swim.','What can the frog do?','swim','clap','drum'],
+  ['Brad has a red flag.','What does Brad have?','a flag','a frog','a drum'],
+  ['The crab is in the sand.','Where is the crab?','in the sand','on the step','in the nest'],
+  ['Stop and clap your hands.','What do you do?','stop and clap','spin and jump','swim and grin'],
+  ['The hen is in the nest.','Where is the hen?','in the nest','on the lamp','in the milk'],
+  ['Glen can jump on the step.','What can Glen do?','jump','swim','spin']];
+P.e1 = [['cape',['cap','cope'],'e'],['made',['mad','mede'],'e'],['cake',['cak','coke'],'e'],['game',['gam','gome'],'e'],['lake',['lak','like'],'e'],
+  ['gate',['gat','gote'],'e'],['name',['nam','nome'],'e'],['kite',['kit','kate'],'e'],['bike',['bik','bake'],'e'],['time',['tim','tame'],'e'],
+  ['ride',['rid','rode'],'e'],['five',['fiv','fave'],'e'],['pine',['pin','pane'],'e'],['hide',['hid','hade'],'e']];
+P.e1S = [['Jake ate a cake by the lake.','Where was Jake?','by the lake','by the gate','at home'],
+  ['Mike can ride his bike.','What can Mike ride?','his bike','a kite','a cake'],
+  ['Kate made a kite.','What did Kate make?','a kite','a cake','a game'],
+  ['It is time to hide.','What is it time to do?','hide','ride','bake'],
+  ['We came to the gate.','Where did we come?','to the gate','to the lake','to the pine'],
+  ['Dave gave me a plate.','What did Dave give me?','a plate','a cake','a kite']];
+P.e2 = [['hope',['hop','hape'],'e'],['rope',['rop','ripe'],'e'],['home',['hom','hame'],'e'],['nose',['nos','nase'],'e'],['bone',['bon','bane'],'e'],
+  ['note',['not','nute'],'e'],['cube',['cub','cabe'],'e'],['tube',['tub','tibe'],'e'],['cute',['cut','cate'],'e'],['mule',['mul','male'],'e'],['huge',['hug','hage'],'e'],['stove',['stov','stave'],'e']];
+P.e2S = [['The dog has a bone.','What does the dog have?','a bone','a rope','a cube'],
+  ['Rose has a cute mule.','What does Rose have?','a mule','a nose','a tube'],
+  ['We hope to go home.','Where do we hope to go?','home','to the cube','to the rope'],
+  ['Pete can use the rope.','What can Pete use?','the rope','the tube','the bone'],
+  ['The note is on the stove.','Where is the note?','on the stove','on the nose','in the hole']];
+P.ai = [['rain',['rane','rayn'],'ai'],['train',['trane','trayn'],'ai'],['paint',['pant','paynt'],'ai'],['snail',['snale','snayl'],'ai'],['chain',['chane','chayn'],'ai'],
+  ['play',['plai','pley'],'ay'],['day',['dai','dey'],'ay'],['stay',['stai','stey'],'ay'],['tray',['trai','trey'],'ay'],['say',['sai','sey'],'ay'],['spray',['sprai','sprey'],'ay']];
+P.aiS = [['The train is in the rain.','What is in the rain?','the train','the snail','the tray'],
+  ['Can we play all day?','When can we play?','all day','in the rain','on the tray'],
+  ['The snail is on the trail.','Where is the snail?','on the trail','on the train','in the pail'],
+  ['Jay will paint the gate.','What will Jay paint?','the gate','the train','the tray'],
+  ['Stay and play with me.','What will we do?','play','paint','spray']];
+P.ee = [['tree',['trea','trie'],'ee'],['green',['grean','grene'],'ee'],['sleep',['sleap','slepe'],'ee'],['queen',['quean','quene'],'ee'],['sheep',['sheap','shepe'],'ee'],['three',['threa','thre'],'ee'],
+  ['eat',['eet','ete'],'ea'],['seat',['seet','sete'],'ea'],['leaf',['leef','lefe'],'ea'],['team',['teem','teme'],'ea'],['dream',['dreem','dreme'],'ea']];
+P.eeS = [['The sheep sleep under a tree.','Where do the sheep sleep?','under a tree','by the sea','on the street'],
+  ['The queen has a green dress.','What color is the dress?','green','red','blue'],
+  ['We eat a treat at the beach.','Where do we eat?','at the beach','in the tree','on the seat'],
+  ['I see three bees.','How many bees?','three','two','four'],
+  ['A leaf fell from the tree.','What fell?','a leaf','a seed','a bee']];
+P.oa = [['boat',['bote','bowt'],'oa'],['coat',['cote','cowt'],'oa'],['goat',['gote','gowt'],'oa'],['soap',['sope','sowp'],'oa'],['toast',['toste','towst'],'oa'],
+  ['snow',['snoa','sno'],'ow'],['grow',['groa','gro'],'ow'],['slow',['sloa','slo'],'ow'],
+  ['light',['lite','lyte'],'igh'],['high',['hie','hy'],'igh'],['bright',['brite','bryte'],'igh'],['fight',['fite','fyte'],'igh']];
+P.oaS = [['The goat is in the boat.','Where is the goat?','in the boat','on the road','in the snow'],
+  ['Snow fell all night.','What fell?','snow','rain','light'],
+  ['The light is bright.','What is bright?','the light','the boat','the snow'],
+  ['The bowl has soap in it.','What is in the bowl?','soap','toast','snow'],
+  ['Grow tall, little tree!','What will the tree do?','grow','glow','float'],
+  ['I might fly my kite tonight.','What might I fly?','my kite','my boat','my coat']];
+P.r = [['car',['cor','cur'],'ar'],['star',['stor','stir'],'ar'],['park',['pork','perk'],'ar'],['farm',['form','firm'],'ar'],['barn',['born','burn'],'ar'],
+  ['corn',['carn','curn'],'or'],['fork',['fark','ferk'],'or'],['horn',['harn','hurn'],'or'],
+  ['bird',['bard','bord'],'ir'],['girl',['garl','gorl'],'ir'],['turn',['tarn','torn'],'ur'],['her',['har','hor'],'er'],['fern',['farn','forn'],'er']];
+P.rS = [['The car is in the barn.','Where is the car?','in the barn','in the park','on the porch'],
+  ['The bird sat on the fern.','Where did the bird sit?','on the fern','on the car','on the fork'],
+  ['Turn left at the park.','Where do you turn?','at the park','at the farm','at the corn'],
+  ['Her shirt is dirty.','What is dirty?','her shirt','her skirt','her horse'],
+  ['The horse ate the corn.','What did the horse eat?','the corn','the fork','the star'],
+  ['A star is far away.','What is far away?','a star','a car','a jar']];
+const L = (title, sub, demo, steps, tip) => ({title, sub, demo:'<div class="say">' + demo + '</div>', steps, tip});
+const PH = [
+  phonicsLevel('E-2', 'Digraphs: sh, ch, th, wh', L('Two letters, one sound', 'sh, ch, th and wh', 'sh + i + p → ship',
+    ['Listen to the word.','Find the two letters that make one sound.','Tap the word that matches.'],
+    'Say the sounds together: sh (finger on lips), ch (sneeze), th (tongue out). If she picks "sip" for ship, say both slowly and ask which one starts with "shh".'), P.dig, P.digS),
+  phonicsLevel('E-2b', 'Word endings: -ck, -ng, -nk, -ll', L('Sounds that stick together', '-ck, -ng, -nk and -ll at the end', 'duck · ring · pink · bell',
+    ['Listen to the end of the word.','-ck says /k/ after a short vowel; -ng and -nk are glued sounds.','Tap the word that matches.'],
+    'These endings follow a short vowel: duck, ring, pink, bell. Have her say the word and hold the last sound: "rinnng". Glued sounds are learned as a chunk, not letter by letter.'), P.end, P.endS),
+  phonicsLevel('E-3', 'Consonant blends', L('Blends', 'Two consonants — you hear both', 's + t + op → stop',
+    ['Listen to the start and the end of the word.','In a blend you can hear both consonants.','Tap the word with both sounds.'],
+    'Unlike sh or ch, both sounds in a blend are heard: s-t-op. If she drops one ("sop"), stretch it out together: "sssstop".'), P.blend, P.blendS),
+  phonicsLevel('E-4', 'Silent e: a_e and i_e', L('Magic e', 'The e at the end makes the vowel say its name', 'cap → cape &nbsp; kit → kite',
+    ['Listen to the middle sound: short or long?','A long a or i usually has an e at the end.','Tap the word that matches.'],
+    'Contrast pairs out loud: cap/cape, kit/kite, hid/hide. The e is silent but it changes the vowel. Write a word on paper and let her add the e to "make magic".'), P.e1, P.e1S),
+  phonicsLevel('E-4b', 'Silent e: o_e and u_e', L('Magic e with o and u', 'hop → hope, cub → cube', 'hop → hope &nbsp; cub → cube',
+    ['Listen: does the vowel say its name?','If it does, look for the e at the end.','Tap the word that matches.'],
+    'Same idea as a_e and i_e. u_e can say "you" (cube) or "oo" (tube) — both are fine.'), P.e2, P.e2S),
+  phonicsLevel('E-5', 'Vowel teams: ai and ay', L('ai and ay', 'Both say the long a sound', 'rain · play',
+    ['Listen for the long a sound.','ai is usually in the middle of a word, ay at the end.','Tap the word that matches.'],
+    'Teach the position rule: ai in the middle (rain), ay at the end (play). That one rule makes most of these easy.'), P.ai, P.aiS),
+  phonicsLevel('E-5b', 'Vowel teams: ee and ea', L('ee and ea', 'Both say the long e sound', 'tree · eat',
+    ['Listen for the long e sound.','It is often spelled ee or ea.','Tap the word that matches — look carefully at the letters.'],
+    'ee and ea sound the same, so spelling them is partly memory. Reading them is the main goal here; if she can read both, she is on track.'), P.ee, P.eeS),
+  phonicsLevel('E-5c', 'Vowel teams: oa, ow and igh', L('oa, ow and igh', 'Long o and long i teams', 'boat · snow · light',
+    ['Listen to the vowel sound.','Long o: oa in the middle, ow at the end. Long i: igh.','Tap the word that matches.'],
+    'igh is a three-letter team — "the g and h are silent". oa is usually in the middle (boat), ow at the end (snow).'), P.oa, P.oaS),
+  phonicsLevel('E-6', 'Bossy r: ar, or, er, ir, ur', L('Bossy r', 'The r changes the vowel', 'car · corn · bird · turn',
+    ['Listen to the vowel with the r.','ar says "ar", or says "or"; er, ir and ur all say "er".','Tap the word that matches.'],
+    'er, ir and ur sound the same, so this sheet never makes her choose between them by sound alone. Point out "the r is bossy — it changes the vowel".'), P.r, P.rS)
+];
+/* E-1: read the word, find the picture — with look-alike choices */
+const E1 = ENG.find(l => l.id === 'E-1');
+if(E1 && window.V85 && window.V85.readItemsFor) E1.build = n => window.V85.readItemsFor(n, FAMILIES.map(f => f[0].replace('-', '')));
+if(!ENG.some(l => l.id === 'E-2b')){
+  const at = ENG.findIndex(l => l.id === 'E-2');
+  const oldIds = ['E-2','E-3','E-4','E-5'];
+  for(let k = ENG.length - 1; k >= 0; k--) if(oldIds.includes(ENG[k].id)) ENG.splice(k, 1);
+  if(at > -1) ENG.splice(at, 0, ...PH);
+  /* spelling everyday words comes after the phonics patterns, not before */
+  const twoA = [];
+  for(let k = ENG.length - 1; k >= 0; k--) if(/^2A-\d+$/.test(ENG[k].id)) twoA.unshift(ENG.splice(k, 1)[0]);
+  ins(ENG, 'after', 'E-6', twoA);
+}
+
+/* ---------- early reading: count the sounds, ending sounds ---------- */
+const SOUND_WORDS = [['at',2],['in',2],['up',2],['on',2],['it',2],['me',2],['go',2],['bee',2],['egg',2],['zoo',2],
+  ['cat',3],['dog',3],['sun',3],['fish',3],['ship',3],['cake',3],['moon',3],['bed',3],['pig',3],['shoe',2],
+  ['frog',4],['stop',4],['lamp',4],['jump',4],['hand',4],['nest',4],['crab',4],['milk',4]];
+function soundsItem(){
+  const [w, n] = pick(SOUND_WORDS);
+  const opts = [2, 3, 4].map(k => '<span class="v87bx">' + '<i></i>'.repeat(k) + '</span><small>' + k + '</small>');
+  return {kind:'pic', cnt:{w, n}, q:'Say the word slowly. How many sounds?', opts, a: n - 2,
+    say:'Say the word slowly: ' + w + '. ' + w + '. How many sounds do you hear?', spkLabel:'Hear the word', audioRate:0.75, key:'nsnd:' + w};
+}
+const END_WORDS = ['cat','dog','sun','bed','cup','bus','pig','hen','map','web','log','jam','van','net','tub','lip','bag','pan','pot','rug'];
+function endItem(){
+  const w = pick(END_WORDS), last = w[w.length - 1];
+  const pool = 'bdgmnpst'.split('').filter(c => c !== last && c !== w[0]);
+  const opts = shuffle([last].concat(sample(pool, 2)));
+  return {kind:'choice', endS:{w, last}, q:'What sound do you hear at the <b>end</b>?', opts: opts.map(c => '<span class="v87w">' + c + '</span>'), a: opts.indexOf(last),
+    say:'Listen: ' + w + '. ' + w + '. What sound do you hear at the end?', spkLabel:'Hear the word', audioRate:0.75, key:'endsnd:' + w};
+}
+const NEWE = {
+  sounds:{id:'6A-6b', skill:'Tap the sounds: how many?', n:SHEET_N, sct:420, audio:1,
+    lesson:{title:'Count the sounds', sub:'One box for each sound you hear',
+      demo:'<div class="say">c · a · t → 3 sounds</div><div class="cap">fish is 3 sounds too: f · i · sh.</div>',
+      steps:['Listen to the word.','Say it slowly and tap a finger for each sound.','Count your taps.'],
+      tip:'Count sounds, not letters: "fish" has 4 letters but 3 sounds (f-i-sh). Use pennies on the table — push one forward for each sound. This skill (segmenting) is what makes spelling possible later.'},
+    build(n){ return Array.from({length:n}, soundsItem); }},
+  ending:{id:'6A-6c', skill:'Ending sounds', n:SHEET_N, sct:420, audio:1,
+    lesson:{title:'The last sound', sub:'Listen to the end of the word',
+      demo:'<div class="say">ca<b>t</b> → /t/</div><div class="cap">Stretch the word and listen to how it ends.</div>',
+      steps:['Listen to the word.','Say it slowly and stop on the last sound.','Tap the letter that makes that sound.'],
+      tip:'Most children hear first sounds easily but not last sounds. Play "I spy something that ends with /t/". Exaggerate the end: "ca-T".'},
+    build(n){ return Array.from({length:n}, endItem); }}
+};
+if(!ENG.some(l => l.id === '6A-6b')) ins(ENG, 'after', '6A-6', [NEWE.sounds, NEWE.ending]);
+
+/* =====================================================================
+   Learn-it explanations for the new question types
+   ===================================================================== */
+const big = s => '<div class="ln-big">' + s + '</div>';
+const explain0 = window.V87.explain;
+window.V87.explain = function(it, Lv, sub){
+  try{
+    if(it.kind === 'math' && (it.op === '×' || it.op === '÷') && /^[CD]-/.test(Lv.id) && it.top <= 12 && it.bottom <= 12 || (it.kind === 'math' && it.op === '÷' && /^D-/.test(Lv.id) && it.a <= 12 && it.bottom <= 12)){
+      const mul = it.op === '×', g = mul ? it.top : it.a, e = it.bottom, tot = g * e;
+      const grp = n => n === 1 ? 'group' : 'groups';
+      const pic = groupsHTML(g, e), steps = range(1, g).map(k => k * e).join(', ');
+      if(mul) return [
+        {html: big(it.top + ' × ' + it.bottom + ' = ?'), say: it.top + ' times ' + it.bottom + '.'},
+        {html: pic + big(it.top + ' × ' + it.bottom), say: it.top + ' times ' + it.bottom + ' means ' + g + ' ' + grp(g) + ' of ' + e + '.'},
+        {html: pic, say: g === 1 ? 'One group of ' + e + ' is just ' + e + '.' : 'Count by ' + e + 's: ' + steps + '.'},
+        {html: pic + big(it.top + ' × ' + it.bottom + ' = <b class="ok">' + it.a + '</b>'), say: it.top + ' times ' + it.bottom + ' is ' + it.a + '.'}];
+      return [
+        {html: big(it.top + ' ÷ ' + it.bottom + ' = ?'), say: it.top + ' divided by ' + it.bottom + '.'},
+        {html: big(it.top + ' ÷ ' + it.bottom) + '<p class="ln-stepline">How many groups of ' + e + ' make ' + it.top + '?</p>', say:'Ask: how many groups of ' + e + ' make ' + it.top + '?'},
+        {html: pic, say:'Count by ' + e + 's until you reach ' + it.top + ': ' + steps + '. That is ' + g + ' ' + grp(g) + '.'},
+        {html: pic + big(it.top + ' ÷ ' + it.bottom + ' = <b class="ok">' + it.a + '</b>'), say: it.top + ' divided by ' + it.bottom + ' is ' + it.a + ', because ' + it.a + ' times ' + e + ' is ' + it.top + '.'}];
+    }
+    if(it.quick) return [
+      {html:'<div class="v87quick">' + diceHTML(Math.min(6, it.quick)) + '</div>', say:'How many dots? Look quickly.'},
+      {html:'<div class="v87quick">' + diceHTML(Math.min(6, it.quick)) + '</div>', say:'Do not count one by one. Look at the pattern — like the dots on a dice.'},
+      {html:'<div class="v87quick">' + diceHTML(Math.min(6, it.quick)) + '</div>' + big('<b class="ok">' + it.quick + '</b>'), say:'That pattern is ' + it.quick + '.'}];
+    if(it.more){ const m = it.more, big1 = Math.max(m.x, m.y), small1 = Math.min(m.x, m.y);
+      return [
+        {html: it.opts.join(' '), say: it.q},
+        {html: it.opts.join(' '), say:'Count each group: ' + m.x + ' and ' + m.y + '.'},
+        {html: it.opts[it.a], say: m.fewer ? small1 + ' is fewer than ' + big1 + '. That group has fewer.' : big1 + ' is more than ' + small1 + '. That group has more.'}]; }
+    if(it.sense === 'cmp' && it.cmp){
+      if(it.cmp.nums){ const b = Math.max(...it.cmp.nums);
+        return [{html: big(it.cmp.nums.join(' &nbsp; ')), say:'Which number is the greatest?'},
+          {html: big(it.cmp.nums.join(' &nbsp; ')), say:'Compare the tens first. The most tens is the biggest number.'},
+          {html: big('<b class="ok">' + b + '</b>'), say: b + ' is the greatest.'}]; }
+      const a = it.cmp.a, b = it.cmp.b, sym = a > b ? '&gt;' : a < b ? '&lt;' : '=';
+      const ta = Math.floor(a / 10), tb = Math.floor(b / 10);
+      return [{html: big(a + ' ▢ ' + b), say:'Compare ' + a + ' and ' + b + '.'},
+        {html: big(a + ' ▢ ' + b), say: ta !== tb ? 'Look at the tens first: ' + ta + ' tens and ' + tb + ' tens.' : 'The tens are the same, so look at the ones: ' + a % 10 + ' and ' + b % 10 + '.'},
+        {html: big(a + ' <b class="ok">' + sym + '</b> ' + b), say: a === b ? 'They are equal.' : a + (a > b ? ' is greater than ' : ' is less than ') + b + '. The open side faces the bigger number.'}]; }
+    if(it.hc){ const end = it.a;
+      return [{html: hundredChartHTML(it.top, it.top) + big(it.top + ' ' + it.op + ' ' + it.bottom), say: it.top + (it.op === '+' ? ' plus ' : ' take away ') + it.bottom + '.'},
+        {html: hundredChartHTML(it.top, end), say:'On the hundred chart, ' + (it.op === '+' ? 'each 10 is one row down.' : 'each 10 is one row up.') + ' The ones stay the same.'},
+        {html: hundredChartHTML(it.top, end) + big(it.top + ' ' + it.op + ' ' + it.bottom + ' = <b class="ok">' + end + '</b>'), say:'So ' + it.top + (it.op === '+' ? ' plus ' : ' take away ') + it.bottom + ' is ' + end + '.'}]; }
+    if(it.kind === 'seq' && it.skip){ const run = it.run.filter(v => v !== '▢');
+      return [{html: big(it.run.join(', ').replace('▢', '?')), say:'What comes next?'},
+        {html: big(it.run.join(', ').replace('▢', '?')), say:'Each number is ' + it.skip + ' more than the one before. We are counting by ' + it.skip + 's.'},
+        {html: big(run.join(', ') + ', <b class="ok">' + it.a + '</b>'), say: run[run.length - 1] + ' plus ' + it.skip + ' is ' + it.a + '.'}]; }
+    if(it.grp){ const g = it.grp.g, e = it.grp.each, a = g * e, steps = range(1, g).map(k => k * e).join(', ');
+      const pic = it.grp.as === 'array' ? arrayHTML(g, e) : groupsHTML(g, e);
+      return [{html: pic, say: it.grp.as === 'rep' ? 'Adding the same number again and again is the same as times.' : 'How many in all?'},
+        {html: pic, say: g + (it.grp.as === 'array' ? ' rows' : ' groups') + ', with ' + e + ' in each. Count by ' + e + 's: ' + steps + '.'},
+        {html: pic + big(g + ' × ' + e + ' = <b class="ok">' + a + '</b>'), say: g + ' groups of ' + e + ' is ' + a + '. We write it ' + g + ' times ' + e + '.'}]; }
+    if(it.ph){ const w = it.ph.w;
+      return [{html: big('🔊 ' + H(w)), say:'Listen: ' + w + '.'},
+        {html: '<div class="ln-words">' + it.words.map(x => '<span>' + H(x) + '</span>').join('') + '</div>', say:'Look at every choice. Find the letters that make the sounds you heard.'},
+        {html: big(markPattern(w, it.ph.pat)), say: w + '. ' + (it.ph.pat === 'e' ? 'The e at the end makes the vowel say its name.' : it.ph.pat === 'blend' ? 'You can hear both consonants together.' : 'These letters work together in ' + w + '.')}]; }
+    if(it.cnt){ const w = it.cnt.w, n = it.cnt.n;
+      return [{html: big('🔊 ' + H(w)), say:'Listen: ' + w + '.'},
+        {html: '<span class="v87bx big">' + '<i></i>'.repeat(n) + '</span>', say:'Say it slowly and tap a finger for each sound.'},
+        {html: '<span class="v87bx big">' + '<i class="on"></i>'.repeat(n) + '</span>' + big('<b class="ok">' + n + '</b>'), say: w + ' has ' + n + ' sounds.'}]; }
+    if(it.endS){ const w = it.endS.w, l = it.endS.last;
+      return [{html: big('🔊 ' + H(w)), say:'Listen: ' + w + '.'},
+        {html: big(H(w.slice(0, -1)) + '<b class="ph">' + l + '</b>'), say:'Say it slowly and stop on the last sound.'},
+        {html: big('<b class="ok">' + l + '</b>'), say:'The last sound is [[' + l + ']]. The letter ' + l + ' makes that sound.'}]; }
+  }catch(e){ console.warn('v87 content explain', e); }
+  return explain0(it, Lv, sub);
+};
+
+/* ---------- one-time: anyone already on the everyday-words spelling levels does phonics first ---------- */
+const migrate3 = migrate;
+window.migrate = migrate = function(){
+  migrate3();
+  DB.students.forEach(s => {
+    if(s.v87c) return;
+    s.v87c = dayKey();
+    if(/^2A-\d+$/.test(s.english || '') && !(s.testDue && s.testDue.english)){
+      s.english = 'E-1'; s.seen = (s.seen || []).filter(x => x !== 'e:E-1');
+    }
+  });
+};
+
+/* the generic "Directions: tap the speaker" line is noise on these questions */
+const cellC = cell;
+window.cell = cell = function(it, i, single, n){
+  const d = cellC(it, i, single, n);
+  try{
+    if(it && (it.sense || it.clock || it.ruler || it.grp || it.cmp || it.quick || it.more || it.ph || it.cnt || it.endS)){
+      d.querySelectorAll('.note').forEach(x => { if(/^Directions:/.test(x.textContent)) x.remove(); });
+    }
+  }catch(e){}
+  return d;
+};
+
+/* ---------- sheets never come up short; repeats only when the level runs out ---------- */
+const build3 = buildSheet;
+window.buildSheet = buildSheet = function(subject){
+  const sh = build3(subject);
+  try{
+    if(sh && !sh.isTest && !sh.isCheckup && !sh.items.some(i => i.kind === 'passage')){
+      const L0 = lvl(sh.subject, sh.level), want = Math.min(window.v87QPer ? v87QPer() : 10, L0.n || 10);
+      if(typeof L0.gen === 'function'){
+        const count = {}; sh.items.forEach(i => count[i.key] = (count[i.key] || 0) + 1);
+        /* swap a repeat for a fresh question when the level has more to give */
+        sh.items.forEach((it, k) => {
+          if(it.review || it.mixed || count[it.key] <= 1) return;
+          for(let g = 0; g < 20; g++){ const nx = L0.gen(); if(!count[nx.key]){ count[it.key]--; count[nx.key] = 1;
+            sh.items[k] = Object.assign({stack:L0.stack, given:(nx.kind === 'choice' || nx.kind === 'pic') ? null : ''}, nx); seqSafe(sh.items[k]);
+            if(writeMode() && sh.items[k].kind === 'math') sh.items[k].penMath = true; break; } }
+        });
+        /* tiny levels (only a couple of possible questions) repeat instead of shrinking the sheet */
+        let live0 = sh.items.filter(i => !i.review).length, g = 0;
+        while(live0 < want && g++ < 30){ const nx = L0.gen();
+          const it = Object.assign({stack:L0.stack, given:(nx.kind === 'choice' || nx.kind === 'pic') ? null : ''}, nx); seqSafe(it);
+          if(writeMode() && it.kind === 'math') it.penMath = true;
+          sh.items.splice(Math.min(sh.items.length, 1 + rnd(sh.items.length)), 0, it); live0++; }
+      }
+      /* the same question never twice in a row */
+      for(let k = 1; k < sh.items.length; k++) if(sh.items[k].key && sh.items[k].key === sh.items[k - 1].key){
+        const j = sh.items.findIndex((x, m) => m > k && x.key !== sh.items[k].key && (m + 1 >= sh.items.length || sh.items[m + 1].key !== sh.items[k].key));
+        if(j > -1){ const t = sh.items[k]; sh.items[k] = sh.items[j]; sh.items[j] = t; }
+      }
+    }
+  }catch(e){ console.warn('v87 fill', e); }
+  return sh;
+};
+/* stage tests: no repeated questions */
+const test0 = buildTest;
+window.buildTest = buildTest = function(subject){
+  const t = test0(subject);
+  try{
+    const seen = new Set();
+    t.items.forEach((it, k) => {
+      if(it.kind === 'passage' || !it.key) return;
+      if(!seen.has(it.key)){ seen.add(it.key); return; }
+      const L0 = it.lv ? lvl(subject, it.lv) : null;
+      if(!L0 || typeof L0.gen !== 'function') return;
+      for(let g = 0; g < 25; g++){ const nx = L0.gen(); if(!seen.has(nx.key)){ seen.add(nx.key);
+        t.items[k] = Object.assign({stack:L0.stack, lv:L0.id, given:(nx.kind === 'choice' || nx.kind === 'pic') ? null : ''}, nx); seqSafe(t.items[k]);
+        if(writeMode() && t.items[k].kind === 'math') t.items[k].penMath = true; break; } }
+    });
+  }catch(e){ console.warn('v87 test', e); }
+  return t;
+};
+/* speech: read symbols as words */
+const say5 = say;
+const speakable = t => String(t)
+  .replace(/(\d)\s*×\s*(\d)/g, '$1 times $2').replace(/×\s*(\d)/g, 'times $1').replace(/×/g, ' times ')
+  .replace(/(\d)\s*÷\s*(\d)/g, '$1 divided by $2').replace(/÷/g, ' divided by ')
+  .replace(/(\d)\s*[−-]\s*(\d)/g, '$1 minus $2').replace(/(^|[\s(,])[−]\s?(\d)/g, '$1take away $2')
+  .replace(/(^|[\s(,])\+\s?(\d)/g, '$1plus $2').replace(/(\d)\s*\+\s*(\d)/g, '$1 plus $2')
+  .replace(/\s*→\s*/g, ' to ').replace(/(^|\s)-([a-z]{1,4})\b/g, '$1"$2"').replace(/¢/g, ' cents')
+  .replace(/([.?!])\s*\.(\s|$)/g, '$1$2').replace(/\?\s*\./g, '?');
+window.say = say = function(text, rate){ return say5(text == null ? text : speakable(text), rate); };
+window.v87speakable = speakable;
+
+/* ---------- no red clock for young children ---------- */
+const render2 = render;
+window.render = render = function(){
+  render2();
+  try{ document.body.classList.toggle('v87young', !!(me && (me.age || 0) < 7)); }catch(e){}
+};
+})();
+
+/* ===== V8.7 work space: write on the problem, scratch paper, ones-first typing ===== */
+(function(){
+'use strict';
+const digits = n => String(Math.abs(n)).length;
+
+/* ---------- freehand drawing on a canvas, stored as normalised strokes ---------- */
+function drawStrokes(cv, strokes, color){
+  const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  if(!r.width || !r.height) return;
+  cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
+  const c = cv.getContext('2d');
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  c.clearRect(0, 0, r.width, r.height);
+  c.lineCap = 'round'; c.lineJoin = 'round'; c.lineWidth = 3.2; c.strokeStyle = color || '#5B6472';
+  (strokes || []).forEach(s => {
+    if(!s.length) return;
+    c.beginPath(); c.moveTo(s[0][0] * r.width, s[0][1] * r.height);
+    if(s.length === 1) c.lineTo(s[0][0] * r.width + 0.5, s[0][1] * r.height + 0.5);
+    for(let k = 1; k < s.length; k++) c.lineTo(s[k][0] * r.width, s[k][1] * r.height);
+    c.stroke();
+  });
+}
+function wireDraw(cv, getStrokes, opt){
+  opt = opt || {};
+  let cur = null;
+  const pt = e => { const r = cv.getBoundingClientRect(); return [Math.round((e.clientX - r.left) / r.width * 1000) / 1000, Math.round((e.clientY - r.top) / r.height * 1000) / 1000]; };
+  cv.style.touchAction = 'none';
+  cv.addEventListener('pointerdown', e => {
+    if(opt.locked && opt.locked()) return;
+    e.preventDefault(); e.stopPropagation();
+    if(opt.onStart) opt.onStart();
+    try{ cv.setPointerCapture(e.pointerId); }catch(err){}
+    cur = [pt(e)]; getStrokes().push(cur);
+    drawStrokes(cv, getStrokes(), opt.color);
+  });
+  cv.addEventListener('pointermove', e => {
+    if(!cur) return; e.preventDefault();
+    const p = pt(e), l = cur[cur.length - 1];
+    if(Math.abs(p[0] - l[0]) + Math.abs(p[1] - l[1]) < 0.006) return;
+    cur.push(p); drawStrokes(cv, getStrokes(), opt.color);
+  });
+  const end = e => { if(!cur) return; cur = null; if(opt.onEnd) opt.onEnd(); };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+  cv.addEventListener('click', e => e.stopPropagation());
+}
+
+/* ---------- the problem, laid out in columns with room above for marks ---------- */
+function workGrid(it){
+  const top = String(it.top), bot = String(it.bottom), n = Math.max(top.length, bot.length);
+  const row = (s, op) => '<span class="op">' + (op || '') + '</span>' + Array.from({length:n}, (x, k) => {
+    const ch = s[s.length - n + k]; return '<span class="d">' + (ch === undefined ? '' : ch) + '</span>';
+  }).join('');
+  return '<div class="g" style="grid-template-columns:30px repeat(' + n + ',var(--v88col))">' +
+    '<span class="op"></span>' + Array(n).fill('<span class="d m"></span>').join('') +
+    row(top) + row(bot, it.op) + '</div>';
+}
+function workEl(it, i, locked){
+  const w = document.createElement('div');
+  w.className = 'v88work';
+  w.innerHTML = '<div class="gw">' + workGrid(it) + '<canvas class="v88mk" aria-label="Write your working here"></canvas>' +
+    '<button class="v88clr" title="Clear my marks">✕</button></div>';
+  const cv = w.querySelector('canvas'), clr = w.querySelector('.v88clr');
+  if(!Array.isArray(it.marks)) it.marks = [];
+  clr.style.display = it.marks.length && !locked ? '' : 'none';
+  clr.onclick = e => { e.stopPropagation(); it.marks = []; drawStrokes(cv, it.marks); clr.style.display = 'none'; };
+  wireDraw(cv, () => it.marks, {
+    locked: () => phase === 'mark' || (phase === 'fix' && !it.wrong),
+    onStart: () => {
+      if(sel !== i){
+        sel = i;
+        document.querySelectorAll('#paper .sel').forEach(x => x.classList.remove('sel'));
+        const c = w.closest('.prob, .item'); if(c) c.classList.add('sel');
+        try{ drawFoot(); }catch(err){}
+      }
+    },
+    onEnd: () => { clr.style.display = ''; }
+  });
+  requestAnimationFrame(() => drawStrokes(cv, it.marks));
+  return w;
+}
+
+/* ---------- typed answers fill from the right, ones first, like paper ---------- */
+function answerCells(it){
+  const t = digits(it.top), b = digits(it.bottom);
+  let n = it.op === '+' ? Math.max(t, b) + 1 : it.op === '×' ? t + b : Math.max(t, b);
+  n = Math.max(n, String(it.given || '').length, 1);
+  return Math.min(n, 5);
+}
+function cellsHTML(it, active){
+  const g = String(it.given || ''), n = answerCells(it), pad = n - g.length;
+  let s = '<span class="v88cells">';
+  for(let k = 0; k < n; k++){
+    const ch = k >= pad ? g[k - pad] : '';
+    s += '<span class="c' + (active && k === pad - 1 ? ' cur' : '') + (ch ? ' f' : '') + '">' + ch + '</span>';
+  }
+  return s + '</span>';
+}
+const ones1st = it => it && it.kind === 'math' && it.stack && !it.penMath && !writeMode();
+const keyIn0 = keyIn;
+window.keyIn = keyIn = function(k){
+  const it = sheet && sheet.items[sel];
+  if(ones1st(it) && k !== '▶'){
+    if(k === '⌫') it.given = String(it.given || '').slice(1);
+    else if(String(it.given || '').length < answerCells(it) && /^[0-9]$/.test(k)) it.given = k + String(it.given || '');
+    render();
+    return;
+  }
+  return keyIn0(k);
+};
+
+/* ---------- hook into the worksheet ---------- */
+const cell0 = cell;
+window.cell = cell = function(it, i, single, n){
+  const d = cell0(it, i, single, n);
+  try{
+    if(it && it.kind === 'math' && it.stack){
+      const st = d.querySelector('.stack');
+      if(st){
+        const locked = phase === 'mark' || (phase === 'fix' && !it.wrong);
+        if(writeMode() || it.penMath){
+          const bar = st.querySelector('.bar');
+          while(st.firstChild && st.firstChild !== bar) st.removeChild(st.firstChild);
+          st.insertBefore(workEl(it, i, locked), bar);
+          st.classList.add('v88stack');
+        } else {
+          const ans = st.querySelector('.ans');
+          if(ans){ ans.outerHTML = cellsHTML(it, i === sel && !locked); }
+        }
+      }
+    }
+  }catch(e){ console.warn('v87 work', e); }
+  return d;
+};
+/* marks belong to one sheet: never carried into a repeat */
+const build0 = buildSheet;
+window.buildSheet = buildSheet = function(subject){
+  const sh = build0(subject);
+  try{ sh.items.forEach(it => { delete it.marks; }); }catch(e){}
+  return sh;
+};
+const snap0 = snapshotSheet;
+window.snapshotSheet = snapshotSheet = function(){
+  const s = snap0();
+  try{ s.items.forEach((o, k) => { const it = sheet.items[k]; if(it && it.marks && it.marks.length) o.marks = it.marks.map(st => st.filter((p, j) => j % 2 === 0 || j === st.length - 1)); }); }catch(e){}
+  return s;
+};
+/* the sheet review shows her working next to the answer */
+const review0 = openSheetReview;
+window.openSheetReview = openSheetReview = function(snap){
+  review0(snap);
+  try{
+    const rows = document.querySelectorAll('#svBody .svrow');
+    let r = 0;
+    snap.items.forEach(it => {
+      if(it.kind === 'passage') return;
+      const row = rows[r++];
+      if(!row || !it.marks || !it.marks.length || it.kind !== 'math') return;
+      const w = document.createElement('div');
+      w.className = 'v88work v88rev';
+      w.innerHTML = '<small>Her working</small><div class="gw">' + workGrid(it) + '<canvas class="v88mk"></canvas></div>';
+      row.insertBefore(w, row.querySelector('.svagain'));
+      const cv = w.querySelector('canvas');
+      requestAnimationFrame(() => drawStrokes(cv, it.marks));
+    });
+  }catch(e){ console.warn('v87 review', e); }
+};
+/* "practice this again" starts clean */
+document.addEventListener('click', e => {
+  if(e.target && e.target.classList && e.target.classList.contains('svagain')){
+    try{ (me.misses || []).forEach(m => { if(m.item) delete m.item.marks; }); }catch(err){}
+  }
+}, true);
+
+/* ---------- scratch paper ---------- */
+const scr = document.createElement('div');
+scr.id = 'v88scratch';
+scr.innerHTML = '<div class="bar"><b>Scratch paper</b><span>Work it out here. This is not checked.</span>' +
+  '<button id="v88sClear">Clear</button><button id="v88sDone" class="go">Done</button></div><canvas></canvas>';
+document.body.appendChild(scr);
+let SCR = [];
+const scv = scr.querySelector('canvas');
+wireDraw(scv, () => SCR, {color:'#1F2A44'});
+const openScratch = () => { scr.classList.add('on'); requestAnimationFrame(() => drawStrokes(scv, SCR, '#1F2A44')); };
+scr.querySelector('#v88sClear').onclick = () => { SCR = []; drawStrokes(scv, SCR, '#1F2A44'); };
+scr.querySelector('#v88sDone').onclick = () => { scr.classList.remove('on'); };
+window.addEventListener('resize', () => { if(scr.classList.contains('on')) drawStrokes(scv, SCR, '#1F2A44'); });
+const book = document.getElementById('book');
+if(book){
+  const b = document.createElement('button');
+  b.className = 'book v88sbtn'; b.id = 'v88scratchBtn'; b.textContent = '✏️'; b.title = 'Scratch paper';
+  b.onclick = openScratch;
+  book.insertAdjacentElement('afterend', b);
+}
+/* only on math sheets; a new sheet starts with clean scratch paper */
+const render0 = render;
+window.render = render = function(){
+  render0();
+  try{
+    const b = document.getElementById('v88scratchBtn');
+    if(b) b.style.display = sheet && sheet.subject === 'math' ? '' : 'none';
+    if(sheet !== window.__v88sheet){ window.__v88sheet = sheet; SCR = []; scr.classList.remove('on'); }
+  }catch(e){}
+};
+window.V87W = {workGrid, drawStrokes, cellsHTML, answerCells};
 })();
 
 </script>

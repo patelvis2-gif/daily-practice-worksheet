@@ -438,6 +438,68 @@ window.cell = cell = function(it, i, single, n){
   return d;
 };
 
+/* ---------- sheets never come up short; repeats only when the level runs out ---------- */
+const build3 = buildSheet;
+window.buildSheet = buildSheet = function(subject){
+  const sh = build3(subject);
+  try{
+    if(sh && !sh.isTest && !sh.isCheckup && !sh.items.some(i => i.kind === 'passage')){
+      const L0 = lvl(sh.subject, sh.level), want = Math.min(window.v87QPer ? v87QPer() : 10, L0.n || 10);
+      if(typeof L0.gen === 'function'){
+        const count = {}; sh.items.forEach(i => count[i.key] = (count[i.key] || 0) + 1);
+        /* swap a repeat for a fresh question when the level has more to give */
+        sh.items.forEach((it, k) => {
+          if(it.review || it.mixed || count[it.key] <= 1) return;
+          for(let g = 0; g < 20; g++){ const nx = L0.gen(); if(!count[nx.key]){ count[it.key]--; count[nx.key] = 1;
+            sh.items[k] = Object.assign({stack:L0.stack, given:(nx.kind === 'choice' || nx.kind === 'pic') ? null : ''}, nx); seqSafe(sh.items[k]);
+            if(writeMode() && sh.items[k].kind === 'math') sh.items[k].penMath = true; break; } }
+        });
+        /* tiny levels (only a couple of possible questions) repeat instead of shrinking the sheet */
+        let live0 = sh.items.filter(i => !i.review).length, g = 0;
+        while(live0 < want && g++ < 30){ const nx = L0.gen();
+          const it = Object.assign({stack:L0.stack, given:(nx.kind === 'choice' || nx.kind === 'pic') ? null : ''}, nx); seqSafe(it);
+          if(writeMode() && it.kind === 'math') it.penMath = true;
+          sh.items.splice(Math.min(sh.items.length, 1 + rnd(sh.items.length)), 0, it); live0++; }
+      }
+      /* the same question never twice in a row */
+      for(let k = 1; k < sh.items.length; k++) if(sh.items[k].key && sh.items[k].key === sh.items[k - 1].key){
+        const j = sh.items.findIndex((x, m) => m > k && x.key !== sh.items[k].key && (m + 1 >= sh.items.length || sh.items[m + 1].key !== sh.items[k].key));
+        if(j > -1){ const t = sh.items[k]; sh.items[k] = sh.items[j]; sh.items[j] = t; }
+      }
+    }
+  }catch(e){ console.warn('v87 fill', e); }
+  return sh;
+};
+/* stage tests: no repeated questions */
+const test0 = buildTest;
+window.buildTest = buildTest = function(subject){
+  const t = test0(subject);
+  try{
+    const seen = new Set();
+    t.items.forEach((it, k) => {
+      if(it.kind === 'passage' || !it.key) return;
+      if(!seen.has(it.key)){ seen.add(it.key); return; }
+      const L0 = it.lv ? lvl(subject, it.lv) : null;
+      if(!L0 || typeof L0.gen !== 'function') return;
+      for(let g = 0; g < 25; g++){ const nx = L0.gen(); if(!seen.has(nx.key)){ seen.add(nx.key);
+        t.items[k] = Object.assign({stack:L0.stack, lv:L0.id, given:(nx.kind === 'choice' || nx.kind === 'pic') ? null : ''}, nx); seqSafe(t.items[k]);
+        if(writeMode() && t.items[k].kind === 'math') t.items[k].penMath = true; break; } }
+    });
+  }catch(e){ console.warn('v87 test', e); }
+  return t;
+};
+/* speech: read symbols as words */
+const say5 = say;
+const speakable = t => String(t)
+  .replace(/(\d)\s*×\s*(\d)/g, '$1 times $2').replace(/×\s*(\d)/g, 'times $1').replace(/×/g, ' times ')
+  .replace(/(\d)\s*÷\s*(\d)/g, '$1 divided by $2').replace(/÷/g, ' divided by ')
+  .replace(/(\d)\s*[−-]\s*(\d)/g, '$1 minus $2').replace(/(^|[\s(,])[−]\s?(\d)/g, '$1take away $2')
+  .replace(/(^|[\s(,])\+\s?(\d)/g, '$1plus $2').replace(/(\d)\s*\+\s*(\d)/g, '$1 plus $2')
+  .replace(/\s*→\s*/g, ' to ').replace(/(^|\s)-([a-z]{1,4})\b/g, '$1"$2"').replace(/¢/g, ' cents')
+  .replace(/([.?!])\s*\.(\s|$)/g, '$1$2').replace(/\?\s*\./g, '?');
+window.say = say = function(text, rate){ return say5(text == null ? text : speakable(text), rate); };
+window.v87speakable = speakable;
+
 /* ---------- no red clock for young children ---------- */
 const render2 = render;
 window.render = render = function(){

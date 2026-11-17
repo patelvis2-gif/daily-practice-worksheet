@@ -241,8 +241,8 @@ function tradeItem(ask){
   const t = 2 + rnd(7), o = rnd(10), n = t * 10 + o;
   ask = ask || pick(['ones','ones','tens','same']);
   if(ask === 'ones') return {kind:'trade', ask, t, o, n, a: o + 10, key:'tr:o:' + n,
-    q: n + ' is ' + tw(t) + ' and ' + ow(o) + '. Trade one ten for ten ones. Now there are ' + tw(t - 1) + ' and how many ones?',
-    say: n + ' is ' + tw(t) + ' and ' + ow(o) + '. Trade one ten for ten ones. Now there are ' + tw(t - 1) + ' and how many ones?'};
+    q: n + ' is ' + tw(t) + ' and ' + ow(o) + '. Trade one ten for ten ones. Now we have ' + tw(t - 1) + ' and how many ones?',
+    say: n + ' is ' + tw(t) + ' and ' + ow(o) + '. Trade one ten for ten ones. Now we have ' + tw(t - 1) + ' and how many ones?'};
   if(ask === 'tens') return {kind:'trade', ask, t, o, n, a: t - 1, key:'tr:t:' + n,
     q: 'Trade one ten in ' + n + ' for ten ones. How many tens are left?', say: 'Trade one ten in ' + n + ' for ten ones. How many tens are left?'};
   return {kind:'trade', ask:'same', t, o, n, a: n, key:'tr:s:' + n,
@@ -483,7 +483,7 @@ function padEl(it, i){
       e.stopPropagation();
       if(k === '⌫') it.given = String(it.given || '').slice(0, -1);
       else if(k === '✓'){ if(String(it.given || '').length) return nextOpen(i); return; }
-      else if(String(it.given || '').length < 4) it.given = String(it.given || '') + k;
+      else if(String(it.given || '').length < 5) it.given = String(it.given || '') + k;
       sel = i; render();
     };
     p.appendChild(b);
@@ -559,7 +559,7 @@ function blocksSteps(it){
       say: need ? 'Always start with the ones. Can we take ' + yO + ' from ' + xO + '? No — there are not enough ones. Trade one ten for ten ones.'
                 : 'Always start with the ones. Can we take ' + yO + ' from ' + xO + '? Yes — there are enough ones.'});
     if(need) s.push({html: pair(blocksHTML({rods:xT - 1, ones:xO + 10, fresh:10}), colHTML(x, y, op, {borrow:true, hiOnes:true})),
-      say:'Break one ten into ten ones. Now there are ' + tens(xT - 1) + ' and ' + ones(xO + 10) + '. On paper, cross out the ' + xT + ', write ' + (xT - 1) + ', and put a little 1 in front of the ' + xO + '.'});
+      say:'Break one ten into ten ones. Now we have ' + tens(xT - 1) + ' and ' + ones(xO + 10) + '. On paper, cross out the ' + xT + ', write ' + (xT - 1) + ', and put a little 1 in front of the ' + xO + '.'});
     const onesNow = need ? xO + 10 : xO, rodsNow = need ? xT - 1 : xT;
     s.push({html: pair(blocksHTML({rods:rodsNow, ones:onesNow, fresh: need ? 10 : 0, goneOnes:yO}), colHTML(x, y, op, {borrow:need, ones:true, hiOnes:true})),
       say: onesNow + ' take away ' + yO + ' is ' + (onesNow - yO) + '. Write ' + (onesNow - yO) + ' in the ones.'});
@@ -577,7 +577,7 @@ function blocksSteps(it){
     say: carry ? 'Start with the ones: ' + xO + ' plus ' + yO + ' is ' + sum + '. That is too many for the ones place — bundle ten ones into a new ten.'
                : 'Start with the ones: ' + xO + ' plus ' + yO + ' is ' + sum + '.'});
   if(carry) s.push({html: pair(blocksHTML({rods:xT + yT + 1, ones:sum - 10, newRod:true}), colHTML(x, y, op, {carry:true, ones:true, hiOnes:true})),
-    say:'Ten ones make one ten. Now there are ' + ones(sum - 10) + ' — write ' + (sum - 10) + ' — and carry the new ten: write a little 1 above the tens.'});
+    say:'Ten ones make one ten. Now we have ' + ones(sum - 10) + ' left over — write ' + (sum - 10) + ' — and carry the new ten: write a little 1 above the tens.'});
   else s.push({html: pair(blocksHTML({rods:xT + yT, ones:sum, altRods:yT, altOnes:yO}), colHTML(x, y, op, {ones:true, hiOnes:true})), say:'Write ' + sum + ' in the ones.'});
   const tt = xT + yT + (carry ? 1 : 0);
   s.push({html: pair(blocksHTML({rods:tt, ones:sum % 10, newRod:carry, hiRods:true}), colHTML(x, y, op, {carry, ones:true, tens:true, hiTens:true})),
@@ -614,7 +614,7 @@ function storySteps(it){
   const how = add ? 'We know both parts and the whole is missing, so we add: ' + x + ' plus ' + y + '.'
                   : (t === 'comp' ? 'The difference is missing, so we take away: ' + x + ' minus ' + y + '.' : 'A part is missing, so we take away: ' + x + ' minus ' + y + '.');
   const end = {join: it.p1 + ' has ' + a + ' now.', partW: a + ' in all.', compMore: it.p2 + ' has ' + a + '.',
-    sep: it.p1 + ' has ' + a + ' left.', partP: a + ' are blue.', comp: it.p1 + ' has ' + a + ' more.'}[t];
+    sep: it.p1 + ' has ' + a + ' left.', partP: a + (a === 1 ? ' is blue.' : ' are blue.'), comp: it.p1 + ' has ' + a + ' more.'}[t];
   return [
     {html: head, say: it.text},
     {html: head + barHTML(it, false), say: hint},
@@ -632,7 +632,7 @@ function tradeSteps(it){
   return [
     {html: blocksHTML({rods:t, ones:o}), say: n + ' is ' + tw(t) + ' and ' + ow(o) + '.'},
     {html: blocksHTML({rods:t, ones:o, tapRods:true}), say:'Break one ten stick into ten ones.'},
-    {html: blocksHTML({rods:t - 1, ones:o + 10, fresh:10}), say:'Now there are ' + tw(t - 1) + ' and ' + ow(o + 10) + '.'},
+    {html: blocksHTML({rods:t - 1, ones:o + 10, fresh:10}), say:'Now we have ' + tw(t - 1) + ' and ' + ow(o + 10) + '.'},
     {html: blocksHTML({rods:t - 1, ones:o + 10, fresh:10}) + big('<b class="ok">' + it.a + '</b>'), say: end + ' It is still ' + n + '.'}];
 }
 function moneySteps(it){
@@ -699,7 +699,7 @@ function keypad(LN, onGo, lock){
     b.onclick = () => {
       if(k === '⌫') LN.entry = String(LN.entry || '').slice(0, -1);
       else if(k === '✓'){ if(String(LN.entry || '').length) onGo(Number(LN.entry)); return; }
-      else if(String(LN.entry || '').length < 4) LN.entry = String(LN.entry || '') + k;
+      else if(String(LN.entry || '').length < 5) LN.entry = String(LN.entry || '') + k;
       window.V87._repaint();
     };
     pad.appendChild(b);
